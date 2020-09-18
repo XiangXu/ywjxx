@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Two Sum"
+title:  Two Sum
 date:   2020-09-18 09:43
 image:  leetcode.jpeg
 tags:   LeetCode

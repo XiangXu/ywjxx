@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Add Two Numbers"
+title:  Add Two Numbers
 date:   2020-09-18 15:03
 image:  leetcode.jpeg
 tags:   LeetCode
