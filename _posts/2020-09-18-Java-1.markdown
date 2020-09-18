@@ -37,7 +37,6 @@ The String object is the most used class in the Java language. Thanks to the imm
 
 **If found, the Java compiler will return a reference to its memory address, without allocating additional memory**, by doing this, JVM can save lots of spaces. However **if new operator is used, it explicitly creates a new String in heap memory**.
 
-
 ### Garbage Collection
 
 **Before Java 7, the JVM placed the Java String Pool in the PerGen space, which has fixed size - it cann't expanded at runtime and is not eligible for garabage collection**.
