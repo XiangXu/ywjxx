@@ -6,10 +6,9 @@ image:  programming.jpeg
 tags:   Programming Java
 ---
 
+## String
 
-# StringBuilder vs StringBuffer
-
-1. String is **immutable** in Java. If we have a look at Java source code, We can find that an final byte array is used for character storage. 
+String is **immutable** in Java. If we have a look at Java source code, We can find that an final byte array is used for character storage. 
 
 ```java
 
@@ -29,11 +28,14 @@ tags:   Programming Java
 
 ```
 
-2. When we create a String using double quotes, it first looks for the String with same value in the JVM string pool, if found it returns the reference otherwise it creates the String object and then places it in the String pool. This way JVM saves a lot of spaces by using the same String in different threads. But if a new operator is used, it explicitly creates a new String in heap memory.
+<!-- Line breaks -->
+<br />
 
-3. Operator + is overloaded for String and used to concatenate two String. Although internally it uses StringBuffer or StringBuilder to perform this action.
+1. When we create a String using double quotes, it first looks for the String with same value in the JVM string pool, if found it returns the reference otherwise it creates the String object and then places it in the String pool. This way JVM saves a lot of spaces by using the same String in different threads. But if a new operator is used, it explicitly creates a new String in heap memory.
 
-4. String overrides **equals()** and **hashCode()** methods, two Strings are equal only if they have the same characters in the same order. 
+2. Operator + is overloaded for String and used to concatenate two String. Although internally it uses StringBuffer or StringBuilder to perform this action.
+
+3. String overrides **equals()** and **hashCode()** methods, two Strings are equal only if they have the same characters in the same order. 
 
 ## String vs StringBuffer vs StringBuilder
 
@@ -46,6 +48,6 @@ tags:   Programming Java
 
 Reference: 
 
-https://www.journaldev.com/538/string-vs-stringbuffer-vs-stringbuilder
+<https://www.journaldev.com/538/string-vs-stringbuffer-vs-stringbuilder>
 
-https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.18.1
+<https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.18.1>
