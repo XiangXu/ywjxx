@@ -1,9 +1,9 @@
 ---
 layout: post
 title:  "StringBuilder vs StringBuffer"
-date:   2020-09-18 11:28:12 +0300
+date:   2020-09-18 11:28
 image:  java.jpeg
-tags:   Programming Java
+tags:   Java
 ---
 
 ## String
