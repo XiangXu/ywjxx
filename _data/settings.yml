@@ -1,8 +1,8 @@
 #-------------------------------
 # General Site Settings
 title: ywjxx
-logo: logo.svg # You can add own logo.
-description: Zolan is modern minimal theme for Jekyll
+# logo: logo.jpg # You can add own logo.
+description: Xiang Xu and Wanjun Blog
 
 
 #-------------------------------
@@ -10,8 +10,10 @@ description: Zolan is modern minimal theme for Jekyll
 author:
   name: Xiang Xu
   image: profile.jpeg
-  say-hello: <strong>写在前面的话</strong>
-  bio: 欢迎大家来到我们的博客, 我们会在这里记录生活的点点滴滴.
+  say-hello: Hello I'm <strong>Xiang Xu</strong>
+  bio: Come from 🇨🇳  and living in 🇮🇪  at moment <br/>
+       Software Engineer 👨‍💻 <br/>
+      
 
 
 #-------------------------------
@@ -22,6 +24,7 @@ author:
 instagram: https://www.instagram.com/xiangxu_/ # Add your Instagram handle
 facebook: https://www.facebook.com/profile.php?id=100004084192117 # Add your Facebook handle
 github: https://github.com/XiangXu
+linkedin: https://www.linkedin.com/in/xiang-xu-2a106271/
 
 
 #-------------------------------
@@ -31,7 +34,7 @@ disqus-identifier: mr-brown # add your shortname for Disqus Comment. For example
 
 #-------------------------------
 # Instagram Feed
-instafeed: true # To enable the instafeed, use the value true. To turn off use the value false.
+instafeed: false # To enable the instafeed, use the value true. To turn off use the value false.
 instagram-profile: xiangxu_ # Add instagram username
 
 
