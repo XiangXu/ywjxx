@@ -15,3 +15,8 @@ YWJ和XX分别是我老婆和我名字的缩写, 她也会在这上面更新一�
 在这里我要特别感谢zolan的模版: http://jekyllthemes.org/themes/zolan/
 
 博客的具体搭建我参考了: https://www.jianshu.com/p/f2ca9ea74d8f
+
+## 如何运行
+
+1. bundle install
+2. undle exec jekyll serve
