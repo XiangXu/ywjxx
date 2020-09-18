@@ -1,7 +1,7 @@
 ---
 layout: post
-title: String vs StringBuilder vs StringBuffer
-date: 2020-09-18 22:27
+title:  String vs StringBuilder vs StringBuffer
+date:   2020-09-18 22:27
 image:  java.jpeg
 tags:   Java
 ---
