@@ -49,11 +49,11 @@ Constraints:
 
 This is a typical sliding window problem, **a sliding window is an abstract concept commonly used in array/string problem**. A window is a range of elements in array/string which usually defined by the start and end incides. 
 
-1. Create a Map to store character and its index of the given String.
+1. Create a Map to store character and its index in the given String.
 2. Define two pointers called start and end, they both point to the first character at begining.
-3. Slide end pointer to right and if current character is not in the Map, we calculate current max length then slide end pointer further.
-4. If current character is in the Map, we update index value in the map for that character if needed by Math.max(start, map.get(currChar)+1), then repeat step 3.
-5. Return the max length when end pointer reach the last character in the given String.
+3. Slide end pointer to right and if the character it points to is not in the Map, we calculate current max length then slide end pointer further.
+4. Otherwise, we update index value in the map for that character if needed by using **Math.max(start, map.get(currChar)+1)**, then repeat step 3.
+5. Return the max length when the end pointer reach the last character in the given String.
 
 ```java
 class Solution 
