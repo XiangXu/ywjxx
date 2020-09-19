@@ -22,6 +22,7 @@ public boolean equals(Object o) {
 }
 ```
 
+<!-- Line breaks -->
 <br/>
 
 ## hashcode()
@@ -34,6 +35,7 @@ hahscode() method returns a hash code value of the object, it is a native method
 public native int hashCode();
 ```
 
+<!-- Line breaks -->
 <br/>
 
 There are 3 rules to hashcode method:
