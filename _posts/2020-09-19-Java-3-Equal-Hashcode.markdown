@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  Equal vs == and HashCode()
-date:   2020-09-19 17:17
+date:   2020-09-19 16:17
 image:  java.jpeg
 tags:   Java
 ---
