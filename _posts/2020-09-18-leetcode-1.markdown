@@ -65,7 +65,6 @@ class Solution
 ```
 <!-- Line breaks -->
 <br />
-<br />
 
 ## Time & Space Complexity:
 
