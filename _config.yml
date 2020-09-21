@@ -35,4 +35,4 @@ sass:
   style: compressed
 
 # Time Zone
-timezone: UTC
+timezone: Europe/London
