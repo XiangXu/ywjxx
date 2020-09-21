@@ -78,6 +78,9 @@ private int iterativeBinarySearch(int[] array, int target)
 }
 ```
 
+<!-- Line breaks -->
+<br />
+
 Reference
 
 <https://www.geeksforgeeks.org/binary-search>
