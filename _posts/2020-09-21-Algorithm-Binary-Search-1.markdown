@@ -3,7 +3,7 @@ layout: post
 title:  Binary Search
 date:   2020-09-21 22:40
 image:  algorithm.jpeg
-tags:   Algorithm
+tags:   [Fundation, Algorithm]
 ---
 
 Given a **sorted array** arr[] of n elements, write a function to search a given element x in arr[].
@@ -46,8 +46,6 @@ private int recusiveBinarySearch(int[] array, int left, int right, int target)
     return -1;
 }
 ```
-
-
 <!-- Line breaks -->
 <br />
 

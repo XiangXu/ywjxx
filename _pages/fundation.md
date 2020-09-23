@@ -1,5 +1,5 @@
 ---
 layout: page
-title: Algorithm
+title: Fundation
 permalink: /tag/algorithm/
 ---
