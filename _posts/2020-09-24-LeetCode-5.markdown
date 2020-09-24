@@ -1,0 +1,86 @@
+---
+layout: post
+title:  Longest Palindromic Substring
+date:   2020-09-24 18:52
+image:  leetcode.jpeg
+tags:   LeetCode
+---
+
+## Problem
+
+Given a string s, find the longest palindromic substring in s. You may assume that the maximum length of s is 1000.
+
+```
+Example 1:
+
+Input: "babad"
+Output: "bab"
+Note: "aba" is also a valid answer.
+
+Example 2:
+
+Input: "cbbd"
+Output: "bb"
+```
+
+<!-- Line breaks -->
+<br />
+
+## Solution
+
+We can use "Expand Around Center" approach to solve this problem. 
+
+The idea is to traverse each character in the given String. Then expend from each character to left and right at the same time, check the substring from this range to see if it satisfies palindromic. Return the longest palindromic substring.
+
+```java
+class Solution 
+{
+    public String longestPalindrome(String s) 
+    {
+        // check special case
+        if(s == null || s.length() == 0)
+            return "";
+        
+        String result = "";
+        for(int i=0; i<s.length(); i++)
+        {
+            char currChar = s.charAt(i);
+            
+            String str1 = expendFromCenter(s, i, i);
+            String str2 = expendFromCenter(s, i, i + 1);
+            
+            String str = str1.length() >= str2.length() ? str1 : str2;
+            result = str.length() > result.length() ? str : result;
+        }
+        
+        return result;
+    }
+             
+    private String expendFromCenter(String s, int left, int right)
+    {
+        String str = "";
+
+        while(left >= 0 && right <= s.length() - 1 && s.charAt(left) == s.charAt(right))
+        {
+            str = s.substring(left, right + 1);
+            left --;
+            right ++;
+        }
+
+        return str;
+    }
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+## Time & Space Complexity:
+
+* **Time Complexity: O(n<sup>2</sup>))**: Since expanding a palindrome around its center could take O(n) time, the overall complexity is O(n<sup>2</sup>).
+* **Space Complexity: O(l)**: We only create few variables.
+
+
+
+
+
