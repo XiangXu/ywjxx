@@ -3,7 +3,7 @@ layout: post
 title:  Cookie vs Session vs LocalStorage vs SessionStorage
 date:   2020-09-26 12:02
 image:  computer_network.jpg
-tags:   [Fundation, Computer Network]
+tags:   [Fundation, Network]
 ---
 
 ## Stateless Applications
