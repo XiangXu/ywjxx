@@ -1,5 +1,5 @@
 ---
 layout: page
 title: Fundation
-permalink: /tag/algorithm/
+permalink: /tag/fundation/
 ---
