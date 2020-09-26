@@ -3,7 +3,7 @@ layout: post
 title:  HTTP Methods
 date:   2020-09-21 22:40
 image:  computer_network.jpg
-tags:   [Fundation, Computer Network]
+tags:   [Fundation, Network]
 ---
 
 ## What is Http?
