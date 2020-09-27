@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Network Terms
+title:  OSI Model
 date:   2020-09-27 21:36
 image:  computer_network.jpg
 tags:   [Fundation, Network]
