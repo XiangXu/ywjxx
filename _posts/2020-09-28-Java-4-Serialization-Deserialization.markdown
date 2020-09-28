@@ -47,6 +47,9 @@ public class Persist
 }
 ```
 
+<!-- Line breaks -->
+<br />
+
 An ObjectInputStream class is used to deserialize objects and primitive data written using an ObjectOutputStream.
 
 ```java
@@ -67,6 +70,9 @@ public class Depersist
     }
 }
 ```
+
+<!-- Line breaks -->
+<br />
 
 1. If a class implements serializable then all its sub classes will also be serializable.
 2. If a class has a reference to another class, all the references must be Serializable otherwise serialization process will be not performed.
@@ -96,6 +102,9 @@ class Employee implements Serializable
 }  
 ```
 
+<!-- Line breaks -->
+<br />
+
 "id" will not be serialized, so when you deserialize the object after serialization, you will not get the value of id. It will always return default value - in this case, it will return 0 because the data type of id is an integer.
 
 ## SerialVersionUID
@@ -107,6 +116,9 @@ We can also declare our own SerialVersionUID in the Serializable class by creati
 ```java
 private static final long serialVersionUID=1L;  
 ```
+
+<!-- Line breaks -->
+<br />
 
 Reference
 
