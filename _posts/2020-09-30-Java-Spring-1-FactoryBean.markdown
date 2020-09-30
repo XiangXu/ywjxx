@@ -2,7 +2,7 @@
 layout: post
 title:  FactoryBean
 date:   2020-09-30 20:48
-image:  spring.jpg
+image:  spring.png
 tags:   [Java, Spring]
 ---
 
