@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  ZigZag Conversion
+title:  6. ZigZag Conversion
 date:   2020-09-27 22:20
 image:  leetcode.jpeg
 tags:   LeetCode

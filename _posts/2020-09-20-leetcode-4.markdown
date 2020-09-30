@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Median of Two Sorted Arrays
+title:  4. Median of Two Sorted Arrays
 date:   2020-09-20 12:15
 image:  leetcode.jpeg
 tags:   LeetCode

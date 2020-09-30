@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Reverse Integer
+title:  7. Reverse Integer
 date:   2020-09-30 22:57
 image:  leetcode.jpeg
 tags:   LeetCode

@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Longest Palindromic Substring
+title:  5. Longest Palindromic Substring
 date:   2020-09-24 18:52
 image:  leetcode.jpeg
 tags:   LeetCode
