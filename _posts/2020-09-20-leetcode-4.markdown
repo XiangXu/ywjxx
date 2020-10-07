@@ -77,6 +77,9 @@ total: 1   2   3   4   5   6  ｜  7   9   10   11   13   16
 The median is (6 + 7) / 2 = 6.5. 
 ```
 
+<!-- Line breaks -->
+<br />
+
 As you can see above, the length of array total = the length of array nums1 + the length of array nums2.  
 
 We know the mdeidan is calculated by averaging numbers 6 and 7, so if we make a cut in array total between 6 and 7, the left side of cut point have numbers: 1, 2 ,3, 4, 5, 6 and the right side of cut point have numbers: 7, 9, 10, 11, 13, 16. 
