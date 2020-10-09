@@ -19,4 +19,4 @@ YWJ和XX分别是我老婆和我名字的缩写, 她也会在这上面更新一�
 ## 如何运行
 
 1. bundle install
-2. undle exec jekyll serve
+2. bundle exec jekyll serve

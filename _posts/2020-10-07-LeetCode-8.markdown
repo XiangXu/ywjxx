@@ -43,6 +43,9 @@ Output: -2147483648
 Explanation: The number "-91283472332" is out of the range of a 32-bit signed integer. Thefore INT_MIN (−231) is returned.
 ```
 
+<!-- Line breaks -->
+<br />
+
 ## Solution
 
 This problem can be solved by scan character from left to right. However, there are few edge conditions we need to handle:
