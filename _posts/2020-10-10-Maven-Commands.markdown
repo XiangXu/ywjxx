@@ -18,7 +18,7 @@ Maven is a project management and comprehension tool that provides developers a 
 
 ## POM
 
-POM stands for Project Object Model. It is fundamental unit of work in Maven. It is an XML file that resides in the base directory of the project as pom.xml.
+**POM stands for Project Object Model.** It is fundamental unit of work in Maven. It is an XML file that resides in the base directory of the project as pom.xml.
 
 ```xml
 <project xmlns = "http://maven.apache.org/POM/4.0.0"
@@ -42,7 +42,7 @@ POM stands for Project Object Model. It is fundamental unit of work in Maven. It
 
 ## What is Build Lifecycle
 
-A Build Lifecycle is a well-defined sequence of phases, which define the order in which the goals are to be executed. Here phase represents a stage in lifecycle. 
+**A Build Lifecycle is a well-defined sequence of phases, which define the order in which the goals are to be executed**. Here phase represents a stage in lifecycle. 
 
 * **prepare-resource**: resource copying can be customized in this phases.
 * **validate**: validates if the project is correct and if all necessary information is available.
