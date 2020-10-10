@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  Useful Commands
-date:   2020-09-24 22:40
+date:   2020-10-10 10:18
 image:  oop.jpg
 tags:   [Fundation, Command]
 ---
