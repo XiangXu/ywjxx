@@ -33,6 +33,9 @@ POM stands for Project Object Model. It is fundamental unit of work in Maven. It
 </project>
 ```
 
+<!-- Line breaks -->
+<br />
+
 * **groupId**: This is an Id of project's group. This is generally unique amongst an organziation or a project.
 * **artifactId**: This is an Id of the project. This is generally name of the project.
 * **version**: This is the version of the project.
@@ -56,6 +59,9 @@ There are always **pre** and **post** phases to register **goals**, which must r
 ```
 mvn clean dependency:copy-dependencies package
 ```
+
+<!-- Line breaks -->
+<br />
 
 Here the clean phase will be executed first, followed by the dependency:copy-dependencies goal, and finally package phase will be executed.、
 
@@ -118,11 +124,17 @@ Maven is actually a plugin execution framework where every task is actually done
 mvn [plugin-name]:[goal-name]
 ```
 
+<!-- Line breaks -->
+<br />
+
 For example, a Java project can be compiled with the maven-compiler-plugin's compile-goal by running the following command.
 
 ```
 mvn compiler:compile
 ```
+
+<!-- Line breaks -->
+<br />
 
 ## What is SNAPSHOT?
 
