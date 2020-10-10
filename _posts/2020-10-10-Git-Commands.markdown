@@ -6,8 +6,6 @@ image:  oop.jpg
 tags:   [Fundation, Command]
 ---
 
-# Git Useful Commands
-
 **Revert file**  
 ```
 git checkout [filename]
