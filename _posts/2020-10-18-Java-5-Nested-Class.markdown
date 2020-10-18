@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  Java Nested Class
-date:   2020-1018 12:35
+date:   2020-10-18 12:35
 image:  java.jpeg
 tags:   Java
 ---
