@@ -83,3 +83,64 @@ tags:   AWS
 
 * Each region has many availability zones.
 * Each availability zone is one or more discrete data centers with redudant power, networking, and connectivity.
+
+## IAM 
+
+### Users & Groups
+
+* IAM = Identity and Access Management, Global service. We can create users and assign group. 
+* Root account created by default, shouldn't be used or shared.
+* Users are people within your organization, and can be grouped.
+* Groups only contain users, not other groups.
+* User don't have to belong to a group, and user can belong to multiple groups.
+
+### Permissions
+
+* Users or Groups can be assigned **JSON** documents called policies.
+* These policies define the **permissions** of the users.
+* In AWS you apply the **least privilege principle**: don't give more permissions than a user needs.
+
+### Password Policy
+
+* Strong passwords - including uppercase letters, lowercase letters, numbers, non-alphanumeric characters.
+* Allow all IAM users to change their own passwords.
+* Require users to change their password after some time.
+* Prevent password re-use.
+
+### Multi Factor Authentication -MFA
+
+* You want to protect your Root Accounts and IAM users.
+* MFA = password you know + security device you own.
+
+MFA devices options AWS
+
+1. Google Authenticator - phone only
+2. Authy - Multi - device
+3. Universal 2nd Factor(J2F) Security Key - physical device
+4. Hardware Key Fob MMA Device
+5. Hardware Key Fob MFA Device for AWS GovCloud(US)
+
+### How can users access AWS
+
+* AWS Management Console (protected by password + MFA).
+* AWS Command Line Interface (CLI): protected by access keys.
+* AWS Software Developer kit (SDK): for code: protected by access keys.
+* Access keys are generated through the AWS Console.
+* Users manage their own access keys.
+* Access Keys are secret, just like a password. Don't share them.
+* Access Key ~= username.
+* Secret Access Key ~= password.
+
+### Roles for Services
+
+* Some AWS service will need to perform actions on your behalf.
+* To do so, we will assign permissions to AWS services with IAM Roles.
+
+### Security Tools
+
+* IAM Credentials Report (account-level)
+  * a report that lists all your account's users and the status of their various credentials.
+  
+* IAM Access Advisor (user-level)
+  * Access advisor shows the service permissions granted to a user and when those services were last accessed.
+  * You can use this information to revise your policies.
