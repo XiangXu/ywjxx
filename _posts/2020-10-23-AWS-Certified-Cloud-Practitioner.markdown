@@ -107,7 +107,7 @@ tags:   AWS
 * Require users to change their password after some time.
 * Prevent password re-use.
 
-### Multi Factor Authentication -MFA
+### Multi Factor Authentication - MFA
 
 * You want to protect your Root Accounts and IAM users.
 * MFA = password you know + security device you own.
@@ -144,3 +144,83 @@ MFA devices options AWS
 * IAM Access Advisor (user-level)
   * Access advisor shows the service permissions granted to a user and when those services were last accessed.
   * You can use this information to revise your policies.
+
+## Amazone EC2
+
+Elastic Compute Cloud = Infrastructure as a Service. It mainly consists in the capability of:
+
+* Renting virtual machines (EC2).
+* Storing data on virtual drives (EBS).
+* Distributing load across machines (ELB).
+* Scaling the services using an auto-scaling group (ASG).
+
+### Introduction to Security Groups
+
+* Security Groups are the fundamental of network security in AWS.
+* They control how traffic is allowed into or out of our EC2 instances.
+* Security groups only contain **allow** rules.
+* Security groups rules can reference by IP or by security group. 
+
+### Security Groups Deeper Dive
+
+* Security groups are acting as a "firewall" on EC2 instances.
+* They regulate:
+  * Access to Ports.
+  * Authorised IP ranges - IPv4 and IPv6.
+  * Control of inbound network (from other to the instance).
+  * Control of outbound network (from the instance to other).
+
+#### Classis Ports to know
+
+* 22 = SSH (Secure Shell) - log into a Linux instance.
+* 21 = FTP (File Transport Protocol) - upload files into a file share.
+* 22 = SFTP (Secure File Transport Protocol) - upload files using SSH.
+* 80 = HTTP - access unsecured websites.
+* 443 = HTTPS - access secured websites.
+* 3389 = RDP (Remote Desktop Protocol) - log into a Windows instance.
+
+### EC2 Instances Purchasing Options
+
+#### On-Demand Instances
+
+* Pay for what you use: Linux - billing per second, after the first minute; all other opearting system - billing per hour.
+* Has the highest cost but no upfront payment.
+* No long-term commitment.
+
+Recommended for **short term** and **un-interrupted workloads**, where you cann't predict how the applicaiton will behave.
+  
+#### Reserved: (Minimum 1 year)
+
+* Reserved Instances: long workloads.
+* Convertible Reserved Instances: long workloads with flexible instances.
+* Scheduled Reserved Instances: example - every Thursday between 3 and 6 pm.
+
+* Up to 75% discount compared to On-demand.
+* Reservation period: 1 year = + discount | 3 years = +++ discount
+* Purchasing options: no upfront | partial upfront = +| All upfront = ++ discount
+* Reserve a specific instance type. 
+
+Recommended for **steady - state useage applications** (think database).
+
+#### Spot Instance: short workloads, cheap, can lose instances(less reliable).
+
+* Can get a discount of up to 90% compared to On - demand.
+* Instance that you can lose at any point of time if your max price is less than the current spot price.
+* The MOST cost-efficient instances in AWS.
+
+Not suitable for critical jobs or databases. 
+
+#### Dedicated Hosts: book an entire physical server, control instance placement.
+
+* Dedicated Hosts can help you adress **compliance requirements** and reduce costs by allowing you to **use your existing server-bound software licenses**.
+* Allocated for your account for a 3-year period reservation.
+* More expensive.
+* Useful for sotware that have complicated licensing model.
+* Or for companies that hvae strong regulatory or compliance needs.
+
+#### Dedicated Instances
+
+* Instances running on hardware that's dedicated to you.
+* May share hardware with other instances in same account.
+* No Control over instance placement (can move hardware after stop / start).
+
