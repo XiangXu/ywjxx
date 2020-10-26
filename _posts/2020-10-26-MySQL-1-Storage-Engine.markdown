@@ -2,7 +2,7 @@
 layout: post
 title:  MySQL Storage Engine
 date:   2020-10-26 21:20
-image:  mysql.jpeg
+image:  mysql.jpg
 tags:   [Database, MySQL]
 ---
 
