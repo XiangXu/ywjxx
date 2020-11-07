@@ -139,5 +139,5 @@ class Solution
 
 ## Time & Space Complexity:
 
-* **Time Complexity: O(l)**: length of String s.
+* **Time Complexity: O(1)**: length of String s.
 * **Space Complexity: O(1)**: Constant space is used.
