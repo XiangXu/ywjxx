@@ -25,6 +25,9 @@ Output: ""
 Explanation: There is no common prefix among the input strings.
 ```
 
+<!-- Line breaks -->
+<br />
+
 Constraints:
 
 * 0 <= strs.length <= 200

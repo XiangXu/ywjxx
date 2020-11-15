@@ -93,6 +93,6 @@ class Solution
 
 ## Time & Space Complexity:
 
-* **Time Complexity: O(l)**: length of num`.
+* **Time Complexity: O(l)**: length of num.
 * **Space Complexity: O(1)**: Constant space is used.
 
