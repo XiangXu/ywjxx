@@ -37,7 +37,7 @@ Constraints:
 * 0 <= nums.length <= 3000
 * -105 <= nums[i] <= 105
 
-## Problem
+## Solution
 
 This problem can be solved by using two pointers. The idea is to sort an input array and then run through all indices of a possible first element of a triplet.  For each possible first element we make a standard bi-directional 2 Sum sweep of the remaining part of the array. Also we want to skip equal elements to avoid duplicates in the answer.
 

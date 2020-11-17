@@ -1,0 +1,85 @@
+---
+layout: post 
+title:  17. Letter Combinations of a Phone Number
+date:   2020-11-17 21:21
+image:  leetcode.jpeg
+tags:   LeetCode
+---
+
+## Problem
+
+Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
+
+A mapping of digit to letters (just like on the telephone buttons) is given below. Note that 1 does not map to any letters.
+
+![letters](https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Telephone-keypad2.svg/200px-Telephone-keypad2.svg.png)
+
+```
+Example 1:
+
+Input: digits = "23"
+Output: ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+
+Example 2:
+
+Input: digits = ""
+Output: []
+
+Example 3:
+
+Input: digits = "2"
+Output: ["a","b","c"]
+```
+
+Constraints:
+
+* 0 <= digits.length <= 4
+* digits[i] is a digit in the range ['2', '9'].
+
+## Solution
+
+This quesiton can be solved by using **backtracking** algorithm.
+
+```java
+class Solution 
+{
+    private static final String[] keyboard = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wsyz"};
+    
+    public List<String> letterCombinations(String digits) 
+    {
+        if(digits == null || digits.length() == 0)
+            return Collections.emptyList();
+        
+        List<String> result = new ArrayList<>();
+        
+        backTracking(0, digits, new StringBuilder(), result);
+        
+        return result;
+    }
+    
+    private void backTracking(int index, String digits, StringBuilder sb, List<String> result)
+    {
+        if(sb.length() == digits.length())
+        {
+            result.add(sb.toString());
+            return;
+        }
+        
+        String letters = keyboard[digits.charAt(index) - '0'];
+        for(char letter : letters.toCharArray())
+        {
+            sb.append(letter);
+            backTracking(index+1, digits, sb, result);
+            sb.deleteCharAt(sb.length()-1);
+        }
+    }
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+## Time & Space Complexity:
+
+* **Time Complexity: O(3<sup>n</sup> * 4<sup>m s</sup>)**: where N is the number of digits in the input that maps to 3 letters (e.g. 2, 3, 4, 5, 6, 8) and M is the number of digits in the input that maps to 4 letters (e.g. 7, 9), and N+M is the total number digits in the input.
+* **Space Complexity: O(3<sup>n</sup> * 4<sup>m s</sup>)**: since one has to keep 3<sup>n</sup> * 4<sup>m s</sup> solutions.
