@@ -1,6 +1,6 @@
 ---
 layout: post 
-title:  18. Letter Combinations of a Phone Number
+title:  18. 4 Sum 
 date:   2020-11-20 21:38
 image:  leetcode.jpeg
 tags:   LeetCode
