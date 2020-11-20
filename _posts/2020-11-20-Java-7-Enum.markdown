@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  Enum in Java
-date:   2020-11-20 12:35
+date:   2020-11-20 22:35
 image:  java.jpeg
 tags:   Java
 ---
