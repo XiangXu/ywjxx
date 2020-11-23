@@ -1,0 +1,101 @@
+---
+layout: post 
+title:  20. Valid Parentheses
+date:   2020-11-23 23:11
+image:  leetcode.jpeg
+tags:   LeetCode
+---
+
+## Problem
+
+Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+
+An input string is valid if:
+
+1. Open brackets must be closed by the same type of brackets.
+2. Open brackets must be closed in the correct order.
+
+```
+Example 1:
+
+Input: s = "()"
+Output: true
+
+Example 2:
+
+Input: s = "()[]{}"
+Output: true
+
+Example 3:
+
+Input: s = "(]"
+Output: false
+
+Example 4:
+
+Input: s = "([)]"
+Output: false
+
+Example 5:
+
+Input: s = "{[]}"
+Output: true
+```
+
+<!-- Line breaks -->
+<br />
+
+Constraints:
+
+* 1 <= s.length <= 104
+* s consists of parentheses only '()[]{}'.
+
+## Solution
+
+This problem can be solved by using stack. Let's take an example: "()[]{}"
+1. We iterator over each character of the given String.
+2. If currect character is '(', '[' or '{' then we push ')', ']' or '}' into a stack.
+3. If current character is ')', ']' or '}', we pop last element from the stack and check if it is equals to current character. If not equal then we return false.
+4. When we iterator over all characters in the given, we check the stack to see if it is empty or not. If it is empty then we return true otherwise we return false.
+
+```java
+class Solution 
+{
+    public boolean isValid(String s) 
+    {
+        // Check special cases 
+        if(s == null || s.length() == 1 || s.length()%2 != 0)
+            return false;
+        
+        Stack<Character> stack = new Stack();
+        
+        for(char c : s.toCharArray())
+        {
+            // s consists of parentheses only '()[]{}'.
+            if(c == '(')
+                stack.push(')');
+            else if(c == '[')
+                stack.push(']');
+            else if(c == '{')
+                stack.push('}');
+            else 
+            {
+                if(stack.isEmpty() || c != stack.pop())
+                    return false;
+            }
+        }
+        
+        return stack.isEmpty();
+    }
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+## Time & Space Complexity:
+
+* **Time Complexity: O(n)**: because we simply traverse the given string one character at a time and push and pop operations on a stack take O(1) time.
+* **Space Complexity: O(n)**:  as we push all opening brackets onto the stack and in the worst case, we will end up pushing all the brackets onto the stack. e.g. ((((((((((.
+
+
