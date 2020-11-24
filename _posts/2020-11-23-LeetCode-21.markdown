@@ -1,6 +1,6 @@
 ---
 layout: post 
-title:  21.  Merge Two Sorted Lists
+title:  21. Merge Two Sorted Lists
 date:   2020-11-23 23:37
 image:  leetcode.jpeg
 tags:   LeetCode
