@@ -90,7 +90,7 @@ class Solution
 ## Time & Space Complexity:
 
 * **Time Complexity: O(n)**: n is the max length of l1 or l2.
-* **Space Complexity: O(n)**: the length of dummyHead..
+* **Space Complexity: O(n)**: the length of dummyHead.
 
 
 This problem can also be solved by using Recursion.
