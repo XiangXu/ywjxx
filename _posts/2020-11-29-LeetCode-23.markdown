@@ -1,4 +1,10 @@
-# Merge k Sorted Lists
+---
+layout: post 
+title:  23. Merge k Sorted Lists
+date:   2020-11-29 22:37
+image:  leetcode.jpeg
+tags:   LeetCode
+---
 
 ## Problem
 
