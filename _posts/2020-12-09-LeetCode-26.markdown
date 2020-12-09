@@ -1,0 +1,98 @@
+---
+layout: post 
+title:  26. Remove Duplicates from Sorted Array
+date:   2020-12-09 21:59
+image:  leetcode.jpeg
+tags:   LeetCode
+---
+
+## Problem
+
+Given a sorted array nums, remove the duplicates in-place such that each element appears only once and returns the new length.
+
+Do not allocate extra space for another array, you must do this by **modifying the input array in-place with O(1) extra memory**.
+
+Clarification:
+
+Confused why the returned value is an integer but your answer is an array?
+
+Note that the input array is passed in by reference, which means a modification to the input array will be known to the caller as well.
+
+Internally you can think of this:
+
+```
+// nums is passed in by reference. (i.e., without making a copy)
+int len = removeDuplicates(nums);
+
+// any modification to nums in your function would be known by the caller.
+// using the length returned by your function, it prints the first len elements.
+for (int i = 0; i < len; i++) {
+    print(nums[i]);
+}
+
+Example 1:
+
+Input: nums = [1,1,2]
+Output: 2, nums = [1,2]
+Explanation: Your function should return length = 2, with the first two elements of nums being 1 and 2 respectively. It doesn't matter what you leave beyond the returned length.
+
+Example 2:
+
+Input: nums = [0,0,1,1,1,2,2,3,3,4]
+Output: 5, nums = [0,1,2,3,4]
+Explanation: Your function should return length = 5, with the first five elements of nums being modified to 0, 1, 2, 3, and 4 respectively. It doesn't matter what values are set beyond the returned length.
+```
+
+<!-- Line breaks -->
+<br />
+
+Constraints:
+
+* 0 <= nums.length <= 3 * 104
+* -104 <= nums[i] <= 104
+* nums is sorted in ascending order.
+
+## Solution 
+
+The easiest way to solve this problem is to create a set. However this question requires us to solve it by modifying the input array in-place with O(l) extra memory. 
+
+Since the array is already sorted, we can keep two pointers slow and fast, where slow is the slow-runner while fast is the fast-runner. As long as nums[slow] = nums[fast], we increment fast to skip the duplicate.
+
+When we encounter nums[j] != nums[i], the duplicate run has ended so we must copy its value to nums[slow+1]. slow is then incremented and we repeat the same process again until fast reaches the end of array.
+
+```java
+class Solution 
+{
+    public int removeDuplicates(int[] nums) 
+    {
+        if(nums == null || nums.length == 0)
+            return 0;
+        
+        int slow = 0;
+        int fast = 0;
+        
+        while(fast < nums.length)
+        {
+            if(nums[slow] != nums[fast])
+            {
+                slow++;
+                nums[slow] = nums[fast];
+            }
+            fast++;
+        }
+        
+        return slow + 1;
+    }
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+## Time & Space Complexity:
+
+* **Time Complexity: O(n)**: where n is the length of given array nums.
+* **Space Complexity: O(l)**: we only declare some variables.
+
+
+
