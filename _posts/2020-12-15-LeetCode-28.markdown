@@ -66,6 +66,9 @@ class Solution
 }
 ```
 
+<!-- Line breaks -->
+<br />
+
 ## Time & Space Complexity:
 
 * **Time Complexity: O(n)**: where n is the length of String haystack.

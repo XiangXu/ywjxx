@@ -45,6 +45,9 @@ class TestMemberOuter1{
 }  
 ```
 
+<!-- Line breaks -->
+<br />
+
 ### Java Anonymous Inner Class
 
 A class has no name is known anonymous inner class in Java. **It should be used if you have override method of class or interface**. It creates by class (maybe abstract or concrete) and Interface.
@@ -69,6 +72,9 @@ class TestAnonymousInner
 }  
 ```
 
+<!-- Line breaks -->
+<br />
+
 ### Java Local Inner Class
 
 **A class created inside a method is called local inner class in java**. If you want to invoke the methods of local inner class, you must instantiate this class inside the method.
@@ -88,8 +94,10 @@ public class localInner1
     l.msg();  
  }  
 }  
-
 ```
+
+<!-- Line breaks -->
+<br />
 
 ### Java Static Nested Class
 
@@ -113,3 +121,5 @@ class TestOuter1
     }  
 }
 ```
+
+
