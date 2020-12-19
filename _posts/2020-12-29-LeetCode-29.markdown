@@ -1,0 +1,123 @@
+---
+layout: post 
+title:  29. Divide Two Integers
+date:   2020-12-19 11:21
+image:  leetcode.jpeg
+tags:   LeetCode
+---
+
+## Problem
+
+Given two integers dividend and divisor, divide two integers without using multiplication, division, and mod operator.
+
+Return the quotient after dividing dividend by divisor.
+
+The integer division should truncate toward zero, which means losing its fractional part. For example, truncate(8.345) = 8 and truncate(-2.7335) = -2.
+
+Note:
+
+* Assume we are dealing with an environment that could only store integers within the 32-bit signed integer range: [−231,  231 − 1]. For this problem, assume that your function returns 2<sup>31</sup> − 1 when the division result overflows.
+
+```java
+Example 1:
+
+Input: dividend = 10, divisor = 3
+Output: 3
+Explanation: 10/3 = truncate(3.33333..) = 3.
+
+Example 2:
+
+Input: dividend = 7, divisor = -3
+Output: -2
+Explanation: 7/-3 = truncate(-2.33333..) = -2.
+
+Example 3:
+
+Input: dividend = 0, divisor = 1
+Output: 0
+
+Example 4:
+
+Input: dividend = 1, divisor = 1
+Output: 1
+```
+
+<!-- Line breaks -->
+<br />
+
+Constraints:
+
+* -231 <= dividend, divisor <= 231 - 1
+* divisor != 0
+
+## Solution
+
+For this probem, assume that your function returns 2<sup>31</sup> - 1, that means we have to use type Long to handle result overflows. 
+
+We can also use a boolean variable to store whether the result is positive or negative, then we can covert both dividend and divisor into positive number therefore simplify the solution.  
+
+Meanwhile, there are also few corner cases we need to consider:
+
+1. When dividend is less than divisor, we can just return 0.
+2. When dividend is equal to divisor, we can just return 1.
+
+After all of the steps above, we can finally move to the solution, let's take an example dividend = 10, divisor = 3.
+
+1. Declare few variables: long multiply = 1; long sum = divisor. In this case: multiply = 1 and sum = 3.
+2. While sum + sum <= dividend, do: sum += sum and multiply += multiply. In this case:
+    1: multiply = 2; sum = 6
+    2: sum + sum = 12 > 6. dividend becomes to 10 - 6 = 4.
+3. We then repeat step 2 again with dividend = 4, in this case: sum = 3 + 3 > 4, then multiply += 1 -> 2 + 1 =3.
+4. In this case, we just return 3 as result 
+
+```java
+class Solution 
+{    
+    public int divide(int dividend, int divisor) 
+    {
+        boolean isNegative = ((dividend < 0 && divisor > 0) || (dividend > 0 && divisor < 0));
+        
+        // Convert to positive long numbers.
+        long dividendLong = Math.abs((long)dividend);
+        long divisorLong = Math.abs((long)divisor);
+        
+        if(dividendLong < divisorLong)
+            return 0;
+        
+        if(dividendLong == divisorLong)
+            return isNegative ? -1 : 1;
+        
+        long result = divideHelper(dividendLong, divisorLong);
+        
+        if(result > Integer.MAX_VALUE)
+            return isNegative ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        
+        return isNegative ? -(int)result : (int)result;
+    }
+    
+    private long divideHelper(long dividend, long divisor)
+    {
+        if(dividend < divisor)
+            return 0;
+        
+        long sum = divisor;
+        long multiple = 1;
+        
+        while(sum + sum <= dividend)
+        {
+            sum += sum;
+            multiple += multiple;
+        }
+        
+        return multiple + divideHelper(dividend - sum, divisor);
+    }
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+## Time & Space Complexity:
+
+* **Time Complexity: O(logN)**: dichotomy - sum+sum.
+* **Space Complexity: O(logN)**: recursion.
