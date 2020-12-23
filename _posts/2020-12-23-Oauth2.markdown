@@ -32,10 +32,6 @@ The idea of roles is part of the core specification of the OAuth 2.0 authorizati
 
 Scopes are an important concept in OAuth 2.0. They are used to speficy exactly the reason for which access to resources may be granted. Acceptable scope values, and which resources they releate to, are dependent on the Resource Server.
 
-## OAuth 2.0 Access Tokens and Authorization Code
-
-The OAuth 2.0 Authorization server may not directly return an Access Token after the Resource Owner has authroized access. Instead, and for better security, an Authorization Code may be returned, which is the exchanged for an Access Token. In addition, the Authorization server may also issue a Refresh Token with the Access Token. Unlike Access Token, Refresh Token normally have long expiry times and may be exchanged for new Access Tokens when the latter expires. Because Refresh Tokens have these properties, they have to be sotred securely by clients. 
-
 ## How Does OAuth 2.0 work?
 
 At the most basic level, before OAuth 2.0 can be used, the Client must acquire its own credentials, a client id and client secret, from the Authorization Server in order to identify and authenticate itself when requesting an Access Token.
@@ -50,27 +46,100 @@ Using OAuth 2.0, access requests are initiated by the Client, e.g., a mobile app
 
 4. The Authorization server redirects back to the Client with either an Authorization Code or Access Token, depending on the grant type, as it will be explained in the next section. A Refresh Token may also be returned. 
 
-5. With he Access Token, the Client requests access to the resource from the Resource server.
+5. With the Access Token, the Client requests access to the resource from the Resource server.
 
 ## Grant Types in OAuth 2.0
 
-In OAuth 2.0, grants are the set of steps a Client has to perform to get resource access authorization. The authorization framework provides several grant types to address different scenarios:
+### Authorization Code
 
-* **Authorization Code grant**: The Authorization server returns a single-use Authorization Code to the Client, which is then exchanged for an Access Token. This is the best option for traditional web apps where the exchange can securely happen on the server side. The Authorization Code flow might be used by Single Page Apps (SPA) and mobile/native apps. However, here, the client secret cannot be stored securely, and so authentication, during the exchange, is limited to the use of client id alone. A better alternative is the Authorization Code with PKCE grant, below.  
+**The authorization code grant type is the most commonly used because it is optimized for server side applications, where source code is not publicly exposed, and Client secret confidentiality can be maintained**. This is a redirection-based flow, which means that the application must be capable of interacting with user-agent (browser) and receiving API authorization codes that are routed through the user-agent.
 
-* **Implicit Grant:** A simplified flow where the Access Token is returned directly to the Client. In the Implicit flow, the authorization server may return the Access Token as a parameter in the callback URI or as a response to a form post. The first option is now deprecated due to potential token leakage.
+#### Step 1: Authorization Code Link
 
-* **Authorization Code Grant with Proof Key for Code Exchange (PKCE)**: This authorization flow is similar to the Authorization Code grant, but with additional steps that make it more secure for mobile/native apps and SPAs.
+First, the user is given an authorization code link that looks like the following:
 
-* **Resource Owner Credentials Grant Type**: This grant requires the Client first to acquire the resource owner’s credentials, which are passed to the Authorization server. It is, therefore, limited to Clients that are completely trusted. It has the advantage that no redirect to the Authorization server is involved, so it is applicable in the use cases where a redirect is infeasible.
+```
+https://cloud.digitalocean.com/v1/oauth/authorize?response_type=code&client_id=CLIENT_ID&redirect_uri=CALLBACK_URL&scope=read
+```
+<!-- Line breaks -->
+<br />
 
-* **Client Credentials Grant Type**: Used for non-interactive applications e.g., automated processes, microservices, etc. In this case, the application is authenticated per se by using its client id and secret.
+Here is an explanation of the link components:
 
-* **Device Authorization Flow**: A grant that enables use by apps on input-constrained devices, such as smart TVs.
+* https://cloud.digitalocean.com/v1/oauth/authorize: the API authorization endpoint
+* client_id=client_id: the application’s client ID (how the API identifies the application)
+* redirect_uri=CALLBACK_URL: where the service redirects the user-agent after an authorization code is granted
+* response_type=code: specifies that your application is requesting an authorization code grant
+* scope=read: specifies the level of access that the application is requesting
 
-* **Refresh Token Grant**: The flow that involves the exchange of a Refresh Token for a new Access Token.
+#### Step 2: User Authorizes Application
+
+When the user click the link, they must first log in to the service, to authenticate their identify (unless they are already logged in). Then they will be prompted by the service to authorize or deny the application access to their account.
+
+#### Step 3: Application Receives Authorization Code
+
+If the user clicks "Authorize Application", the service redirects the user-agent to the application redirect URI., which was specified during the client registration, along with an authorization code. The redirect would look something like this:
+
+```
+https://dropletbook.com/callback?code=AUTHORIZATION_CODE
+```
+
+#### Step 4: Application Requests Access Token
+
+The application requests an access token from the API, by passing the authorization code along with authentication details, including the client secret, to the API token endpoint. Here is an example POST request to DigitalOcean's token endpoint:
+
+```
+https://cloud.digitalocean.com/v1/oauth/token?client_id=CLIENT_ID&client_secret=CLIENT_SECRET&grant_type=authorization_code&code=AUTHORIZATION_CODE&redirect_uri=CALLBACK_URL
+```
+
+#### Step 5: Application Receives Access Token
+
+If the authorization is valid, the API will send a response containing the acess token and optionally, a refresh token to the application. The entire response will look something like this:
+
+```json 
+{
+    "access_token":"ACCESS_TOKEN",
+    "token_type":"bearer",
+    "expires_in":2592000,
+    "refresh_token":"REFRESH_TOKEN",
+    "scope":"read",
+    "uid":100101,
+    "info":
+    {
+        "name":"Mark E. Mark",
+        "email":"mark@thefunkybunch.com"
+    }
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+Now the application is authorized! It may use the token to access the user’s account via the service API, limited to the scope of access, until the token expires or is revoked. If a refresh token was issued, it may be used to request new access tokens if the original token has expired.
+
+### Grant Type: Implicit
+
+**The implicit grant type is used for mobile apps and web applications (applications that run in a web browser), where the client secret confidentiality is not guaranteed**. The implicit grant type is also a redirection - based flow but the access token is given to the user - agent to foward to the application, so it may be exposed to the user and other applications on the user's device. Also, this flow does not authenticate the identify of the application, and relies on the redirect URI (that was registered with the service) to server this purpose.
+
+**The implicit grant type does not support refresh token**/
+
+The implicit grant flow basically works as follows: the user is asked to authorize the application, then the authorization server passes the access token back to the user-agent, which passes it to the application. 
+
+### Greant Type: Resource Owner Password Credentials
+
+**With the resource owner password credentials grant type, the user provides their service credentials (username and password) directly to the application, which uses the credentials to obtain an access token from the service**. This grant type should only be enabled on the authorization server if other flows are not viable. Also, it should only be used if the application is trusted by the user (e.g. it is owned by the service, or the user's desktop OS).
+
+### Grant Type: Client Credentials
+
+**The client credentials grant type provides an application a way to access its own service account**. Examples of when this might be useful include if an application wants to update its registered or redirect URI, or access other data stored in this service account via the API.
+
+### Refresh Token Flow
+
+After an access token expires, using it to make a request from the API will result in an “Invalid Token Error”. At this point, if a refresh token was included when the original access token was issued, it can be used to request a fresh access token from the authorization server.
 
 
 Reference
 
 <https://auth0.com/intro-to-iam/what-is-oauth-2/>
+
+<https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2>
