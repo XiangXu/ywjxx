@@ -16,7 +16,7 @@ The **final keyword** in java is used to restrict the user. The Java final keywo
 
 ## finally
 
-The finally keyword is used in association with try/catch block and guarantees that a section of code will be executed, even if an exception is thrown. The finally block will be executed after the try and catch blocks. **The only exception is aemon threads will terminates their run() methods without executing finally caluses**.
+The finally keyword is used in association with try/catch block and guarantees that a section of code will be executed, even if an exception is thrown. The finally block will be executed after the try and catch blocks. **The only exception is Daemon threads will terminates their run() methods without executing finally caluses**.
 
 ## finalize
 
