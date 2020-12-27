@@ -46,7 +46,7 @@ There are 3 rules to hashcode method:
 
 ## How equals() and hashcode() related to each other?
 
-Let's have a look at hashed collections first. Such collections hash each their element to provide fast access to them (O(l) in most cases). The most popular Java hashed collection is **HashMap**. It is used to to keep "key - value" pairs. It uses **hashCode()** and **equals()** to proceed **put()** and **get()** operations. 
+Let's have a look at hashed collections first. Such collections hash each their element to provide fast access to them (O(l) in most cases). The most popular Java hashed collection is **HashMap**. It is used to keep "key - value" pairs. It uses **hashCode()** and **equals()** to proceed **put()** and **get()** operations. 
 
 **HashMap** contains several buckets (the number changes if the size is reached), that could be used to store the **key-value** elements (such pair called Entry) in them. The bucket could contain zero, one or several elements. If there are several elements, it is called a collision, and the elements are stored in a LinkedList (it is only partly true, but, again, we are focusing on the concept right now) inside the bucket.
 

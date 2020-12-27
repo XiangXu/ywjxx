@@ -67,7 +67,7 @@ We know we can solve this problem by implementing Binary Search.
 Let's take an example:
 
 ```
-               L1    L1
+               L1    R1
 nums1: 2   4   6  |  9   10   
                L2    R2
 nums2: 1   3   5  |  7   11   13   16
