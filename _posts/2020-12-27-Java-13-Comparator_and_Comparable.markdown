@@ -55,6 +55,42 @@ The method sort(List<T>) in the type Collections is not applicable for the argum
 
 Let's understand what we did wrong here.
 
+## Comparable
+
+As the name suggests, **Comparable is an interface defining a strategy of comparing an object with another object of the same type**. **This is called class's natural ordering**.
+
+Accordingly, in order to be able to sort - we define our player objects as comparable by implementing the Comparable interface:
+
+```java
+public class Player implements Comparable<Player> {
+     
+    //...
+    @Override
+    public int compareTo(Player otherPlayer) {
+        return (this.getRanking() - otherPlayer.getRanking());
+    }
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+The sorting order is decided by the return value of the compareTo() method.
+
+The method returns a number indicating whether the object being comparsed is less than, equal or greater than the object being passed as argument.
+
+Finally when we run our PlayerSorter now, we can see our Players sorted by their ranking:
+
+```
+Before Sorting : [John, Roger, Steven]
+After Sorting : [Steven, John, Roger]
+```
+
+<!-- Line breaks -->
+<br />
+
+Now that we have a clear understanding of natural ordering with Comparable, let's see how we can use other types of ordering, in more flexible manner than directly implementing interface.
+
 ## Comparator
 
 The Comparator interface defines a compare(arg1, arg2) method with two arguments which represent compared objects works similarly to Comparable.compareTo() method.
