@@ -3,7 +3,7 @@ layout: post
 title:  Git Useful Commands
 date:   2020-10-10 10:18
 image:  oop.jpg
-tags:   [Fundation, Command]
+tags:   [Fundation, Git]
 ---
 
 **Revert file**  
