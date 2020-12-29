@@ -18,6 +18,11 @@ tags:   [Fundation, Python]
 2. Set environment to development: `export FLASK_ENV=development`
 3. Then run: `flask run` to start the server.
 
+### How to run you localhost with HTTPS?
+
+1. Install pyopenssl `python3 -m pip install pyopenssl`
+2. Start Flask Server: `flask run --cert=adhoc`
+
 ### How to automatically create requirements.txt
 
 `python3 -m pip freeze > requirements.txt`
