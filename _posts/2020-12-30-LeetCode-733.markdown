@@ -114,7 +114,9 @@ class Solution
         Stack<int[]> stack = new Stack<>();
         stack.push(new int[]{sr, sc});
         
-        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        int[][] directions = {
+            {1, 0}, {-1, 0}, {0, 1}, {0, -1}
+        };
         
         while(!stack.isEmpty())
         {
