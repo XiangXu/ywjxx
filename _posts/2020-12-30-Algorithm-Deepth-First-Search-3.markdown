@@ -15,6 +15,6 @@ DFS can be implemented in two ways:
 
 ## DFS Example
 
-</2020/12/30/LeetCode-733/>
+<https://ywjxx.netlify.app/2020/12/30/leetcode-733/>
 
 
