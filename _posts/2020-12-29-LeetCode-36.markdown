@@ -112,6 +112,9 @@ class Solution
 }
 ```
 
+<!-- Line breaks -->
+<br />
+
 ## Time & Space Complexity:
 
 * **Time Complexity: O(n<sup>2</sup>)**: Two for loop.
