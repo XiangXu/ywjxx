@@ -21,7 +21,8 @@ tags:   [Fundation, Python]
 ### How to run you localhost with HTTPS?
 
 1. Install pyopenssl `python3 -m pip install pyopenssl`
-2. Start Flask Server: `flask run --cert=adhoc`
+2. add following code to main app: `if __name__ == "__main__": app.run(ssl_context='adhoc')`
+3. Start Flask Server: `flask run --cert=adhoc`
 
 ### How to automatically create requirements.txt
 
