@@ -1,6 +1,6 @@
 ---
 layout: post 
-title:  Comparator and Comparable in Java
+title:  HashMap
 date:   2021-01-03 19:05
 image:  java.jpeg
 tags:   Java

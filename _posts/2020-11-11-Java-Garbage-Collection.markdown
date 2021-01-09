@@ -6,9 +6,9 @@ image:  java.jpeg
 tags:   Java
 ---
 
-**Garbage collection is the process of looking at heap memory, identifying which objects are in use and which are not, and deleting the unused object**. An in use object, or a referenced object, means that some part of you program still maintains a pointer to that object. An unused object,  or uneferenced object, is no longer referenced by any part of your program. So the memory used by unferenced object can be reclaimed.
+**Garbage collection is the process of looking at heap memory, Reference Counting and Reachability Analysis can be used to identify which objects are in use and which are not, and deleting the unused object**. An in use object, or a referenced object, means that some part of you program still maintains a pointer to that object. An unused object, or uneferenced object, is no longer referenced by any part of your program. So the memory used by unferenced object can be reclaimed.
 
-* Step 1: **Marking** : The first step in the process is called **Marking**. This is where the garbage collector identifies which pieces of memory are in use and which are not.
+* Step 1: **Marking**: The first step in the process is called **Marking**. This is where the garbage collector identifies which pieces of memory are in use and which are not.
 * Step 2: **Normal Deletion**: Normal deletion removes unferenced objects leaving referenced objects and pointers to free space.
 * Step 2a: **Deletion with Compacting**: The further improve performance, in addition to deleting unreferenced objects, you can also compact the remaining referenced objects. By moving referenced object together, this makes new memory allocation much easier and faster.
 
