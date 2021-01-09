@@ -1,0 +1,98 @@
+---
+layout: post 
+title:  38.  Count and Say
+date:   2021-01-09 22:53
+image:  leetcode.jpeg
+tags:   LeetCode
+---
+
+## Problem 
+
+The count-and-say sequence is a sequence of digit strings defined by the recursive formula:
+
+* countAndSay(1) = "1"
+* countAndSay(n) is the way you would "say" the digit string from countAndSay(n-1), which is then converted into a different digit 
+
+To determine how you "say" a digit string, split it into the minimal number of groups so that each group is a contiguous section all of the same character. Then for each group, say the number of characters, then say the character. To convert the saying into a digit string, replace the counts with a number and concatenate every saying.
+
+```
+Example 1:
+
+Input: n = 1
+Output: "1"
+Explanation: This is the base case.
+
+Example 2:
+
+Input: n = 4
+Output: "1211"
+Explanation:
+countAndSay(1) = "1"
+countAndSay(2) = say "1" = one 1 = "11"
+countAndSay(3) = say "11" = two 1's = "21"
+countAndSay(4) = say "21" = one 2 + one 1 = "12" + "11" = "1211"
+```
+
+<!-- Line breaks -->
+<br/>
+
+Constraints:
+
+* 1 <= n <= 30
+
+## Solution
+
+This problem can be solved by using brute force.
+
+```java
+class Solution 
+{
+    public String countAndSay(int n) 
+    {
+        String str = "1";
+        
+        // how many times we need to do "Count and Say"
+        for(int i=1; i<n; i++)
+        {
+            StringBuilder sb = new StringBuilder();
+            char firstChar = str.charAt(0);
+            // count how many times a number diplicated
+            int count = 0;
+            
+            // generate new String based on previouse String
+            for(int j=0; j<=str.length(); j++)
+            {
+                if(j == str.length())
+                {
+                    sb.append(count).append(firstChar);
+                    break;
+                }
+                
+                char currChar = str.charAt(j);
+                if(firstChar == currChar)
+                {
+                    count ++;
+                }
+                else
+                {
+                    sb.append(count).append(firstChar);
+                    firstChar = currChar;
+                    count = 1;
+                }
+            }
+            
+            str = sb.toString();
+        }
+        
+        return str;
+    }
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+## Time & Space Complexity:
+
+* **Time Complexity: O(<sup>2</sup>)**: Two for loop.
+* **Space Complexity: O(1)**: Only created few variables.
