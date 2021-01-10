@@ -99,5 +99,5 @@ class Solution
 
 ## Time & Space Complexity:
 
-* **Time Complexity**: ?
-* **Space Complexity**: ?
+* **Time Complexity: O(n)**: All number combinations in array candidates.
+* **Space Complexity: O(n)**: We created a tmp list to store the result. 
