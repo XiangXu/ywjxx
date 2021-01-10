@@ -1,6 +1,6 @@
 ---
 layout: post 
-title:  38.  Count and Say
+title:  38. Count and Say
 date:   2021-01-09 22:53
 image:  leetcode.jpeg
 tags:   LeetCode
