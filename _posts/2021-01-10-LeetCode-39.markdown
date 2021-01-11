@@ -99,5 +99,5 @@ class Solution
 
 ## Time & Space Complexity:
 
-* **Time Complexity: O(n)**: All number combinations in array candidates.
+* **Time Complexity: O(2<sup>N</sup>)**: The worst case, our algorithm will exhaust all possible combinations from the input array, which in total amounts to 2<sup>N</sup>. N will be the size of the input array
 * **Space Complexity: O(n)**: We created a tmp list to store the result. 
