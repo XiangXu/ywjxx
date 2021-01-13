@@ -1,7 +1,7 @@
 ---
 layout: post 
 title:  41. First Missing Positive
-date:   2021-01-1323:12
+date:   2021-01-13 23:12
 image:  leetcode.jpeg
 tags:   LeetCode
 ---
