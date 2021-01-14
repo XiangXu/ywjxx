@@ -12,7 +12,7 @@ tags:   [Fundation, Network]
 
 **DNS(Domain Name System) is a database that maintans the name of the website(URL) and the particular IP address it links to**. Every single URL on the Internet has an unique IP Address assigned to it. The IP address belows to the computer which hosts the server of the website we are requesting to access. For example, www.google.com has an IP address of 209.85.227.104. So if you’d like, you can reach www.google.com by typing http://209.85.227.104 on your browser. DNS is a list of URLs, and their IP addresses, like how a phone book is a list of names and their corresponding phone numbers.
 
-The primary purpose of DNS is human-friendly navigation. You can easily access a website by typing the correct IP address for it on your browser, but imagine having to remember different sets of numbers for all the sites we regularly access? Therefore, it is easier to rember the name of website using a URL and let DNS do the work for us mapping it to the correct    IP.
+The primary purpose of DNS is human-friendly navigation. You can easily access a website by typing the correct IP address for it on your browser, but imagine having to remember different sets of numbers for all the sites we regularly access? Therefore, it is easier to rember the name of website using a URL and let DNS do the work for us mapping it to the correct IP.
 
 The find DNS record, the browser checks four caches:
 
