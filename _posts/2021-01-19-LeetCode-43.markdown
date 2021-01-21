@@ -1,0 +1,111 @@
+---
+layout: post 
+title:  43. Multiply Strings
+date:   2021-01-14 22:58
+image:  leetcode.jpeg
+tags:   LeetCode
+---
+
+## Problem
+
+Given two non-negative integers num1 and num2 represented as strings, return the product of num1 and num2, also represented as a string.
+
+Note: You must not use any built-in BigInteger library or convert the inputs to integer directly.
+
+```
+Example 1:
+
+Input: num1 = "2", num2 = "3"
+Output: "6"
+
+Example 2:
+
+Input: num1 = "123", num2 = "456"
+Output: "56088"
+```
+
+Constraints:
+
+* 1 <= num1.length, num2.length <= 200
+* num1 and num2 consist of digits only.
+* Both num1 and num2 do not contain any leading zero, except the number 0 itself.
+
+## Solution
+
+When we multiple two numbers, the max length of result will be num1.length + num2.length.
+
+We can use an example to explain our algorithm:
+
+```
+123 * 456
+
+        4 5 6
+        1 2 3
+        
+=           
+        12  15  18
+     8  10  12
+  4  5   6
+
+products = {0, 4, 13, 28, 27, 18}
+
+18 % 10 = 8, 18 / 10 = 1, carry 1.
+(27 + 1) % 10 = 8, 28 / 10 = 2, carry 2.
+(28 + 2) % 10 = 0, 20 / 10 = 3, carry 2.
+(13 + 3) % 10 = 6, 16 / 10 = 1, carry 1.
+(4 + 1) % 10 = 5, 5 / 10 = 0, carry 0.
+
+final result: 56088
+```
+
+Basically we can multiple each digit from right to left and carry the number if needed.
+
+
+```java
+class Solution 
+{
+    public String multiply(String num1, String num2) 
+    {
+        if("0".equals(num1) || "0".equals(num2))
+            return "0";
+        
+        int len1 = num1.length();
+        int len2 = num2.length();
+        int[] products = new int[len1 + len2];
+        
+        for(int i=len1-1; i>=0; i--)
+        {
+            for(int j=len2-1; j>=0; j--)
+            {
+                products[i+j+1] += (num1.charAt(i) - '0') * (num2.charAt(j) - '0');
+            }
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        int carry = 0;
+        
+        for(int i=products.length-1; i>=0; i--)
+        {
+            int total = products[i] + carry;
+            int num = total % 10;
+            carry = total / 10;
+            sb.append(num);
+        }
+        
+        String result = sb.reverse().toString();
+        if(result.charAt(0) == '0')
+            result = result.substring(1, result.length());
+        
+        return result;
+    }
+    
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+## Time & Space Complexity:
+
+* **Time Complexity: O(mn)**: m is the length of num1 and n is the length of num2.
+* **Space Complexity: O(m+n)**: the length of products array
