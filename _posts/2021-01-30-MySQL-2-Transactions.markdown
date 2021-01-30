@@ -107,6 +107,9 @@ SET autocommit = OFF
 SET autocommit = ON;
 ```
 
+<!-- Line breaks -->
+<br />
+
 ## Commit Rollback Example
 
 ```sql
