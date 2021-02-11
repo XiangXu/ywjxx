@@ -1,0 +1,78 @@
+---
+layout: post 
+title:  49. Group Anagrams
+date:   2021-02-11 21:54
+image:  leetcode.jpeg
+tags:   LeetCode
+---
+
+## Problem
+
+Given an array of strings strs, group the anagrams together. You can return the answer in any order.
+
+An Anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.
+
+```
+Example 1:
+
+Input: strs = ["eat","tea","tan","ate","nat","bat"]
+Output: [["bat"],["nat","tan"],["ate","eat","tea"]]
+
+Example 2:
+
+Input: strs = [""]
+Output: [[""]]
+
+Example 3:
+
+Input: strs = ["a"]
+Output: [["a"]]
+```
+
+<!-- Line breaks -->
+<br />
+
+Constraints:
+
+* 1 <= strs.length <= 104
+* 0 <= strs[i].length <= 100
+* strs[i] consists of lower-case English letters.
+
+## Solution
+
+We can solve this question by using a hash map `HashMap<String, List<String>>` and sort all characters alphabetically in each string. 
+
+```java
+class Solution 
+{
+    public List<List<String>> groupAnagrams(String[] strs) 
+    {
+        if(strs == null || strs.length == 0)
+            return Collections.emptyList();
+        
+        Map<String, List<String>> map = new HashMap<>();
+        
+        for(String str : strs)
+        {
+            char[] charArr = str.toCharArray();
+            Arrays.sort(charArr);
+            String sortedStr = new String(charArr);
+            
+            if(!map.containsKey(sortedStr))
+                map.put(sortedStr, new ArrayList<>());
+            
+            map.get(sortedStr).add(str);
+        }
+        
+         return new ArrayList<>(map.values());
+    }
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+## Time & Space Complexity:
+
+* **Time Complexity: O(n)**: loop the given array. 
+* **Space Complexity: O(n)**: n is the length of anagrams string.
