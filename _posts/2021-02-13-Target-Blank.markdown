@@ -24,3 +24,10 @@ rel="noopener noreferrer"
 var newWnd = window.open();
 newWnd.opener = null;
 ```
+
+<!-- Line breaks -->
+<br />
+
+Reference
+
+<https://www.jitbit.com/alexblog/256-targetblank---the-most-underestimated-vulnerability-ever/>
