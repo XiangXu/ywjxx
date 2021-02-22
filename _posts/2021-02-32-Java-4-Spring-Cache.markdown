@@ -135,7 +135,7 @@ We will simulate the delay in the actual method call by using **Thread.sleep()**
 
 ### 5.1 Create Spring Boot project
 
-Create one simple spring boot project named `spring-cache` with spring-boot-web dependency for hosting this in web server from https://start.spring.
+Create one simple spring boot project named `spring-cache` with spring-boot-web dependency for hosting this in web server from https://start.spring.io
 
 ### Create HTTP GET RESET API
 
