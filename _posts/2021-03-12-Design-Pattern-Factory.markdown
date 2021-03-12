@@ -2,8 +2,8 @@
 layout: post 
 title:  Design Pattern
 date:   2021-03-12 22:24
-image:  leetcode.jpeg
-tags:   Design Pattern
+image:  design_pattern.jpg
+tags:   Design_Pattern
 ---
 
 Factory pattern is one of the most used design patterns in Java. **This type of design comes under creational pattern as this pattern provides one of the best way to create an object**.
