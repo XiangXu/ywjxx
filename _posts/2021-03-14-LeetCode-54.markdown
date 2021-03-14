@@ -1,0 +1,114 @@
+---
+layout: post 
+title:  54. Spiral Matrix
+date:   2021-03-14 22:08
+image:  leetcode.jpeg
+tags:   LeetCode
+---
+
+## Problem
+
+Given an m x n matrix, return all elements of the matrix in spiral order.
+
+```
+
+Example 1:
+Input: matrix = 
+[  
+    [1,2,3],
+    [4,5,6],
+    [7,8,9]
+]
+Output: [1,2,3,6,9,8,7,4,5]
+
+Example 2:
+Input: matrix = 
+[
+    [1,2,3,4],
+    [5,6,7,8],
+    [9,10,11,12]
+]
+Output: [1,2,3,4,8,12,11,10,9,5,6,7]
+```
+
+<!-- Line breaks -->
+<br />
+
+Constraints:
+
+* m == matrix.length
+* n == matrix[i].length
+* 1 <= m, n <= 10
+* -100 <= matrix[i][j] <= 100
+
+## Solution
+
+This is a very simple and easy to understand solution. I traverse right and increment rowBegin, then traverse down and decrement colEnd, then I traverse left and decrement rowEnd, and finally I traverse up and increment colBegin.
+
+The only tricky part is that when I traverse left or up I have to check whether the row or col still exists to prevent duplicates.
+
+```java
+class Solution 
+{
+    public List<Integer> spiralOrder(int[][] matrix)
+    {
+        if(matrix == null || matrix.length == 0)
+            return Collections.emptyList();
+        
+        int rowBegin = 0;
+        int rowEnd = matrix.length - 1;
+        
+        int columnBegin = 0;
+        int columnEnd = matrix[0].length - 1;
+        
+        List<Integer> result = new ArrayList<>();
+        
+        while(rowBegin <= rowEnd && columnBegin <= columnEnd)
+        {
+            for(int i=columnBegin; i<=columnEnd; i++)
+            {
+                result.add(matrix[rowBegin][i]);
+            }
+            
+            rowBegin ++;
+            
+            for(int i=rowBegin; i<=rowEnd; i++)
+            {
+                result.add(matrix[i][columnEnd]);
+            }
+            
+            columnEnd --;
+            
+            if(rowBegin <= rowEnd)
+            {
+                for(int i=columnEnd; i>=columnBegin; i--)
+                {
+                    result.add(matrix[rowEnd][i]);
+                }
+            }
+            
+            rowEnd --;
+            
+            if(columnBegin <= columnEnd)
+            {
+                for(int i=rowEnd; i>=rowBegin; i--)
+                {
+                    result.add(matrix[i][columnBegin]);
+                }
+            }
+            
+            columnBegin++;
+        }
+        
+        return result;
+    }
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+## Time & Space Complexity:
+
+* **Time Complexity: O(m*n)**: m is number of rows in input matrix and n is the number of columns in the input matrix.
+* **Space Complexity: O(l)**: constant space.
