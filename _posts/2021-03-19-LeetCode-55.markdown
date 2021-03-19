@@ -1,0 +1,76 @@
+---
+layout: post 
+title:  55. Jump Game
+date:   2021-03-14 22:08
+image:  leetcode.jpeg
+tags:   LeetCode
+---
+
+## Problem
+
+Given an array of non-negative integers nums, you are initially positioned at the first index of the array.
+
+Each element in the array represents your maximum jump length at that position.
+
+Determine if you are able to reach the last index.
+
+```
+Example 1:
+
+Input: nums = [2,3,1,1,4]
+Output: true
+Explanation: Jump 1 step from index 0 to 1, then 3 steps to the last index.
+
+Example 2:
+
+Input: nums = [3,2,1,0,4]
+Output: false
+Explanation: You will always arrive at index 3 no matter what. Its maximum jump length is 0, which makes it impossible to reach the last index.
+```
+
+<!-- Line breaks -->
+<br />
+
+Constraints:
+
+* 1 <= nums.length <= 3 * 104
+* 0 <= nums[i] <= 105
+
+## Solution
+
+I tried to use Backtracking algorithm to solve this question at begining, but I got **Time Limit Exceeded**.
+
+After I read the solution, I found that this question can be solved by using Greedy algorithm. 
+
+Iterating right-to-left, for each position we check if there is a potential jump that reaches a GOOD index (currPosition + nums[currPosition] >= leftmostGoodIndex). If we can reach a GOOD index, then our position is itself GOOD. Also, this new GOOD position will be the new leftmost GOOD index. Iteration continues until the beginning of the array. If first position is a GOOD index then we can reach the last index from the first position.
+
+```java
+class Solution 
+{
+    public boolean canJump(int[] nums) 
+    {
+        if(nums == null || nums.length == 0)
+            return false;
+        
+        int lastGoodIndexPosition = nums.length - 1;
+       
+        for(int i=nums.length-1; i>=0; i--)
+        {
+            if(i + nums[i] >= lastGoodIndexPosition)
+            {
+                lastGoodIndexPosition = i;
+            }
+        }
+        
+        return lastGoodIndexPosition == 0;
+    }
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+## Time & Space Complexity:
+
+* **Time Complexity: O(n)**: We are doing a single pass through the nums array, hence nn steps, where nn is the length of array nums.
+* **Space Complexity: O(l)**: constant space.
