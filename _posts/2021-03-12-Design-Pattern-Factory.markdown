@@ -1,6 +1,6 @@
 ---
 layout: post 
-title:  Design Pattern - Factory pATTERN
+title:  Design Pattern - Factory Pattern
 date:   2021-03-12 22:24
 image:  design_pattern.jpg
 tags:   Design_Pattern
