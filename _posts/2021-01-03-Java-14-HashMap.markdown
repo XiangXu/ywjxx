@@ -54,7 +54,7 @@ Now, the hash value is used to find the bucket location at which Entry object is
 
 **What about if two keys have the same hashcode?** Here, the implementation of equals() method for key object is become important.
 
-**The bucket is a linkedlist but not java.util.LinkedList. HashMap has tiw own implementation of the linkedlist**. Therefore, it traverses through linkedlist and compares key in each entry using key.equals() until equals() returns true. Then the value object is returned.
+**The bucket is a linkedlist but not java.util.LinkedList. HashMap has its own implementation of the linkedlist**. Therefore, it traverses through linkedlist and compares key in each entry using key.equals() until equals() returns true. Then the value object is returned.
 
 Also if when two keys are the same and have same hashcode, then the previous key-value pair is replaced with current key-value pair.
 
