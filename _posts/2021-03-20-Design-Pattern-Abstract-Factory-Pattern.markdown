@@ -1,6 +1,6 @@
 ---
 layout: post 
-title:  Design Pattern - Factory Pattern
+title:  Design Pattern - Abstract Factory Pattern
 date:   2021-03-20 13:15
 image:  design_pattern.jpg
 tags:   Design_Pattern
@@ -142,7 +142,6 @@ public class AbstractFactoryPatternDemo {
 
 <!-- Line breaks -->
 <br />
-
 
 Reference
 
