@@ -1,0 +1,164 @@
+package com.itaac.cycletestautomation.impl;
+
+import com.itaac.cycletestautomation.service.JschService;
+import com.jcraft.jsch.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Vector;
+
+@Service
+public class JschServiceImpl implements JschService
+{
+    private static final Logger logger = LogManager.getLogger(JschServiceImpl.class);
+
+    @Override
+    public Session createJschSession(String hostname, String username, String password, int port) throws JSchException
+    {
+        try
+        {
+            Session session = new JSch().getSession(username, hostname, port);
+            session.setPassword(password);
+
+            Properties config = new Properties();
+            config.put("StrictHostKeyChecking", "no");
+            session.setConfig(config);
+
+            session.connect();
+            return session;
+        }
+        catch (JSchException e)
+        {
+            logger.error("createJschSession failed", e);
+            throw e;
+        }
+    }
+
+    @Override
+    public List<String> connectAndExecuteCommand(Session jschSession, String command) throws JSchException, IOException
+    {
+        try
+        {
+            ChannelExec channelExec = (ChannelExec)jschSession.openChannel("exec");
+            channelExec.setCommand(command);
+            channelExec.connect();
+
+            InputStream in;
+            List<String> results = new ArrayList<>();
+            in = channelExec.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            String line;
+            while((line = reader.readLine()) != null)
+            {
+                results.add(line);
+            }
+            channelExec.disconnect();
+            in.close();
+            return results;
+        }
+        catch (JSchException e)
+        {
+            logger.error("connectAndExecuteCommand JSchException", e);
+            throw e;
+        }
+        catch (IOException e)
+        {
+            logger.error("connectAndExecuteCommand IOException", e);
+            throw e;
+        }
+    }
+
+    public void downloadDirectory(Session jschSession, String sourcePath, String destPath) throws JSchException,
+            SftpException
+    {
+        try
+        {
+            if(!new File(destPath).mkdirs())
+            {
+                String error = "Failed to create directory: " + destPath;
+                throw new JSchException(error);
+            }
+            ChannelSftp channelSftp = createSftpChannel(jschSession);
+            channelSftp.lcd(destPath);
+            lsFolderCopy(channelSftp, sourcePath, destPath);
+        }
+        catch (JSchException e)
+        {
+            logger.error("downloadDirectory JSchException", e);
+            throw e;
+        }
+        catch (SftpException e)
+        {
+            logger.error("downloadDirectory SftpException", e);
+            throw e;
+        }
+
+    }
+
+    @Override
+    public void secureFtp(String from, String destinationDirectory, Session session)
+            throws JSchException, SftpException, FileNotFoundException
+    {
+        try
+        {
+            ChannelSftp channel = createSftpChannel(session);
+            File localFile = new File(from);
+            channel.cd(destinationDirectory);
+            channel.put(new FileInputStream(localFile), localFile.getName());
+            channel.disconnect();
+        }
+        catch (JSchException e)
+        {
+            logger.error("secureFtp JSchException", e);
+            throw e;
+        }
+        catch (SftpException e)
+        {
+            logger.error("secureFtp SftpException", e);
+            throw e;
+        } catch (FileNotFoundException e)
+        {
+            logger.error("secureFtp FileNotFoundException", e);
+            throw e;
+        }
+    }
+
+    private void lsFolderCopy(ChannelSftp channelSftp, String sourcePath, String destPath) throws SftpException
+    {
+        Vector<ChannelSftp.LsEntry> list = channelSftp.ls(sourcePath);
+
+        for (ChannelSftp.LsEntry oListItem : list)
+        {
+            String source = sourcePath + "/" + oListItem.getFilename();
+            String destination = destPath + "/" + oListItem.getFilename();
+            if (!oListItem.getAttrs().isDir())
+            {
+                if (!(new File(destination)).exists() || (oListItem.getAttrs().getMTime() >
+                        Long.valueOf(new File(destination).lastModified() / (long) 1000).intValue()))
+                {
+                    new File(destination);
+                    logger.info("Downloading file {} to {}", source, destination);
+                    channelSftp.get(source, destination);
+                }
+            }
+            else if (!(".".equals(oListItem.getFilename()) || "..".equals(oListItem.getFilename()))
+                    && new File(destination).mkdirs())
+            {
+                lsFolderCopy(channelSftp, source, destination);
+            }
+        }
+    }
+
+
+    private ChannelSftp createSftpChannel(Session jschSession) throws JSchException
+    {
+        ChannelSftp channelSftp;
+        channelSftp = (ChannelSftp)jschSession.openChannel("sftp");
+        channelSftp.connect();
+        return channelSftp;
+    }
+}
