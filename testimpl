@@ -1,0 +1,69 @@
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+
+/**
+ * This class is used to connect remote service and execute command
+ */
+public interface JschService
+{
+    /**
+     * Get an object of Jsch Session
+     * @param hostname remote server hostname
+     * @param username remote server username
+     * @param password remote server password
+     * @param port remote server port
+     * @return Jsch session
+     * @throws JSchException when jsch session creation fail
+     */
+    Session createJschSession(String hostname, String username, String password, int port) throws JSchException;
+
+    /**
+     * Get an object of Jsch Session with default port 22
+     * @param hostname remote server hostname
+     * @param username remote server username
+     * @param password remote server password
+     * @return Jsch session
+     * @throws JSchException when jsch session creation fail
+     */
+    default Session createJschSession(String hostname, String username, String password) throws JSchException
+    {
+        return createJschSession(hostname, username, password, 22);
+    }
+
+    /**
+     * Execute command
+     * @param jschSession Jsch session can be used to connect server
+     * @param command command need to be executed on server
+     * @return command execution result
+     * @throws JSchException when command execution fail
+     * @throws IOException when read out command output fail
+     */
+    List<String> connectAndExecuteCommand(Session jschSession, String command) throws JSchException, IOException;
+
+    /**
+     * Download directory from source path to destination path
+     * @param jschSession Jsch session can be used to connect server
+     * @param sourcePath Directory path we want to copy from
+     * @param destPath Directory path we want to copy to
+     * @throws JSchException when create sftp channel fail
+     * @throws SftpException when sftp execution fail
+     */
+    void downloadDirectory(Session jschSession, String sourcePath, String destPath) throws JSchException, SftpException;
+
+    /**
+     * Upload file from source path to destination path
+     * @param from the path of local file
+     * @param destinationDirectory Directory path we want to copy to
+     * @param session Jsch session can be used to connect server
+     * @throws JSchException when create sftp channel fail
+     * @throws SftpException when secure ftp execution fail
+     * @throws FileNotFoundException when local file cannot be found
+     */
+    void secureFtp(String from, String destinationDirectory, Session session) throws JSchException, SftpException,
+            FileNotFoundException;
+}
