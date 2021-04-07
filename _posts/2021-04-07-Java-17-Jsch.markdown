@@ -1,0 +1,287 @@
+---
+layout: post 
+title:  JSch - Java Secure Channel
+date:   2021-04-07 22:27
+image:  java.jpeg
+tags:   Java, SSH, SFTP
+---
+
+Jsch is a pure Java implementation of SSH2. JSch allows you to connect to an sshd server and use port forwarding, X11 forwarding, file transfer, etc., and you can integrate its functionality into your own Java programs. JSch is licensed under BSD style license.
+
+In order to use Jsch, we need to add **JSch Maven Dependency** to our pom.xml. 
+
+<https://mvnrepository.com/artifact/com.jcraft/jsch>
+
+```
+<!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
+<dependency>
+    <groupId>com.jcraft</groupId>
+    <artifactId>jsch</artifactId>
+    <version>0.1.55</version>
+</dependency>
+```
+
+<!-- Line breaks -->
+<br />
+
+I created following interface which contains following methods:
+
+* Establish an SSH connection and execute command.
+* Download directory from remote server.
+* Transfer a file through Sftp.
+
+```java
+
+// Interface
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+
+/**
+ * This class is used to connect remote service, transfer file and execute command
+ */
+public interface JschService
+{
+    /**
+     * Get an object of Jsch Session
+     * @param hostname remote server hostname
+     * @param username remote server username
+     * @param password remote server password
+     * @param port remote server port
+     * @return Jsch session
+     * @throws JSchException when jsch session creation fail
+     */
+    Session createJschSession(String hostname, String username, String password, int port) throws JSchException;
+
+    /**
+     * Get an object of Jsch Session with default port 22
+     * @param hostname remote server hostname
+     * @param username remote server username
+     * @param password remote server password
+     * @return Jsch session
+     * @throws JSchException when jsch session creation fail
+     */
+    default Session createJschSession(String hostname, String username, String password) throws JSchException
+    {
+        return createJschSession(hostname, username, password, 22);
+    }
+
+    /**
+     * Execute command
+     * @param jschSession Jsch session can be used to connect server
+     * @param command command need to be executed on server
+     * @return command execution result
+     * @throws JSchException when command execution fail
+     * @throws IOException when read out command output fail
+     */
+    List<String> connectAndExecuteCommand(Session jschSession, String command) throws JSchException, IOException;
+
+    /**
+     * Download directory from source path to destination path
+     * @param jschSession Jsch session can be used to connect server
+     * @param sourcePath Directory path we want to copy from
+     * @param destPath Directory path we want to copy to
+     * @throws JSchException when create sftp channel fail
+     * @throws SftpException when sftp execution fail
+     */
+    void downloadDirectory(Session jschSession, String sourcePath, String destPath) throws JSchException, SftpException;
+
+    /**
+     * Upload file from source path to destination path
+     * @param from the path of local file
+     * @param destinationDirectory Directory path we want to copy to
+     * @param session Jsch session can be used to connect server
+     * @throws JSchException when create sftp channel fail
+     * @throws SftpException when secure ftp execution fail
+     * @throws FileNotFoundException when local file cannot be found
+     */
+    void secureFtp(String from, String destinationDirectory, Session session) throws JSchException, SftpException,
+            FileNotFoundException;
+}
+
+
+// Implementation
+import com.jcraft.jsch.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Vector;
+
+@Service
+public class JschServiceImpl implements JschService
+{
+    private static final Logger logger = LogManager.getLogger(JschServiceImpl.class);
+
+    @Override
+    public Session createJschSession(String hostname, String username, String password, int port) throws JSchException
+    {
+        try
+        {
+            JSch jsch = new JSch();
+            // jsch.setKnownHosts("/Users/john/.ssh/known_hosts");
+            Session session = jsch.getSession(username, hostname, port);
+            session.setPassword(password);
+
+            Properties config = new Properties();
+            config.put("StrictHostKeyChecking", "no");
+            session.setConfig(config);
+
+            session.connect();
+            return session;
+        }
+        catch (JSchException e)
+        {
+            logger.error("createJschSession failed", e);
+            throw e;
+        }
+    }
+
+    @Override
+    public List<String> connectAndExecuteCommand(Session jschSession, String command) throws JSchException, IOException
+    {
+        ChannelExec channelExec = null;
+        try
+        {
+            channelExec = (ChannelExec)jschSession.openChannel("exec");
+            channelExec.setCommand(command);
+            channelExec.connect();
+
+            InputStream in;
+            List<String> results = new ArrayList<>();
+            in = channelExec.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            String line;
+            while((line = reader.readLine()) != null)
+            {
+                results.add(line);
+            }
+            in.close();
+            return results;
+        }
+        catch (JSchException e)
+        {
+            logger.error("connectAndExecuteCommand JSchException", e);
+            throw e;
+        }
+        catch (IOException e)
+        {
+            logger.error("connectAndExecuteCommand IOException", e);
+            throw e;
+        }
+        finally
+        {
+            if(channelExec != null)
+                channelExec.exit();
+        }
+    }
+
+    public void downloadDirectory(Session jschSession, String sourcePath, String destPath) throws JSchException,
+            SftpException
+    {
+        ChannelSftp channelSftp = null;
+        try
+        {
+            if(!new File(destPath).mkdirs())
+            {
+                String error = "Failed to create directory: " + destPath;
+                throw new JSchException(error);
+            }
+            channelSftp = createSftpChannel(jschSession);
+            channelSftp.lcd(destPath);
+            lsFolderCopy(channelSftp, sourcePath, destPath);
+        }
+        catch (JSchException e)
+        {
+            logger.error("downloadDirectory JSchException", e);
+            throw e;
+        }
+        catch (SftpException e)
+        {
+            logger.error("downloadDirectory SftpException", e);
+            throw e;
+        }
+        finally
+        {
+            if(channelSftp != null)
+                channelExec.exit();
+        }
+
+    }
+
+    @Override
+    public void secureFtp(String from, String destinationDirectory, Session session)
+            throws JSchException, SftpException, FileNotFoundException
+    {
+        ChannelSftp channel = null;
+        try
+        {
+            channel = createSftpChannel(session);
+            File localFile = new File(from);
+            channel.cd(destinationDirectory);
+            channel.put(new FileInputStream(localFile), localFile.getName());
+            channel.disconnect();
+        }
+        catch (JSchException e)
+        {
+            logger.error("secureFtp JSchException", e);
+            throw e;
+        }
+        catch (SftpException e)
+        {
+            logger.error("secureFtp SftpException", e);
+            throw e;
+        } 
+        catch (FileNotFoundException e)
+        {
+            logger.error("secureFtp FileNotFoundException", e);
+            throw e;
+        }
+        finally
+        {
+            channel.exit();
+        }
+    }
+
+    private void lsFolderCopy(ChannelSftp channelSftp, String sourcePath, String destPath) throws SftpException
+    {
+        Vector<ChannelSftp.LsEntry> list = channelSftp.ls(sourcePath);
+
+        for (ChannelSftp.LsEntry oListItem : list)
+        {
+            String source = sourcePath + "/" + oListItem.getFilename();
+            String destination = destPath + "/" + oListItem.getFilename();
+            if (!oListItem.getAttrs().isDir())
+            {
+                if (!(new File(destination)).exists() || (oListItem.getAttrs().getMTime() >
+                        Long.valueOf(new File(destination).lastModified() / (long) 1000).intValue()))
+                {
+                    new File(destination);
+                    logger.info("Downloading file {} to {}", source, destination);
+                    channelSftp.get(source, destination);
+                }
+            }
+            else if (!(".".equals(oListItem.getFilename()) || "..".equals(oListItem.getFilename()))
+                    && new File(destination).mkdirs())
+            {
+                lsFolderCopy(channelSftp, source, destination);
+            }
+        }
+    }
+
+    private ChannelSftp createSftpChannel(Session jschSession) throws JSchException
+    {
+        ChannelSftp channelSftp;
+        channelSftp = (ChannelSftp)jschSession.openChannel("sftp");
+        channelSftp.connect();
+        return channelSftp;
+    }
+}
+```
