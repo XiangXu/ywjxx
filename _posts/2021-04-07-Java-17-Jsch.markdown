@@ -10,8 +10,6 @@ Jsch is a pure Java implementation of SSH2. JSch allows you to connect to an ssh
 
 In order to use Jsch, we need to add **JSch Maven Dependency** to our pom.xml. 
 
-<https://mvnrepository.com/artifact/com.jcraft/jsch>
-
 ```
 <!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
 <dependency>
