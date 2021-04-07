@@ -38,7 +38,7 @@ Integration testing is of four types:
 
 For example, in school record suppose we have module staff, students and finance combining these modules and checking if on integration these module works fine is regression testing.
 
-## Some Testing
+## Smoke Testing
 
 **This test is done to make sure that sofware under testing is ready or stable for further testing**. It is called a smoke test as the testing an initial pass is done to check if it did not catch fire or smoke in the initial switch on.
 
