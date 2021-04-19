@@ -51,3 +51,11 @@ class Solution
     }
 }
 ```
+
+<!-- Line breaks -->
+<br />
+
+## Time & Space Complexity:
+
+* **Time Complexity: O(n)**: n is the length String s.
+* **Space Complexity: O(n))** N is the length of array splited.
