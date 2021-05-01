@@ -107,5 +107,5 @@ class Solution
 
 ## Time & Space Complexity:
 
-* **Time Complexity: O(n)**: O(N)O(N), where NN is the total number of elements in the input matrix. We add every element in the matrix to our final answer.
+* **Time Complexity: O(n)**: where n is the total number of elements in the input matrix. We add every element in the matrix to our final answer.
 * **Space Complexity: O(n))** n is the length of result.
