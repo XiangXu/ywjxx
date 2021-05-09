@@ -1,0 +1,96 @@
+---
+layout: post 
+title:  60. Permutation Sequence
+date:   2021-05-09 23:23
+image:  leetcode.jpeg
+tags:   LeetCode
+---
+
+## Problem
+
+The set [1, 2, 3, ..., n] contains a total of n! unique permutations.
+
+By listing and labeling all of the permutations in order, we get the following sequence for n = 3:
+
+1. "123"
+2. "132"
+3. "213"
+4. "231"
+5. "312"
+6. "321"
+
+Given n and k, return the kth permutation sequence.
+
+```
+Example 1:
+
+Input: n = 3, k = 3
+Output: "213"
+
+Example 2:
+
+Input: n = 4, k = 9
+Output: "2314"
+
+Example 3:
+
+Input: n = 3, k = 1
+Output: "123"
+```
+
+<!-- Line breaks -->
+<br />
+
+Constraints:
+
+* 1 <= n <= 9
+* 1 <= k <= n!
+
+## Solution
+
+I think this problem can be solved by using back tracking algorithm. We can use back tracking algorithm to generate the list of permutation. Then once we get the list we can just return the result.
+
+```java
+class Solution {
+    public String getPermutation(int n, int k) {
+        // generate permutation string 
+        StringBuilder sb = new StringBuilder();
+        for(int i=1; i<=n; i++){
+            sb.append(String.valueOf(i));
+        }
+        
+        List<String> result = new ArrayList<>();
+        
+        generatePermutationList(sb.toString(), result, "", k);
+        
+        return result.get(k-1);
+    }
+    
+    // Back tracking to generate permutation list
+    private void generatePermutationList(String str, List<String> result, String currStr, int maxSize){   
+        if(result.size() == maxSize)
+            return;
+        
+        if(currStr.length() == str.length()){
+            result.add(currStr);
+            return;
+        }
+        
+        for(char c : str.toCharArray()){
+            if(currStr.indexOf(c) == -1){
+                currStr += c;
+                generatePermutationList(str, result, currStr, maxSize);
+                currStr = currStr.substring(0, currStr.length() - 1);
+            }
+        }
+    }
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+## Time & Space Complexity:
+
+* **Time Complexity: ?**
+* **Space Complexity: O(n!))**: n is the given variable.
