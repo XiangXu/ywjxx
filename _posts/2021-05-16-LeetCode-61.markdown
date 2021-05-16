@@ -1,0 +1,91 @@
+---
+layout: post 
+title:  60. Permutation Sequence
+date:   2021-05-09 23:23
+image:  leetcode.jpeg
+tags:   LeetCode
+---
+
+## Problem
+
+Given the head of a linked list, rotate the list to the right by k places.
+
+Example 1:
+
+![exmaple1](https://assets.leetcode.com/uploads/2020/11/13/rotate1.jpg)
+
+```
+Input: head = [1,2,3,4,5], k = 2
+Output: [4,5,1,2,3]
+```
+
+<!-- Line breaks -->
+<br />
+
+Example 2: 
+
+![exmaple2](https://assets.leetcode.com/uploads/2020/11/13/roate2.jpg)
+
+```
+Input: head = [0,1,2], k = 4
+Output: [2,0,1]
+```
+
+## Solution
+
+Observations:
+
+* Rotate k times  <=> rotate k % length times
+* If k == 0 or head is none, return head
+* Singly linked list, can not go back, store previous node gives you access to both it and node next to it.
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode rotateRight(ListNode head, int k) {
+        if(head == null){
+            return head;
+        }
+        
+        int length = 1;
+        ListNode tail = head;
+        while(tail.next != null){
+            length ++;
+            tail = tail.next;
+        }
+        
+        k %= length;
+        if(k == 0)
+            return head;
+        
+        ListNode prev = head;
+      
+        for(int i=0; i<length - k - 1; i++){
+            prev = prev.next;
+        }
+        
+        ListNode newHead = prev.next;
+        prev.next = null;
+        tail.next = head;
+        
+        return newHead;
+    }
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+## Time & Space Complexity:
+
+* **Time Complexity: O(n)**: n is the length of head.
+* **Space Complexity: O(l)** we only decare few variables.
