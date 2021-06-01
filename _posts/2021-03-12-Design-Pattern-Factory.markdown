@@ -112,6 +112,9 @@ Step 4: use the factory to get object of concrete class by passing an inforatmio
 }
 ```
 
+<!-- Line breaks -->
+<br />
+
 Reference
 
 <https://www.tutorialspoint.com/design_pattern/factory_pattern.htm>
