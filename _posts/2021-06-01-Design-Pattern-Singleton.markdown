@@ -77,6 +77,8 @@ public class Singleton {
 
 **Use lazy instantiation of a singleton or of any other object when there is a fair chance of the object not being needed, and immediate instantiation when the likelihodd of it being needed is high. In general, if instantiation were to fail, and the object is needed, it is better that it fail as early as possible**.
 
+
+
 <!-- Line breaks -->
 <br />
 
