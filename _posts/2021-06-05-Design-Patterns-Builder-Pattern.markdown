@@ -182,6 +182,93 @@ class Builder
 }
 ```
 
+There is another approach to implement builder design pattern:
+
+When a constructor method requires more than 4 parameters and some of them are optionals, in this case you need to think about to use a builder.
+
+```java
+// Builder 
+public class Computer {
+    private String cpu;//mandatory
+    private String ram;//mandatory
+    private int usbCount;//optional
+    private String keyboard;//optional
+    private String display;//optional
+}
+
+// Without builder
+public class Computer {
+     ...
+    public Computer(String cpu, String ram) {
+        this(cpu, ram, 0);
+    }
+    public Computer(String cpu, String ram, int usbCount) {
+        this(cpu, ram, usbCount, "Apple keyboard");
+    }
+    public Computer(String cpu, String ram, int usbCount, String keyboard) {
+        this(cpu, ram, usbCount, keyboard, "Apple display");
+    }
+    public Computer(String cpu, String ram, int usbCount, String keyboard, String display) {
+        this.cpu = cpu;
+        this.ram = ram;
+        this.usbCount = usbCount;
+        this.keyboard = keyboard;
+        this.display = display;
+    }
+}
+
+// with builder
+public class Computer {
+    private String cpu;//mandatory
+    private String ram;//mandatory
+    private int usbCount;//optional
+    private String keyboard;//optional
+    private String display;//optional
+
+    private Computer(Builder builder){
+        this.cpu=builder.cpu;
+        this.ram=builder.ram;
+        this.usbCount=builder.usbCount;
+        this.keyboard=builder.keyboard;
+        this.display=builder.display;
+    }
+    public static class Builder{
+        private String cpu;//mandatory
+        private String ram;//mandatory
+        private int usbCount;//optional
+        private String keyboard;//optional
+        private String display;//optional
+
+        public Builder(String cup,String ram){
+            this.cpu=cup;
+            this.ram=ram;
+        }
+
+        public Builder setUsbCount(int usbCount) {
+            this.usbCount = usbCount;
+            return this;
+        }
+        public Builder setKeyboard(String keyboard) {
+            this.keyboard = keyboard;
+            return this;
+        }
+        public Builder setDisplay(String display) {
+            this.display = display;
+            return this;
+        }        
+        public Computer build(){
+            return new Computer(this);
+        }
+    }
+}
+
+Computer computer=new Computer.Builder("Intel","Apple")
+                .setDisplay("Apple display")
+                .setKeyboard("Apple keyboard")
+                .setUsbCount(2)
+                .build();
+```
+
 <!-- Line breaks -->
 <br />
 
