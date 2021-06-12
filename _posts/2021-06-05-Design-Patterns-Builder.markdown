@@ -182,9 +182,12 @@ class Builder
 }
 ```
 
+<!-- Line breaks -->
+<br />
+
 There is another approach to implement builder design pattern:
 
-When a constructor method requires more than 4 parameters and some of them are optionals, in this case you need to think about to use a builder.
+When a constructor method requires more than 4 parameters and some of them are optional. In this case you need to think about to use a builder.
 
 ```java
 // Builder 
