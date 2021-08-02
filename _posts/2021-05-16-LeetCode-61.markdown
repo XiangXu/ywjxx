@@ -1,7 +1,7 @@
 ---
 layout: post 
-title:  60. Permutation Sequence
-date:   2021-05-09 23:23
+title:  61. Rotate List
+date:   2021-05-16 23:23
 image:  leetcode.jpeg
 tags:   LeetCode
 ---
