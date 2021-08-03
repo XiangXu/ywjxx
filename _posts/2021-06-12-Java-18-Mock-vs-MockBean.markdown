@@ -114,6 +114,9 @@ public class MockBeanAnnotationIntegrationTest {
 }
 ```
 
+<!-- Line breaks -->
+<br />
+
 When we use the annotation on a field, as well as being registered in the application context the mock will also be injected into the field. This is evident in the code above. Here, we have used the injected UserRepository mock to stub the count method. We have then used the bean from the application context to verify that it is indeed the mocked bean.
 
 Reference
