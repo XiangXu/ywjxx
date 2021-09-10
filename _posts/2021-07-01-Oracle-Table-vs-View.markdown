@@ -70,7 +70,7 @@ The following points explain the differences between tables and views:
 
 * A table is a database object that holds information used in applications and reports. On the other hand, a view is also a database object utilized as a table and can also link to other tables.
 * A table consists of rows and columns to store and organized data in a structured format, while the view is a result set of SQL statements.
-* A table is structured with columns and rows, while a view is a virtual table extracted from a database.\
+* A table is structured with columns and rows, while a view is a virtual table extracted from a database.
 * The table is an independent data object while views are usually depending on the table.
 * The table is an actual or real table that exists in physical locations. On the other hand, views are the virtual or logical table that does not exist in any physical location.
 * A table allows to performs add, update or delete operations on the stored data. On the other hand, we cannot perform add, update, or delete operations on any data from a view. If we want to make any changes in a view, we need to update the data in the source tables.
