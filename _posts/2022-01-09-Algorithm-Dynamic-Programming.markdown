@@ -117,6 +117,82 @@ class Solution {
 }
 ```
 
+### 198. House Robber
+
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and **it will automatically contact the police if two adjacent houses were broken into on the same night**.
+
+Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight **without alerting the police**.
+
+<!-- Line breaks -->
+<br />
+
+#### Solution
+
+opt(i) should be the max value of following:
+* opt(i-2) + arr[i]
+* opt(i-1)
+    
+Break Points: 
+* opt(0) = arr[0];
+* opt(1) = max(arr[0], arr[1])
+
+#### Recursive:
+
+* Time complexity: O(2^n)- since opt(n) = opt(n-2) + arr[n]is an exponential time
+* Space complexity: O(n) - space for recursive function call stack
+
+```java
+class Solution {
+    public int rob(int[] nums) {
+        return calculateMaxAmount(nums, nums.length - 1);
+    }
+    
+    private int calculateMaxAmount(int[] nums, int i) {
+        if(i == 0) {
+            return nums[0];
+        }
+        else if(i == 1) {
+            return Math.max(nums[0], nums[1]);
+        }
+        else {
+            int val1 = calculateMaxAmount(nums, i - 2) + nums[i];
+            int val2 = calculateMaxAmount(nums, i - 1);
+            
+            return Math.max(val1, val2);
+        }
+    }
+}
+```
+
+<!-- Line breaks -->
+<br />
+
+### Dynamic Programming - Bottom Up Approach
+
+Time complexity: O(n)
+Space complexity: O(n)
+
+```java
+class Solution {
+    public int fib(int n) {
+        if(n <= 1) {
+            return n;
+        }
+        
+        int[] cache = new int[n + 1];
+        cache[1] = 1;
+        
+        for(int i = 2; i <= n; i++) {
+            cache[i] = cache[i - 1] + cache[i - 2];
+        }
+        
+        return cache[n];
+    }
+}
+```
+
+
+
 
 
 
