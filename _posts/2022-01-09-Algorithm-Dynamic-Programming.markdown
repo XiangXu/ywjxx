@@ -117,6 +117,9 @@ class Solution {
 }
 ```
 
+<!-- Line breaks -->
+<br />
+
 ### 198. House Robber
 
 You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and **it will automatically contact the police if two adjacent houses were broken into on the same night**.
@@ -174,19 +177,23 @@ Space complexity: O(n)
 
 ```java
 class Solution {
-    public int fib(int n) {
-        if(n <= 1) {
-            return n;
+      public int rob(int[] nums) {
+        int[] cache = new int[nums.length];
+        cache[0] = nums[0];
+        
+        if(nums.length == 1) {
+            return cache[0];
         }
         
-        int[] cache = new int[n + 1];
-        cache[1] = 1;
+        cache[1] = Math.max(nums[0], nums[1]);
         
-        for(int i = 2; i <= n; i++) {
-            cache[i] = cache[i - 1] + cache[i - 2];
+        for(int i = 2; i < nums.length; i++) {
+            int val1 = cache[i - 2] + nums[i];
+            int val2 = cache[i - 1];
+            cache[i] = Math.max(val1, val2);
         }
         
-        return cache[n];
+        return cache[nums.length - 1];
     }
 }
 ```
