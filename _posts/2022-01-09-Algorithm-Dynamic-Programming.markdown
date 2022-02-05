@@ -172,8 +172,8 @@ class Solution {
 
 ### Dynamic Programming - Bottom Up Approach
 
-Time complexity: O(n)
-Space complexity: O(n)
+* Time complexity: O(n)
+* *Space complexity: O(n)
 
 ```java
 class Solution {
