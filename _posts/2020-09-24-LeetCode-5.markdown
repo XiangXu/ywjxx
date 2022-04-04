@@ -78,6 +78,54 @@ class Solution
 * **Time Complexity: O(n<sup>2</sup>))**: Since expanding a palindrome around its center could take O(n) time, the overall complexity is O(n<sup>2</sup>).
 * **Space Complexity: O(l)**: We only create few variables.
 
+<!-- Line breaks -->
+<br />
+
+Dynamic Programming:
+
+Rule:
+* isPalindromic[i]][j] = isPalindromic[i+1][j-1] && s.charAt(i) == s.charAt(j);
+
+Break points:
+  * When j == i, isPalindromic[i][j] =  isPalindromic[i][i] = true;
+  * when j == i + 1, isPalindromic[i][j] = isPalindromic[i][i+1] = s.charAt(i) == s.charAt(i+1)
+
+```java
+class Solution {
+    public String longestPalindrome(String s) {
+        if (s.length() == 1) {
+            return s; 
+        }
+        
+        String longest = "";
+        boolean[][] isPalindromic = new boolean[s.length()][s.length()];
+        for(int len = 0; len < s.length(); len++) {
+            for(int i = 0; i + len < s.length(); i++) {
+                int j = i + len;
+                if(len == 0) {
+                    isPalindromic[i][j] = true;
+                }
+                else if(len == 1) {
+                    isPalindromic[i][j] = s.charAt(i) == s.charAt(j);
+                }
+                else {
+                    isPalindromic[i][j] = isPalindromic[i+1][j-1] && (s.charAt(i) == s.charAt(j));
+                }
+                
+                if(isPalindromic[i][j] && (s.charAt(i) == s.charAt(j))) {
+                    String substr = s.substring(i, j+1);
+                    if(longest.length() < substr.length()) {
+                        longest = substr;
+                    }
+                }
+            }
+        }
+        
+        return longest;
+    }
+}
+```
+
 
 
 
