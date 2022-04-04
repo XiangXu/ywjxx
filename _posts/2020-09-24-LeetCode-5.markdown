@@ -87,7 +87,7 @@ Rule:
 * isPalindromic[i]][j] = isPalindromic[i+1][j-1] && s.charAt(i) == s.charAt(j);
 
 Break points:
-  * When j == i, isPalindromic[i][j] =  isPalindromic[i][i] = true;
+  * when j == i, isPalindromic[i][j] =  isPalindromic[i][i] = true;
   * when j == i + 1, isPalindromic[i][j] = isPalindromic[i][i+1] = s.charAt(i) == s.charAt(i+1)
 
 ```java
