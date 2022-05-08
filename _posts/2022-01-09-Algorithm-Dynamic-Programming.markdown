@@ -243,23 +243,22 @@ Constraints:
 
 ```java
 class Solution {
-    // minCoins = Math.min(cache[i], 1 + cache[i - cache[i]])
-    // break point: cache[0] = 0
+    //minCoins = Math.min(cache[i], 1 + cache[i - coins[j]])
+    // break point: 
+    // cache[0] = 0;
     public int coinChange(int[] coins, int amount) {
-        // This array will store the fewest number of coins for each amount.
         int[] cache = new int[amount + 1];
-        Arrays.fill(cache, amount + 1);
+        Arrays.fill(cache, Integer.MAX_VALUE);
         cache[0] = 0;
         
         for(int i = 1; i <= amount; i++) {
             for(int j = 0; j < coins.length; j++) {
-                if(coins[j] <= i) {
+                if(coins[j] <= i && cache[i - coins[j]] != Integer.MAX_VALUE) {
                     cache[i] = Math.min(cache[i], 1 + cache[i - coins[j]]);
                 }
             }
         }
-        
-        return cache[amount] > amount ? -1 : cache[amount];
+        return cache[amount] == Integer.MAX_VALUE ? -1 : cache[amount];
     }
 }
 ```
