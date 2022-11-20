@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  Spring Bean Scope
-date:   2022-11-22 22:33
+date:   2021-11-22 22:33
 image:  spring.png
 tags:   [Java, Spring]
 ---
@@ -19,7 +19,7 @@ The last four scopes mentioned, request, session, application and websocket, are
 
 ## Singleton Scope
 
-When we define a bean with *singleton* scope, the container creates a single instance of that bean. all requests for that bean will return then same object, which is cached. A**ny modifications to the object will be reflected in all reference to the bean**. This scope is the default value if no other scope is specified.
+When we define a bean with *singleton* scope, the container creates a single instance of that bean. all requests for that bean will return then same object, which is cached. **Any modifications to the object will be reflected in all reference to the bean**. This scope is the default value if no other scope is specified.
 
 ## Prototype Scope
 
