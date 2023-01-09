@@ -1,0 +1,148 @@
+---
+layout: post
+title:  Docker
+date:   2023-01-07 17:43
+image:  oop.jpg
+tags:   [Fundation, Docker]
+---
+
+## What is a Container?
+
+* A way to **package** applicaiton with **all necessary dependencies** and **configuration**.
+* **Protable artifact**, easily shared and moved atround.
+* Makes development and deployment **more efficient**.
+
+## Where do containers live?
+
+* Container Repository: it is a collection of related container images used to provide different versions of an application.
+* Private repositories
+* Public repository for Docker (**DockerHub**)
+
+### Before container
+
+* **Installation process different on each OS environment**.
+* **Many steps where something could go wrong**.
+
+### After container
+
+* own isolated envrionment.
+* packaged with all needed configuration.
+* one command to install the app.
+* run same app with 2 different verions.
+
+## Docker Image vs Docker Container
+
+1. Container is a running environment for Image.
+2. **Docker image is the actual package**.
+3. **Docker image is the artifact**, that can be moved around.
+4. **Docker container actually start the application**.
+5. **When the application starts, container environment is created. When it is not running, it is an image**.
+
+## Docker Compose
+
+Compose is a tool for defining and running multi-container Docker applications. With Compose, you use a YAML file to configure your application’s services. Then, with a single command, you create and start all the services from your configuration.
+
+```yml
+version: '2.1'
+services:
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      - MYSQL_DATABASE=test
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test-secret-password
+      - MYSQL_ROOT_PASSWORD=test-secret-root-password
+    ports:
+      - 3306:3306
+  node-app:
+    build: .
+    ports:
+      - "8081:8081"
+```
+
+From your project directory, start up your application by running **docker compose -f redis.yml up**.
+
+## Dockerfile
+
+### What is a Dockerfile
+
+Dockerfile is the blueprint for building images. Docker can build images automatically by reading the instructions from a Dockerfile. A Dockerfile is a text document that contains all the commands a user could call on the command line to assemble an image. 
+
+```dockerfile
+# syntax=docker/dockerfile:1
+FROM golang:1.16-alpine AS build
+
+# Install tools required for project
+# Run `docker build --no-cache .` to update dependencies
+RUN apk add --no-cache git
+RUN go get github.com/golang/dep/cmd/dep
+
+# List project dependencies with Gopkg.toml and Gopkg.lock
+# These layers are only re-built when Gopkg files are updated
+COPY Gopkg.lock Gopkg.toml /go/src/project/
+WORKDIR /go/src/project/
+# Install library dependencies
+RUN dep ensure -vendor-only
+
+# Copy the entire project and build it
+# This layer is rebuilt when a file changes in the project directory
+COPY . /go/src/project/
+RUN go build -o /bin/project
+
+# This results in a single layer image
+FROM scratch
+COPY --from=build /bin/project /bin/project
+ENTRYPOINT ["/bin/project"]
+CMD ["--help"]
+```
+
+* **FROM** creates a layer from the ubuntu:18.04 Docker image.
+* **COPY** adds files from your Docker client’s current directory.
+* **RUN** builds your application with make.
+* **CMD** specifies what command to run within the container.
+
+CMD vs RUN: **CMD = entrypoint command and you can have multiple RUN commands**
+
+How to use Dockerfile and Docker Compose together: https://docs.docker.com/compose/gettingstarted/ 
+
+## Docker Volumes
+
+### When do we need Docker Volumes?
+
+As we know, docker container is a **Virtual File System**, when restarting or removing the container, **Data is gone!**.
+
+### What is a Docker Volume?
+
+Folder in physical host file system is **mounted** into the virtual file system of Docker.
+
+### 3 Volumes Types
+
+* Host Volumes: docker run -v /home/mount/data:/var/lib/mysql/data - you decide where on the host file system the reference is made.
+* Anonymous Volumes: docker run -v /var/lib/mysql/data - for each container a folder is generated that gets mounted.
+* Named Volumes: docker run -v name:/var/lib/mysql/data - you can reference the volume by name - **It should be used in production**
+
+```yml
+version: "3"
+
+services:
+  db:
+    image: db
+    volumes:
+      #1 uses the named and shared volume 'data-volume' created with #3
+      - data-volume:/var/lib/db
+  backup:
+    image: backup-service
+    volumes:
+      #2 uses the named and shared volume 'data-volume' created with #3
+      - data-volume:/var/lib/backup/data
+
+volumes:
+  #3 creates the named volume 'data-volume' 
+  data-volume:
+```
+
+## Docker Cheat Sheet
+
+https://docs.docker.com/get-started/docker_cheatsheet.pdf
