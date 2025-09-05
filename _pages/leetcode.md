@@ -1,5 +1,5 @@
 ---
 layout: page
-title: LeetCode
-permalink: /tag/leetcode/
+title: Algorithm
+permalink: /tag/algorithm/
 ---
