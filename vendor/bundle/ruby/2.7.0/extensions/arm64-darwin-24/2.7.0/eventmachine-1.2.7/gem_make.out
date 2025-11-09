@@ -1,5 +1,5 @@
 current directory: /Users/xiangxu/Workspace/Sites/ywjxx/vendor/bundle/ruby/2.7.0/gems/eventmachine-1.2.7/ext/fastfilereader
-/Users/xiangxu/.rbenv/versions/2.7.8/bin/ruby -I /Users/xiangxu/.rbenv/versions/2.7.8/lib/ruby/2.7.0 -r ./siteconf20251109-91268-1u1y35l.rb extconf.rb
+/Users/xiangxu/.rbenv/versions/2.7.8/bin/ruby -I /Users/xiangxu/.rbenv/versions/2.7.8/lib/ruby/2.7.0 -r ./siteconf20251109-97799-dgdnnd.rb extconf.rb
 creating Makefile
 
 current directory: /Users/xiangxu/Workspace/Sites/ywjxx/vendor/bundle/ruby/2.7.0/gems/eventmachine-1.2.7/ext/fastfilereader
@@ -15,4 +15,4 @@ ld: warning: ignoring duplicate libraries: '-lruby.2.7'
 
 current directory: /Users/xiangxu/Workspace/Sites/ywjxx/vendor/bundle/ruby/2.7.0/gems/eventmachine-1.2.7/ext/fastfilereader
 make "DESTDIR=" install
-/usr/bin/install -c -m 0755 fastfilereaderext.bundle ./.gem.20251109-91268-17ax1ut
+/usr/bin/install -c -m 0755 fastfilereaderext.bundle ./.gem.20251109-97799-z42tsg

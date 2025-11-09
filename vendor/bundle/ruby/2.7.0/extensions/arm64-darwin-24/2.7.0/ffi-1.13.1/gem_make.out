@@ -1,5 +1,5 @@
 current directory: /Users/xiangxu/Workspace/Sites/ywjxx/vendor/bundle/ruby/2.7.0/gems/ffi-1.13.1/ext/ffi_c
-/Users/xiangxu/.rbenv/versions/2.7.8/bin/ruby -I /Users/xiangxu/.rbenv/versions/2.7.8/lib/ruby/2.7.0 -r ./siteconf20251109-91268-s91pqw.rb extconf.rb
+/Users/xiangxu/.rbenv/versions/2.7.8/bin/ruby -I /Users/xiangxu/.rbenv/versions/2.7.8/lib/ruby/2.7.0 -r ./siteconf20251109-97799-1dg47hm.rb extconf.rb
 checking for ffi_prep_closure_loc() in -lffi... yes
 checking for ffi_prep_cif_var()... yes
 checking for ffi_raw_call()... yes
@@ -41,4 +41,4 @@ ld: warning: ignoring duplicate libraries: '-lffi', '-lruby.2.7'
 
 current directory: /Users/xiangxu/Workspace/Sites/ywjxx/vendor/bundle/ruby/2.7.0/gems/ffi-1.13.1/ext/ffi_c
 make "DESTDIR=" install
-/usr/bin/install -c -m 0755 ffi_c.bundle ./.gem.20251109-91268-1kc3193
+/usr/bin/install -c -m 0755 ffi_c.bundle ./.gem.20251109-97799-19ojcv3

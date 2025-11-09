@@ -1,5 +1,5 @@
 current directory: /Users/xiangxu/Workspace/Sites/ywjxx/vendor/bundle/ruby/2.7.0/gems/sassc-2.4.0/ext
-/Users/xiangxu/.rbenv/versions/2.7.8/bin/ruby -I /Users/xiangxu/.rbenv/versions/2.7.8/lib/ruby/2.7.0 -r ./siteconf20251109-91268-uj9lsf.rb extconf.rb
+/Users/xiangxu/.rbenv/versions/2.7.8/bin/ruby -I /Users/xiangxu/.rbenv/versions/2.7.8/lib/ruby/2.7.0 -r ./siteconf20251109-97799-1rvv31m.rb extconf.rb
 creating Makefile
 
 current directory: /Users/xiangxu/Workspace/Sites/ywjxx/vendor/bundle/ruby/2.7.0/gems/sassc-2.4.0/ext
@@ -88,4 +88,4 @@ ld: warning: -multiply_defined is obsolete
 
 current directory: /Users/xiangxu/Workspace/Sites/ywjxx/vendor/bundle/ruby/2.7.0/gems/sassc-2.4.0/ext
 make "DESTDIR=" install
-/usr/bin/install -c -m 0755 libsass.bundle ./.gem.20251109-91268-ruy0t4/sassc
+/usr/bin/install -c -m 0755 libsass.bundle ./.gem.20251109-97799-1rwllj/sassc
