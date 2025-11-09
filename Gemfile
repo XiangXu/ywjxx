@@ -6,3 +6,4 @@ gem 'jekyll-tagging'
 gem "jekyll-sitemap"
 gem "csv"
 gem "logger"
+gem "base64"
