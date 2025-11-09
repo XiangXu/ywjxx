@@ -1,0 +1,9 @@
+---
+layout: post
+title:  Stack (LIFO) Notes
+date:   2025-11-09 21:30
+image:  algorithm.jpeg
+tags:   [Fundation, Algorithm, Data Structure]
+---
+
+Test
