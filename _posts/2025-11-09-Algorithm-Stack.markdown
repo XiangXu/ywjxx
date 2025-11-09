@@ -182,30 +182,17 @@ Complexity: O(n) time, O(n) space worst-case.
 Java (readable) example:
 ```java
 boolean isValid(String s) {
-        if(s.length() % 2 != 0) {
-            return false;
+    Deque<Character> st = new ArrayDeque<>();
+    for (char c : s.toCharArray()) {
+        if (c == '(') st.push(')');
+        else if (c == '{') st.push('}');
+        else if (c == '[') st.push(']');
+        else {
+            if (st.isEmpty() || st.pop() != c) return false;
         }
-
-        Stack<Character> stack = new Stack<>();
-        for(char curr: s.toCharArray()) {
-            if(curr == '(') {
-                stack.push(')');
-            }
-            else if(curr == '{') {
-                stack.push('}');
-            }
-            else if(curr == '[') {
-                stack.push(']');
-            }
-            else {
-                if(stack.isEmpty() || stack.pop() != curr) {
-                    return false;
-                }
-            }
-        }
-
-        return stack.isEmpty();
     }
+    return st.isEmpty();
+}
 ```
 
 Edge cases: empty string -> valid; single char -> invalid; characters other than brackets (problem-dependent).
