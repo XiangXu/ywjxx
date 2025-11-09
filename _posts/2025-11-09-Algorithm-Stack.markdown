@@ -161,6 +161,31 @@ class MinStack {
 4. For "min"/"max" stacks maintain an auxiliary structure storing candidate extrema.
 5. For converting recursive algorithms to iterative, emulate call frames with stack entries that hold both node and state.
 
+### Prefer Deque (ArrayDeque) over java.util.Stack
+
+In modern Java code prefer `Deque` (for example `ArrayDeque`) instead of the legacy `java.util.Stack` class. Reasons:
+
+- Legacy design: `Stack` extends `Vector`, an older synchronized collection, and carries unnecessary legacy behavior.
+- Synchronization overhead: `Vector` methods are synchronized which hurts single-threaded performance. `ArrayDeque` is unsynchronized and faster for typical use.
+- Better API and flexibility: `Deque` supports both stack (LIFO) and queue (FIFO) semantics and provides clearer method names.
+- Performance: `ArrayDeque` has better cache locality and lower constant factors than `Stack` or `LinkedList` in most cases.
+- Null handling & safety: `ArrayDeque` forbids nulls (safer for many algorithms); if you need concurrency, choose a concurrent deque explicitly.
+
+Method mapping (common):
+
+- Stack-like (LIFO): `push(e)` -> `addFirst(e)`, `pop()` -> `removeFirst()`, `peek()` -> `peekFirst()`
+- Queue-like (FIFO): `add(e)`/`offer(e)` -> `addLast(e)`/`offerLast(e)`, `poll()` -> `pollFirst()`
+
+Example (preferred):
+```java
+Deque<Integer> st = new ArrayDeque<>();
+st.push(1); // push as stack (addFirst)
+st.push(2);
+int v = st.pop(); // returns 2 (LIFO)
+```
+
+If you need thread-safety, use `ConcurrentLinkedDeque` or external synchronization — avoid `java.util.Stack` in new code.
+
 ## Common Interview Problems
 * Valid Parentheses
 * Evaluate Reverse Polish Notation
