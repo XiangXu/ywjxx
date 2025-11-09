@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  Stack (LIFO) Notes
-date:   2025-11-09 21:30
+date:   2025-11-09 15:30
 image:  algorithm.jpeg
 tags:   [Fundation, Algorithm, Data Structure]
 ---
