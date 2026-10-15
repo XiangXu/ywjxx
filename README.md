@@ -16,7 +16,8 @@ Welcome! 👋 This is where I write down what I learn: concepts, experiments, "a
 
 ### 🛣️ Coming Soon
 - 🧩 LeetCode: problem walkthroughs, patterns, and 🔁 spaced-repetition reviews
-- 🧮 Data structures & algorithms: arrays, trees 🌳, graphs 🕸️, DP 🧠, and Big-O ⏱️
+- 🧮 Algorithms: sorting 🔢, binary search 🔍, recursion 🌀, greedy 🤑, DP 🧠, and Big-O ⏱️
+- 🧱 Data structures: arrays, hash maps 🗺️, stacks & queues 📚, trees 🌳, heaps ⛰️, and graphs 🕸️
 - 🏗️ System design: scaling, caching, queues, and databases 🗄️
 - 💼 Interview prep: behavioral stories 🗣️ and mock interviews 🎤
 - 🧪 Testing
