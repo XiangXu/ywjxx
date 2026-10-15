@@ -15,10 +15,13 @@ Welcome! 👋 This is where I write down what I learn: concepts, experiments, "a
 | [Prompt Caching](AI%20学习库/Prompt%20Caching.md) | ⚡ Reusing prompt prefixes to save 💸 and ⏳ |
 
 ### 🛣️ Coming Soon
-- 🏗️ System design
+- 🧩 LeetCode: problem walkthroughs, patterns, and 🔁 spaced-repetition reviews
+- 🧮 Data structures & algorithms: arrays, trees 🌳, graphs 🕸️, DP 🧠, and Big-O ⏱️
+- 🏗️ System design: scaling, caching, queues, and databases 🗄️
+- 💼 Interview prep: behavioral stories 🗣️ and mock interviews 🎤
 - 🧪 Testing
 - 🐍 Languages & frameworks
-- 🛠️ Dev tools & workflows
+- 🛠️ Dev tools & workflows: Git, terminal, and IDE tricks ⌨️
 - ...and whatever I get curious about next ✨
 
 ## 🧭 How to Use
