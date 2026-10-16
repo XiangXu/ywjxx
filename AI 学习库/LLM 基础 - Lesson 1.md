@@ -11,7 +11,6 @@ tags:
   - Java
 created: 2026-10-15
 ---
-
 # Lesson 1: LLM Basics（LLM 基础）
 
 > [!info] 课程安排（2026-10-15，60 分钟）
@@ -67,7 +66,7 @@ LLM 不直接读字符。**Tokenizer** 先把文本切成 Token（子词片段�
 ## 4. 成本计算 Cost
 
 $$
-\text{cost} = \text{input\_tokens} \times \text{input price} + \text{output\_tokens} \times \text{output price}
+\text{cost} = \text{input tokens} \times \text{input price} + \text{output tokens} \times \text{output price}
 $$
 
 价格按 **每百万 Token（MTok）** 报价：
@@ -103,7 +102,7 @@ $$
 ## 5. 延迟计算 Latency
 
 $$
-\text{total latency} \approx \text{TTFT} + \text{output\_tokens} \times \text{time per token}
+\text{total latency} \approx \text{TTFT} + \text{output tokens} \times \text{time per token}
 $$
 
 - **TTFT（Time To First Token，首 Token 时间）**：网络 + 排队 + 处理全部输入（**prefill**）。输入越长，TTFT 越长。

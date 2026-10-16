@@ -12,7 +12,6 @@ tags:
   - Token-Sampling
 created: 2026-10-15
 ---
-
 # LLM Decoding: Temperature, Top-p, and Greedy Decoding
 
 ## 1. 核心概念 Overview
