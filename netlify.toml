@@ -1,6 +1,7 @@
 [build]
-  command = "bundle exec jekyll build"
-  publish = "_site"
+  command = "npx quartz build"
+  publish = "public"
 
 [build.environment]
-  RUBY_VERSION = "2.7.8"
+  NODE_VERSION = "26"
+

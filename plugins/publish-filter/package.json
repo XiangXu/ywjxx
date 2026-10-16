@@ -1,0 +1,10 @@
+{
+  "name": "publish-filter",
+  "version": "1.0.0",
+  "description": "Excludes notes marked `publish: false` or `draft: true` from the site build",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./index.js"
+  }
+}

@@ -9,6 +9,7 @@ pattern: ""
 link: https://leetcode.com/problems/
 status: 🔴 todo | 🟡 review | 🟢 mastered
 created: {{date:YYYY-MM-DD}}
+publish: true
 last-reviewed: {{date:YYYY-MM-DD}}
 ---
 

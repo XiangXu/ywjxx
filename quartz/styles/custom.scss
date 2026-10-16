@@ -1,0 +1,568 @@
+@use "./variables.scss" as *;
+
+// ─────────────────────────────────────────────────────────────
+// Xiang's Notes — "study notebook" theme
+// Colours live in quartz.config.yaml (theme.colors); this file only
+// shapes layout, typography and components.
+// ─────────────────────────────────────────────────────────────
+
+:root {
+  --radius: 10px;
+  --radius-lg: 16px;
+  --card: color-mix(in srgb, var(--light) 92%, var(--dark) 3%);
+  --card-border: color-mix(in srgb, var(--lightgray) 85%, transparent);
+  --shadow: 0 1px 2px rgb(0 0 0 / 4%), 0 4px 16px rgb(0 0 0 / 4%);
+  --accent-soft: color-mix(in srgb, var(--secondary) 12%, transparent);
+  --reading-width: 46rem;
+}
+
+:root[saved-theme="dark"] {
+  --card: color-mix(in srgb, var(--light) 94%, white 4%);
+  --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 4px 16px rgb(0 0 0 / 20%);
+}
+
+// ── Typography ───────────────────────────────────────────────
+body {
+  font-feature-settings: "palt" 0;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+article {
+  font-size: 1.05rem;
+  line-height: 1.85; // comfortable for mixed CJK / Latin text
+}
+
+h1,
+h2,
+h3,
+h4 {
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+}
+
+article h2 {
+  margin-top: 2.6rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--lightgray);
+}
+
+article h3 {
+  margin-top: 1.9rem;
+}
+
+.article-title {
+  font-size: 2.1rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+a.internal {
+  background-color: transparent;
+  border-bottom: 1px solid color-mix(in srgb, var(--secondary) 35%, transparent);
+  border-radius: 0;
+  padding: 0;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    border-bottom-color: var(--secondary);
+  }
+
+  &.tag-link {
+    border: none;
+  }
+}
+
+::selection {
+  background: var(--textHighlight);
+}
+
+// ── Page shell ───────────────────────────────────────────────
+.page > #quartz-body {
+  .center {
+    max-width: var(--reading-width);
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+
+  .sidebar.left {
+    border-right: 1px solid var(--lightgray);
+    background: color-mix(in srgb, var(--light) 97%, var(--dark) 2%);
+  }
+
+  .sidebar.right {
+    border-left: 1px solid var(--lightgray);
+  }
+
+  @media all and #{$mobile} {
+    .sidebar.left {
+      border-right: none;
+      border-bottom: 1px solid var(--lightgray);
+    }
+  }
+}
+
+.page-title {
+  font-size: 1.45rem;
+  margin: 0;
+
+  a {
+    color: var(--dark);
+    border: none;
+    background: none;
+
+    &::before {
+      content: "✎";
+      display: inline-grid;
+      place-items: center;
+      width: 1.8rem;
+      height: 1.8rem;
+      margin-right: 0.55rem;
+      border-radius: 8px;
+      background: var(--secondary);
+      color: var(--light);
+      font-size: 1rem;
+      vertical-align: 0.1em;
+    }
+  }
+}
+
+// ── Search ───────────────────────────────────────────────────
+.search > .search-button {
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius);
+  background: var(--light);
+  height: 2.4rem;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--secondary);
+  }
+
+  &::after {
+    content: "⌘K";
+    margin-left: auto;
+    padding: 0.05rem 0.4rem;
+    border: 1px solid var(--lightgray);
+    border-radius: 6px;
+    font-family: var(--codeFont);
+    font-size: 0.7rem;
+    color: var(--gray);
+  }
+}
+
+.search > .search-container > .search-space {
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 64px rgb(0 0 0 / 25%);
+
+  & > input {
+    border-radius: var(--radius);
+  }
+}
+
+// ── Explorer ─────────────────────────────────────────────────
+.explorer {
+  .explorer-content ul li > a,
+  .folder-container .folder-title,
+  .folder-container a {
+    border: none;
+  }
+
+  .explorer-content ul.explorer-ul li > a {
+    display: block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    color: var(--darkgray);
+    opacity: 1;
+
+    &:hover {
+      background: var(--accent-soft);
+      color: var(--secondary);
+    }
+
+    &.active {
+      background: var(--accent-soft);
+      color: var(--secondary);
+      font-weight: $semiBoldWeight;
+    }
+  }
+}
+
+// ── Note properties (frontmatter panel) ──────────────────────
+.note-properties {
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  background: var(--card);
+  font-size: 0.85rem;
+  margin: 0.5rem 0 1rem;
+
+  .note-properties-header {
+    padding: 0.4rem 0.8rem;
+    color: var(--gray);
+  }
+
+  .note-properties-table {
+    margin: 0 0.8rem 0.5rem;
+  }
+}
+
+.content-meta {
+  color: var(--gray);
+  font-size: 0.85rem;
+}
+
+// Tags as soft pills everywhere
+a.internal.tag-link,
+.tags > li > a.tag-link {
+  background: var(--accent-soft);
+  color: var(--secondary);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  &::before {
+    content: "#";
+    opacity: 0.55;
+    margin-right: 1px;
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--secondary) 22%, transparent);
+  }
+}
+
+// ── Callouts ─────────────────────────────────────────────────
+.callout {
+  border-radius: var(--radius);
+  border-width: 0 0 0 4px;
+  box-shadow: none;
+}
+
+// ── Code, tables, quotes ─────────────────────────────────────
+pre {
+  border-radius: var(--radius);
+  border: 1px solid var(--lightgray);
+}
+
+code {
+  border-radius: 5px;
+}
+
+.table-container {
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius);
+
+  & > table {
+    margin: 0;
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+      background: var(--card);
+      font-weight: $semiBoldWeight;
+    }
+
+    th,
+    td {
+      padding: 0.45rem 0.9rem;
+      border-bottom: 1px solid var(--lightgray);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: var(--highlight);
+    }
+  }
+}
+
+blockquote:not(.callout) {
+  border-left: 3px solid var(--secondary);
+  margin-left: 0;
+  padding-left: 1rem;
+  color: var(--darkgray);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--lightgray);
+}
+
+// ── Right sidebar: graph, TOC, backlinks ─────────────────────
+.graph > .graph-outer {
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+.toc,
+.backlinks {
+  h3,
+  .toc-header h3 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gray);
+  }
+}
+
+.backlinks ul li > a {
+  border: none;
+}
+
+// ── Homepage ─────────────────────────────────────────────────
+body[data-slug="index"] {
+  .page-header .article-title,
+  .page-header .note-properties,
+  .page-header .content-meta {
+    display: none;
+  }
+}
+
+// Hero: `> [!hero]` callout in index.md
+.callout[data-callout="hero"] {
+  --color: var(--secondary);
+  --border: transparent;
+  --bg: transparent;
+  border: none;
+  padding: 2.4rem 2rem;
+  margin: 1rem 0 2rem;
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      color-mix(in srgb, var(--tertiary) 18%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--secondary) 16%, var(--light)),
+      color-mix(in srgb, var(--secondary) 4%, var(--light))
+    );
+
+  .callout-icon {
+    display: none;
+  }
+
+  .callout-title-inner {
+    font-family: var(--headerFont);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1.3;
+  }
+
+  .callout-content {
+    font-size: 1.08rem;
+    color: var(--darkgray);
+    max-width: 38rem;
+  }
+}
+
+// Topic cards: `> [!topics]` callout containing a list of links
+.callout[data-callout="topics"] {
+  --border: transparent;
+  --bg: transparent;
+  border: none;
+  padding: 0;
+  margin: 1rem 0 2rem;
+
+  & > .callout-title {
+    display: none;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: 0.9rem;
+  }
+
+  li {
+    position: relative;
+    margin: 0;
+    padding: 1.1rem 1.2rem;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    box-shadow: var(--shadow);
+    color: var(--gray);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    transition:
+      transform 0.15s ease,
+      border-color 0.15s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: var(--secondary);
+    }
+
+    & > a.internal {
+      display: block;
+      margin-bottom: 0.35rem;
+      border: none;
+      font-family: var(--headerFont);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--dark);
+
+      // stretch the link over the whole card
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+      }
+    }
+  }
+}
+
+// Recently updated list (homepage only)
+.recent-notes {
+  & > h3 {
+    font-size: 1.25rem;
+    margin: 0 0 1rem;
+  }
+
+  ul.recent-ul {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  li.recent-li {
+    margin: 0;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    background: var(--card);
+
+    .section {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: baseline;
+      gap: 0 1rem;
+    }
+
+    .desc h3 {
+      margin: 0;
+      font-size: 1rem;
+
+      a {
+        border: none;
+      }
+    }
+
+    .meta {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+
+    .tags {
+      grid-column: 1 / -1;
+      margin: 0.4rem 0 0;
+      padding: 0;
+      justify-content: flex-start;
+    }
+  }
+}
+
+// ── Footer ───────────────────────────────────────────────────
+footer {
+  opacity: 0.8;
+  font-size: 0.85rem;
+}
+
+// ── Mobile tweaks ────────────────────────────────────────────
+@media all and #{$mobile} {
+  article {
+    font-size: 1rem;
+  }
+
+  .callout[data-callout="hero"] {
+    padding: 1.6rem 1.25rem;
+
+    .callout-title-inner {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+// ── Interface uses the sans font; serif is reserved for content headings ──
+.explorer,
+.toc,
+.breadcrumb-container,
+.backlinks,
+.recent-notes li,
+.graph > h3,
+.search,
+.note-properties {
+  font-family: var(--bodyFont);
+}
+
+// Notes start with their own `# Title` (needed in Obsidian), so hide that
+// leading H1 on the site, where Quartz already renders the page title.
+article > .markdown-preview-view > h1:first-child {
+  display: none;
+}
+
+// Pills already separate tags; drop the comma separators between them
+.note-properties-tags .note-properties-separator {
+  display: none;
+}
+
+.note-properties-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+// ── Dark mode refinements ──
+:root[saved-theme="dark"] {
+  .callout[data-callout="hero"] {
+    background:
+      radial-gradient(
+        circle at 100% 0%,
+        color-mix(in srgb, var(--tertiary) 14%, transparent),
+        transparent 55%
+      ),
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--secondary) 18%, var(--light)),
+        color-mix(in srgb, var(--secondary) 5%, var(--light))
+      );
+  }
+
+  .page > #quartz-body .sidebar.left {
+    background: color-mix(in srgb, var(--light) 96%, black 4%);
+  }
+
+  img {
+    opacity: 0.92;
+  }
+}
+
+// Smooth theme switching
+body,
+.sidebar,
+.callout,
+.table-container,
+.note-properties {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+// Quartz's explorer sets the heading font on folder rows; use the UI font instead
+.explorer .folder-container div > a,
+.explorer .folder-container div > button,
+thead {
+  font-family: var(--bodyFont);
+}

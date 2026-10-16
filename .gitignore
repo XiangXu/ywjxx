@@ -1,6 +1,25 @@
-_site/
-.sass-cache/
-.jekyll-cache/
-.jekyll-metadata
+# Quartz / Node
+node_modules/
+public/
+.quartz/
+.quartz-cache/
+prof/
+tsconfig.tsbuildinfo
+quartz/cli/tui/dist/
+.turbo/
+
+# Obsidian: keep shared settings in content/.obsidian, ignore per-device state
+content/.obsidian/workspace.json
+content/.obsidian/workspace-mobile.json
+content/.obsidian/workspaces.json
+content/.obsidian/cache
+content/.trash/
+
+# Notes that must never leave this machine (also excluded from the site)
+content/**/_private/
+
+# Editors / OS
+.idea/
+.vscode/
 .DS_Store
-.bundle/
+.netlify/
