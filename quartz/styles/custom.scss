@@ -917,20 +917,19 @@ body[data-slug="index"] {
   }
   .callout-title-inner,
   .callout-title-inner p {
-    font-size: 3.25rem;
+    font-size: 2.5rem; // same as note titles
     font-weight: 700;
-    letter-spacing: -0.035em;
-    line-height: 1.08;
+    letter-spacing: -0.03em;
+    line-height: 1.12;
     color: var(--dark);
     text-wrap: balance;
   }
   .callout-content {
-    margin-top: 1rem;
-    font-size: 1.3125rem;
-    line-height: 1.5;
+    margin-top: 0.75rem;
+    font-size: 1.125rem;
+    line-height: 1.6;
     letter-spacing: -0.01em;
     color: var(--gray);
-    max-width: 36rem;
     p {
       margin: 0;
     }
@@ -1246,10 +1245,10 @@ ul.section-ul {
   .callout[data-callout="hero"] {
     .callout-title-inner,
     .callout-title-inner p {
-      font-size: 2.25rem;
+      font-size: 2rem;
     }
     .callout-content {
-      font-size: 1.125rem;
+      font-size: 1.0625rem;
     }
   }
   .callout[data-callout="topics"] .callout-content > ul > li {
