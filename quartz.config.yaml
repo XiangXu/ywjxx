@@ -219,7 +219,7 @@ plugins:
     options:
       links:
         GitHub: https://github.com/XiangXu
-        Obsidian: https://obsidian.md
+        LinkedIn: https://www.linkedin.com/in/xiangxu619
     layout:
       position: footer
       priority: 50

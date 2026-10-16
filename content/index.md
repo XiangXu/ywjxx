@@ -4,7 +4,7 @@ description: 软件开发学习笔记 · Software development learning notes, on
 ---
 
 > [!hero] 软件开发学习笔记
-> A personal knowledge base for learning software development: concepts, experiments, and the occasional rabbit hole. Written in Chinese and English, in [Obsidian](https://obsidian.md).
+> 📚 A personal knowledge base for learning software development: 💡 concepts, 🧪 experiments, and the occasional 🐇 rabbit hole. Written in 🇨🇳 Chinese and 🇬🇧 English, in [Obsidian](https://obsidian.md) 🪨💜.
 
 ## 学习主题 Topics
 
