@@ -18,30 +18,32 @@ configuration:
     fontOrigin: local # fonts are loaded by the quartz-fonts plugin below
     cdnCaching: true
     typography:
-      header: Noto Serif SC
-      body: Noto Sans SC
-      code: JetBrains Mono
+      header: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif'
+      body: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif'
+      code: '"SF Mono", ui-monospace, Menlo, monospace'
+    # Neutral grays + a single accent (Apple blue). Gray/darkgray are chosen to
+    # meet WCAG AA on their surfaces; hairlines use `lightgray`.
     colors:
       lightMode:
-        light: "#fbfaf6"
-        lightgray: "#e8e4da"
-        gray: "#a39d90"
-        darkgray: "#3d3b37"
-        dark: "#1d1c1a"
-        secondary: "#0f6b66"
-        tertiary: "#c2410c"
-        highlight: rgba(15, 107, 102, 0.08)
-        textHighlight: "#fde68a99"
+        light: "#ffffff"
+        lightgray: "#d2d2d7"
+        gray: "#6e6e73"
+        darkgray: "#424245"
+        dark: "#1d1d1f"
+        secondary: "#0071e3"
+        tertiary: "#0066cc"
+        highlight: rgba(0, 113, 227, 0.08)
+        textHighlight: "#fff1a8aa"
       darkMode:
-        light: "#141517"
-        lightgray: "#2a2c30"
-        gray: "#6b6f76"
-        darkgray: "#d3d4d6"
-        dark: "#f1f1ee"
-        secondary: "#5ec4b6"
-        tertiary: "#fb923c"
-        highlight: rgba(94, 196, 182, 0.10)
-        textHighlight: "#a1620788"
+        light: "#000000"
+        lightgray: "#38383a"
+        gray: "#a1a1a6"
+        darkgray: "#d2d2d7"
+        dark: "#f5f5f7"
+        secondary: "#2997ff"
+        tertiary: "#64b5ff"
+        highlight: rgba(41, 151, 255, 0.14)
+        textHighlight: "#9a6b0066"
 plugins:
   - source: "@quartz-community/created-modified-date"
     enabled: true
@@ -74,7 +76,7 @@ plugins:
     order: 50
     layout:
       position: right
-      priority: 30
+      priority: 10
   - source: "@quartz-community/crawl-links"
     enabled: true
     options:
@@ -103,24 +105,12 @@ plugins:
   - source: "@quartz-community/quartz-fonts"
     enabled: true
     options:
-      fontOrigin: googleFonts
-      title:
-        name: Noto Serif SC
-        weights: [700]
-      header:
-        name: Noto Serif SC
-        weights: [600, 700]
-      body:
-        name: Noto Sans SC
-        weights: [400, 500, 700]
-        includeItalic: false
-      interface:
-        name: Noto Sans SC
-        weights: [400, 500, 700]
-        includeItalic: false
-      code:
-        name: JetBrains Mono
-        weights: [400, 600]
+      fontOrigin: local
+      title: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif'
+      header: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif'
+      body: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif'
+      interface: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif'
+      code: '"SF Mono", ui-monospace, Menlo, monospace'
   - source: "@quartz-themes/core"
     enabled: false
     options:
@@ -141,8 +131,10 @@ plugins:
       enableRSS: true
   - source: "@quartz-community/favicon"
     enabled: true
+  # Disabled: og-image reads theme.typography and fetches it from Google Fonts,
+  # which cannot work with a system-font stack (and crashes the build).
   - source: "@quartz-community/og-image"
-    enabled: true
+    enabled: false
   - source: "@quartz-community/cname"
     enabled: false
   - source: "@quartz-community/canvas-page"
@@ -162,7 +154,7 @@ plugins:
     enabled: true
     layout:
       position: right
-      priority: 10
+      priority: 60
   - source: "@quartz-community/search"
     enabled: true
     layout:
@@ -234,7 +226,7 @@ plugins:
   - source: "@quartz-community/recent-notes"
     enabled: true
     options:
-      title: 🕒 最近更新 Recently Updated
+      title: 最近更新 Recently Updated
       limit: 6
       showTags: true
       hideTagPages: true
