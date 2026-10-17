@@ -20,7 +20,7 @@ created: 2026-10-17
 - 💾 **Disk** (HDD/SSD): huge (TBs), cheap, slow, **persistent**.
 - ⚡ **RAM**: medium (GBs), fast, **volatile**. It holds running programs and their variables.
 - 🚀 **CPU cache** (L1/L2/L3): tiny (KBs to tens of MBs), fastest, checked first on every read.
-- 🧠 **CPU**: executes instructions and moves data between RAM and disk. RAM and disk never talk directly.
+- 🧠 **CPU**: executes instructions and coordinates data transfers between RAM and disk; they don't talk to each other on their own.
 - 📈 **Moore's Law**: transistor counts double about every 2 years. Clock speed has plateaued.
 
 ## 2. Units Refresher
@@ -36,7 +36,7 @@ A **bit** (0 or 1) is the smallest unit. 1 **byte** = 8 bits.
 
 | Time unit | Seconds | Typical for |
 | --- | --- | --- |
-| Millisecond (ms) | $1/10^3$ | Disk access |
+| Millisecond (ms) | $1/10^3$ | HDD access (an SSD takes ~100 µs) |
 | Microsecond (µs) | $1/10^6$ | Writing 1 MB to RAM |
 | Nanosecond (ns) | $1/10^9$ | RAM access, CPU instruction, cache hit |
 
@@ -44,19 +44,21 @@ A **bit** (0 or 1) is the smallest unit. 1 **byte** = 8 bits.
 
 ```mermaid
 flowchart LR
-    RAM["⚡ RAM<br/>Volatile working memory<br/>GBs · µs"]
+    RAM["⚡ RAM<br/>Volatile working memory<br/>GBs · ~100 ns"]
     subgraph CPU["🧠 CPU — fetch, decode, execute"]
         Cache["🚀 L1 / L2 / L3 cache<br/>On the CPU die · fastest"]
     end
-    Disk["💾 Disk (HDD / SSD)<br/>Persistent storage<br/>TBs · ms"]
+    Disk["💾 Disk (HDD / SSD)<br/>Persistent storage<br/>TBs · SSD ~100 µs, HDD ~10 ms"]
 
-    RAM <-- data --> CPU
-    CPU <-- data --> Disk
-    RAM -. "❌ no direct link" .- Disk
+    RAM <-->|data| CPU
+    CPU <-->|data| Disk
+    RAM -.-|"❌ no direct link"| Disk
 ```
 
 > [!important] Key rule
-> RAM and disk **never talk directly**. Every transfer between them goes through the CPU.
+> RAM and disk **don't talk to each other on their own**. The CPU orchestrates every transfer between them.
+>
+> In real hardware, **DMA** (Direct Memory Access) lets the disk controller copy data into RAM without the CPU moving each byte. The CPU still starts and manages the transfer.
 
 On a read, the CPU checks **cache → RAM → disk**, in that order.
 
@@ -68,9 +70,9 @@ The disk is the computer's primary **persistent** storage. Data survives whether
 
 | | HDD (hard disk drive) | SSD (solid-state drive) |
 | --- | --- | --- |
-| How it works | Mechanical: spinning platters + a read/write head | Electronic, no moving parts (similar to RAM) |
+| How it works | Mechanical: spinning platters + a read/write head | Electronic flash memory chips, no moving parts (unlike RAM, keeps data without power) |
 | Speed | Slower | Much faster |
-| Aging | Wear and tear slows it down over time | No mechanical wear |
+| Aging | Wear and tear slows it down over time | No mechanical wear (flash cells do wear out after many writes, but slowly) |
 | Cost | Cheaper per GB | Costs more |
 | Popularity | Declining | Now the common default |
 
@@ -79,7 +81,7 @@ The disk is the computer's primary **persistent** storage. Data survives whether
 RAM is the fast, **volatile** working memory where running programs live. Its contents are erased when the computer shuts down, which is why you save work to disk.
 
 - **Size:** typically 1 GB to 128 GB. It is much more expensive per byte than disk.
-- **Speed:** writing 1 MB takes microseconds in RAM vs milliseconds on disk, about **1,000× faster**.
+- **Speed:** writing 1 MB takes microseconds in RAM vs milliseconds on an HDD, about **1,000× faster**.
 - **Holds:** open applications and the variables your program allocates.
 
 > [!note]
@@ -106,11 +108,11 @@ A cache keeps a small copy of frequently used data in faster storage, so most re
 **CPU caches (L1, L2, L3)**
 - Much faster than RAM, but they store only KBs to tens of MBs. L1 is the smallest and fastest; L3 is the largest and slowest.
 - On a read, the cache is checked before RAM and disk. A **cache hit** (the data is present and still valid) avoids going to RAM.
-- They are fast partly because they sit on the CPU die and partly because they are built from **SRAM**. Main memory uses DRAM.
+- They are fast partly because they sit on the CPU die and partly because they are built from **SRAM**. Main memory uses DRAM. SRAM is faster but needs more transistors per bit, so it is costlier and bulkier.
 
 **Caching beyond hardware**
 - A web browser caches HTML, CSS, JavaScript, and images so repeat visits load faster.
-- The browser's cache lives on **disk**. Disk is slow next to RAM but fast next to a network request.
+- Browsers keep a small memory cache for the current session, but the main cache lives on **disk**. Disk is slow next to RAM but fast next to a network request.
 
 > [!tip] General pattern
 > Cache = put the data **one level closer** than the slow source.
@@ -122,13 +124,10 @@ Modern CPUs have several **cores**, and the three cache levels are arranged arou
 ```mermaid
 flowchart TB
     subgraph CPU["🧠 CPU chip"]
-        direction TB
         subgraph C1["Core 1"]
-            direction TB
             L1a["L1 (private)<br/>instructions + data"] --> L2a["L2 (private)"]
         end
         subgraph C2["Core 2"]
-            direction TB
             L1b["L1 (private)<br/>instructions + data"] --> L2b["L2 (private)"]
         end
         L2a --> L3["L3 (shared by all cores)"]
@@ -168,7 +167,7 @@ flowchart LR
 - **Managed by hardware:** programs don't choose what goes in L1/L2/L3. The CPU decides and evicts old data automatically.
 
 > [!example] Why programmers care
-> Iterating an array in order is fast: each 64-byte cache line serves several elements (spatial locality). Jumping randomly through memory, such as following linked-list pointers, causes many misses and can be several times slower for the same amount of work.
+> Iterating an array in order is fast: each 64-byte cache line serves several elements (spatial locality). Jumping randomly through memory, such as following linked-list pointers, causes many misses and can be several times slower (often 2–10×) for the same amount of work.
 
 ## 5. The Memory Hierarchy
 
@@ -180,8 +179,8 @@ flowchart TB
     RAM --> SSD["SSD · ~1 TB · ~100 µs"]
     SSD --> HDD["HDD · 1–20 TB · ~10 ms"]
 
-    classDef fast fill:#0071e31a,stroke:#0071e3
-    classDef slow fill:#ff3b301a,stroke:#ff3b30
+    classDef fast fill:#e8f2fd,stroke:#0071e3
+    classDef slow fill:#fdeceb,stroke:#ff3b30
     class L1,L2,L3 fast
     class SSD,HDD slow
 ```
@@ -193,7 +192,7 @@ flowchart TB
 
 ## 6. 📈 Moore's Law
 
-Moore's Law is an observation, not a physical law: **the number of transistors on a chip doubles about every two years**. The curve looks linear on a log-scale chart, but the growth is exponential.
+Moore's Law is an observation, not a physical law: **the number of transistors on a chip doubles about every two years**. Plotted on a log-scale chart, the growth shows up as a straight line, which means it is exponential.
 
 | Year | Chip | Transistors (approx.) |
 | --- | --- | --- |
@@ -212,27 +211,33 @@ $$
 N(t) \approx N_0 \times 2^{(t - t_0)/2}
 $$
 
-From 2,300 in 1971, that formula predicts about 150B by 2023. The actual M2 Ultra has about 134B, so the trend still holds.
+From 2,300 in 1971, that formula predicts about 150B by 2023. The M2 Ultra (two dies joined into one package) has about 134B, so the trend roughly holds, though recent chips sit slightly below the line.
 
 > [!warning] What actually plateaued
-> Since about 2005, **clock speed and single-core performance** have stopped climbing, not transistor count. Extra transistors now go into more cores and bigger caches. To go faster, you work in parallel or on more machines, which leads to distributed systems.
+> Since about 2005, **clock speed** has stopped climbing and single-core gains have slowed sharply, though transistor count kept growing. Extra transistors now go into more cores and bigger caches. To go faster, you work in parallel or on more machines, which leads to distributed systems.
 
 ## 7. ⚠️ Corrections to the Lesson Text
 
 - **"CPU computations take milliseconds."** Too slow by about a million. A single CPU instruction takes under a **nanosecond**; a modern CPU runs billions per second.
 - **"The operating system decides what goes in the CPU cache."** L1/L2/L3 are managed by the **hardware** automatically. The OS manages other caches, such as the page cache for disk files.
 - **"The cost of computers halves."** Moore's Law is about transistor count. Cheaper computing per transistor followed from it, but halving cost is not part of the law itself.
+- **"RAM and disk rely on the CPU to transfer data."** True as a mental model, but with **DMA** the disk controller copies data into RAM directly. The CPU only starts and manages the transfer.
 
 ## 8. 🏗️ Why This Matters for System Design
 
 The same trade-off between speed, size, cost, and durability appears again at the scale of whole systems:
 
-| Computer level | System design equivalent | Principle |
+| Computer level | System design equivalent | Why they match |
 | --- | --- | --- |
-| Disk | Databases, object storage | Persist anything you can't lose |
-| RAM | Redis, Memcached | Keep hot data in memory |
-| CPU cache | CDN, browser cache | Cache close to the reader |
-| Moore's Law slowdown | Distributed systems | Scale out when one machine stops getting faster |
+| CPU cache (L1/L2/L3) | In-process cache, e.g. an LRU map inside the app | Smallest and fastest, sits right next to the code, private to one process or machine (like a core's private L1/L2) |
+| RAM | Shared cache, e.g. Redis, Memcached | Fast but volatile, shared by many app servers (like L3 shared by cores), one network hop away |
+| Disk | Databases, object storage | Slow but durable: the source of truth |
+| Moore's Law slowdown | Distributed systems | One machine stops getting faster, so scale out to many |
+
+On every request: check the in-process cache → then Redis → then the database. This mirrors the hardware hierarchy: closest and smallest first, the durable source of truth last.
+
+> [!note] Where CDNs and browser caches fit
+> These don't map to the CPU cache. They cut **network distance to the user** (geography), not the distance between memory and processor. They follow the same general principle ("put data one level closer to whoever reads it"), but along a different axis.
 
 ## 9. 🧩 Review Questions
 
@@ -244,17 +249,17 @@ The same trade-off between speed, size, cost, and durability appears again at th
 **Q2. What component moves data between RAM and disk?**
 
 > [!success]- Answer
-> The CPU. RAM and disk never communicate directly.
+> The CPU coordinates it. RAM and disk don't communicate on their own (with DMA, the disk controller does the copying, but the CPU still starts and manages it).
 
 **Q3. In what order are cache, RAM, and disk checked on a read?**
 
 > [!success]- Answer
 > Cache → RAM → disk.
 
-**Q4. Why does a browser cache to disk instead of RAM?**
+**Q4. Why does a browser keep its main cache on disk instead of RAM?**
 
 > [!success]- Answer
-> The cache must survive restarts, and disk is still far faster than a network request.
+> Browsers keep a memory cache for the current session, but the main cache is on disk so it survives restarts and can be much larger. Disk is still far faster than a network request.
 
 **Q5. Why is an SSD faster than an HDD?**
 
@@ -269,7 +274,7 @@ The same trade-off between speed, size, cost, and durability appears again at th
 **Q7. Why is looping over an array in order faster than following linked-list pointers?**
 
 > [!success]- Answer
-> Data moves in 64-byte cache lines, so one fetch brings in several neighboring array elements (spatial locality). Linked-list nodes are scattered in memory, so almost every step is a cache miss.
+> Data moves in 64-byte cache lines, so one fetch brings in several neighboring array elements (spatial locality). Linked-list nodes are scattered in memory, so many steps can be cache misses.
 
 ## 10. 🔗 Related
 
