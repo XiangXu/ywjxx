@@ -13,6 +13,7 @@ description: 软件开发学习笔记 · Software development learning notes, on
 > - [[📌 LeetCode 总览|🧩 LeetCode 题库]] 按套路分类的题解，带间隔复习状态
 > - [[📌 算法总览|🧮 算法 Algorithms]] 排序、二分、递归、贪心、动态规划
 > - [[📌 数据结构总览|🧱 数据结构 Data Structures]] 数组、哈希表、栈与队列、树、堆、图
+> - [[📌 系统设计总览|🏗️ 系统设计 System Design]] 计算机架构、内存层级、分布式系统
 
 ## 怎么使用 How to use
 
@@ -22,4 +23,4 @@ description: 软件开发学习笔记 · Software development learning notes, on
 
 ## 即将开始 Coming soon
 
-System design, interview prep, testing, languages and frameworks, and developer tools and workflows.
+Interview prep, testing, languages and frameworks, and developer tools and workflows.
