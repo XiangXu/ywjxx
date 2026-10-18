@@ -212,4 +212,5 @@ All these parts may run on **different computers**, so they talk over a **networ
 
 - ⬅️ Previous: [[Computer Architecture]]
 - [[📌 系统设计总览]]
-- Next up: networking and protocols
+- ➡️ Next: [[Design Requirements]]
+- Coming up: networking and protocols
