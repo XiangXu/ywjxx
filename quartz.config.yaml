@@ -122,8 +122,13 @@ plugins:
     enabled: true
   - source: "@quartz-community/explicit-publish"
     enabled: false
+  # Case redirects are off: on Netlify's case-sensitive build FS they emit e.g.
+  # `AI-学习库/x.html` next to `ai-学习库/x.html`, and Netlify's case-insensitive
+  # URL matching then serves the stub at the real URL -> infinite refresh loop.
   - source: "@quartz-community/alias-redirects"
     enabled: true
+    options:
+      enableCaseRedirects: false
   - source: "@quartz-community/content-index"
     enabled: true
     options:
