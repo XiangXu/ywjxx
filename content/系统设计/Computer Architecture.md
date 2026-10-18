@@ -279,4 +279,4 @@ On every request: check the in-process cache → then Redis → then the databas
 ## 10. 🔗 Related
 
 - [[📌 系统设计总览]]
-- Next up: application architecture and distributed systems
+- ➡️ Next: [[Application Architecture]]
