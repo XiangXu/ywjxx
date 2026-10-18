@@ -27,20 +27,85 @@ npm run format                       # prettier --write
 - `plugins/publish-filter/`: local plugin that drops notes with `publish: false` or `draft: true`.
 - `quartz/`: the Quartz engine. Don't edit it; it's updated with `npx quartz upgrade`.
 
+## How Xiang likes to work
+
+- **Check locally before pushing.** When asked, start `npx quartz build --serve` and give
+  the URL. Xiang often says "let me check locally" before approving.
+- **"Push" means push to `master`** (that's what deploys). Commit and push only when
+  asked, but when asked, push to `master` without making a PR. `obsidian-quartz` is the
+  working branch; keep it in sync with `master`.
+- **Test fixes for real.** Reproduce the bug, fix it, then verify every page and link,
+  not only the one that was reported (see "Verifying changes").
+- **Have Fable review.** After writing or substantially editing a note, Xiang usually
+  asks for a review by the Fable model (spawn an agent with `model: fable`) to check
+  accuracy before pushing. Offer it for new notes.
+- **Emoji everywhere it fits:** README, note headings, homepage copy. Keep it playful
+  but tidy.
+- Personal laptop: installing or upgrading tools (Node via `n`, npm packages) is fine.
+
+## Design: Apple-style, quiet, readable
+
+The site was redesigned "the way Apple would design it" (Apple developer docs feel).
+Every UI change must keep that look:
+
+- **Fonts:** system fonts only (`-apple-system`/SF Pro, PingFang SC for Chinese).
+  No web fonts. That's also why the og-image plugin stays disabled: it fetches Google
+  Fonts and crashes.
+- **Color:** neutral grays plus a single accent, Apple blue (`#0071e3` light,
+  `#2997ff` dark). The palette is in `quartz.config.yaml` → `theme.colors`. Grays must
+  meet WCAG AA contrast.
+- **Surfaces:** flat, with 1px hairlines. Shadows only on floating UI (the search modal).
+  Rounded corners (`--radius` 10px / `--radius-lg` 14px). Tags are plain text, not pills.
+- **Layout:** centered reading column (`--reading-width: 44rem`), roomy line-height
+  (1.75) for mixed Chinese and English, and a quiet right rail with "On this page" first.
+- **Dark mode** must work and look right for every change. It follows the system and
+  has a ☀️/🌙 toggle.
+- **Homepage** (`content/index.md`): the `> [!hero]` title (`软件开发学习笔记`) plus a
+  one-sentence emoji intro, then a `> [!topics]` list. Keep the hero modest: Xiang found
+  an earlier larger title and a narrow, squeezed intro too big.
+- **Footer:** only round GitHub (https://github.com/XiangXu) and LinkedIn
+  (https://www.linkedin.com/in/xiangxu619) icon buttons and `© 2026 Xiang Xu`. No name or
+  job title, no "Built with Quartz".
+- **Mobile:** must work at phone width. Check it alongside desktop.
+- All styling goes in `quartz/styles/custom.scss`, using its CSS variables. Don't
+  hard-code new colors.
+- For a redesign or a big visual change, load the design skills, then look at the result
+  locally in light and dark mode before calling it done.
+
 ## Writing notes
 
-- Frontmatter: `title`, `tags`, `created`, optional `aliases` (each alias becomes a
-  redirect page at the site root, e.g. `AI Learning Library` → `/ai-learning-library`).
-- Link with `[[wikilinks]]`. When adding a note, also add it to its folder's `📌 … 总览` note.
-- Notes are bilingual (中文 + English) and use emoji in headings, so match that style.
+Xiang usually pastes lesson text (from a course or a chat) and asks for a note. Don't
+paste it in verbatim. Rewrite it into a structured study note:
+
+- **File:** `content/<topic>/<Title>.md`, named in English or Chinese to match the
+  folder. Add it to that folder's `📌 … 总览` overview note (one line: emoji, link,
+  short summary). Link the previous note's "Related" section to it.
+- **Frontmatter:** `title`, `aliases` (Chinese and English names, plus key concepts),
+  `tags`, `created: YYYY-MM-DD`. Each alias becomes a redirect page at the site root.
+- **Body:** starts with `# <emoji> Title` (Obsidian needs it; the site hides it). Then use
+  numbered `##` sections with emoji: TL;DR / `> [!abstract]` one-liner → concepts →
+  examples → "Clarifications to the lesson text" (correct anything inaccurate in the
+  source) → review questions with folded `> [!success]- Answer` callouts → `🔗 Related`.
+- **Style:** bilingual (中文 + English), headings like `## 1. 核心概念 Overview`. Use
+  Obsidian callouts (`tip`, `note`, `important`, `warning`, `example`), tables for
+  comparisons, and Java analogies where helpful (the lessons already use them).
+- **Accuracy matters more than copying.** Fix wrong or misleading claims in the source
+  material and say so in the clarifications section.
+- When adding to an existing note, merge into its structure rather than appending a blob.
+- LeetCode notes come from `模板/LeetCode 题解模板.md` (difficulty, pattern, status
+  🔴/🟡/🟢, last-reviewed).
 - Escape dollar signs in prices (`\$20`), or they render as LaTeX.
-- Private notes go in a `_private/` folder (git-ignored). `publish: false` hides a note
-  from the site, but its text is still pushed to GitHub.
+- No underscores inside `\text{}` in math (e.g. `\text{input\_tokens}`). GitHub turns
+  `\_` into `_` and fails with "'_' allowed only in math mode". Use spaces instead:
+  `\text{input tokens}`.
+- Private notes go in a `_private/` folder (git-ignored). `publish: false` or
+  `draft: true` hides a note from the site, but its text is still pushed to GitHub.
 
 ## Deploying
 
 Netlify builds `master` automatically (`netlify.toml`: `npx quartz build` → `public/`).
-Other branches only get Deploy Previews. Ask before pushing.
+Other branches only get Deploy Previews. After pushing, wait about 30 seconds and verify
+the live site (see the checks below).
 
 ## Gotcha: Netlify case-insensitive URLs (refresh-loop bug)
 
