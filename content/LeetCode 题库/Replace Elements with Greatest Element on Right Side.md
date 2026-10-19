@@ -156,6 +156,7 @@ class Solution {
 - [[📌 LeetCode 总览]]
 - 上一题 Previous: [[Remove Element|27. Remove Element]]
 - 同为一次遍历 Also one pass: [[Max Consecutive Ones|485. Max Consecutive Ones]]
+- 下一题 Next note: [[Concatenation of Array|1929. Concatenation of Array]]
 
 ## 9. 🔁 复习记录 Review Log
 

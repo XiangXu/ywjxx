@@ -14,6 +14,7 @@ created: 2026-10-15
 - 📦 数组一次遍历 Array / One Pass:
   - 🟡 [[Max Consecutive Ones|485. Max Consecutive Ones]]: 计数器遇 0 清零，记录最长连续 1 · Easy
   - 🟡 [[Replace Elements with Greatest Element on Right Side|1299. Replace Elements with Greatest Element on Right Side]]: 从右往左遍历，维护后缀最大值 · Easy
+  - 🟡 [[Concatenation of Array|1929. Concatenation of Array]]: 下标映射，`ans[i + n] = nums[i]`，环形数组技巧的入门 · Easy
 - 👉👈 双指针 Two Pointers:
   - 🟡 [[Remove Element|27. Remove Element]]: 快慢指针原地过滤，慢指针写、快指针读 · Easy
 - 🪟 滑动窗口 Sliding Window:
