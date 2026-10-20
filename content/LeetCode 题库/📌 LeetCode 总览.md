@@ -24,6 +24,8 @@ created: 2026-10-15
 - 🧠 动态规划 Dynamic Programming:
 - 🔙 回溯 Backtracking:
 - ⛰️ 堆 Heap / Top-K:
+- 🏗️ 设计 Design:
+  - 🟡 [[Design Dynamic Array|Design Dynamic Array]]: `int[]` + size/capacity 两个计数器，满了翻倍复制，push 均摊 O(1) · Easy
 
 ## 🚦 状态说明 Status Legend
 - 🔴 todo: 还没做出来 Not solved yet

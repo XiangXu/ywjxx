@@ -143,6 +143,7 @@ class Solution {
 
 - [[📌 LeetCode 总览]]
 - 上一题 Previous: [[Replace Elements with Greatest Element on Right Side|1299. Replace Elements with Greatest Element on Right Side]]
+- 下一题 Next: [[Design Dynamic Array|Design Dynamic Array (Resizable Array)]]
 - 同为一次遍历 Also one pass: [[Max Consecutive Ones|485. Max Consecutive Ones]]
 
 ## 9. 🔁 复习记录 Review Log
