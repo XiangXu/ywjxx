@@ -81,8 +81,8 @@ When every output slot's source follows a formula, just fill by formula: `ans[j]
 // 通用骨架 General shape
 State state = initial;                     // 例 e.g. count = 0, rightMax = -1
 for (/* 选方向 pick a direction */) {
-    // ① 用 state 更新答案（state 不含当前元素时，放在 ② 之前）
-    //    use state to update the answer (before ② if state excludes the current element)
+    // ① 用 state 更新答案：state 不含当前元素时放在 ② 之前，含当前元素时放在 ② 之后
+    //    use state to update the answer: before ② if state excludes the current element, after ② if it includes it
     // ② 把当前元素并入 state
     //    fold the current element into state
 }
@@ -104,8 +104,8 @@ for (int i = arr.length - 1; i >= 0; i--) {
 ```java
 int count = 0, max = 0;
 for (int x : nums) {
-    count = (x == 1) ? count + 1 : 0;      // ② 更新状态 update state
-    max = Math.max(max, count);            // ① 状态含当前元素，所以放后面 state includes x, so this goes after
+    count = (x == 1) ? count + 1 : 0;      // ② 先并入 x：这一段包含当前元素 fold x in first: the run includes it
+    max = Math.max(max, count);            // ① 再更新答案 then update the answer
 }
 ```
 
@@ -165,6 +165,8 @@ for (int x : nums) {
 | 1480. Running Sum of 1d Array | 前缀和 prefix sum | Easy |
 | 238. Product of Array Except Self | 前缀积 + 后缀积 prefix + suffix product | Medium |
 | 53. Maximum Subarray | 运行最优（Kadane） running best | Medium |
+| 189. Rotate Array | 下标映射 `(i + k) % n` index mapping | Medium |
+| 503. Next Greater Element II | `i % n` 绕两圈（+ 单调栈） two laps with `i % n` (+ monotonic stack) | Medium |
 
 ## 9. 🔗 相关 Related
 

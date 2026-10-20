@@ -45,8 +45,8 @@ publish: true
 
 ### 3.1 同向读写指针 Read/write pointers
 
-把数组看成两段：`[0, slow)` 是**已经确定保留的结果**，`[slow, fast)` 是已经看过、被丢掉的，`[fast, n)` 还没看。
-Think of the array as three zones: `[0, slow)` is the **kept result**, `[slow, fast)` is seen and discarded, and `[fast, n)` is unseen.
+把数组看成三段：`[0, slow)` 是**已经确定保留的结果**，`[slow, fast)` 是已读过、可以被覆盖的，`[fast, n)` 还没看。
+Think of the array as three zones: `[0, slow)` is the **kept result**, `[slow, fast)` is already read and safe to overwrite, and `[fast, n)` is unseen.
 
 ```
          结果 kept      丢弃 discarded   未看 unseen
@@ -100,7 +100,7 @@ int left = 0, right = nums.length - 1;
 while (left < right) {
     int sum = nums[left] + nums[right];
     if (sum == target) {
-        return new int[] {left, right};
+        return new int[] {left, right};  // 167 要求从 1 开始 wants 1-indexed: {left + 1, right + 1}
     } else if (sum < target) {
         left++;                          // 需要更大 need bigger
     } else {
@@ -118,7 +118,7 @@ return new int[] {-1, -1};
 | --- | --- | --- |
 | 同向原地过滤 Same-direction filter | O(n) | O(1) |
 | 相向（数组已有序） Opposite, already sorted | O(n) | O(1) |
-| 相向（需要先排序） Opposite, sort first | O(n log n) | O(1) 到 O(log n)，取决于排序 depends on the sort |
+| 相向（需要先排序） Opposite, sort first | O(n log n) | O(1) 到 O(n)，取决于排序实现 depends on the sort |
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 

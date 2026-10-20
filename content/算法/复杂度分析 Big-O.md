@@ -36,8 +36,8 @@ publish: true
 - **不同输入用不同变量 Different inputs get different variables:** 遍历两个数组是 O(n + m)，不是 O(n)
 
 > [!note] O、Θ、Ω 的区别 O vs Θ vs Ω
-> 严格说 O 是上界、Ω 是下界、Θ 是“上下界都是它”（紧确界）。面试和日常说的“这个算法是 O(n)”，其实一般指的是 Θ(n)，即紧确的界。
-> Strictly, O is an upper bound, Ω a lower bound, and Θ both (a tight bound). When interviews say "this is O(n)", they almost always mean the tight bound Θ(n).
+> 严格说 O 是上界、Ω 是下界、Θ 是“上下界都是它”（紧确界）。面试和日常说的“这个算法是 O(n)”，通常指的是 Θ(n)，即紧确的界。
+> Strictly, O is an upper bound, Ω a lower bound, and Θ both (a tight bound). When interviews say "this is O(n)", they usually mean the tight bound Θ(n).
 
 ### 1.2 常见复杂度 Common classes
 
@@ -63,8 +63,10 @@ publish: true
 | n ≤ 20 | O(2ⁿ) |
 | n ≤ 500 | O(n³) |
 | n ≤ 5,000 | O(n²) |
+| n ≤ 10⁵ | O(n log n)；O(n²) 在 10⁴ 左右就到边界了 O(n²) is borderline around 10⁴ |
 | n ≤ 10⁶ | O(n log n) 或 O(n) |
-| n > 10⁸ | O(log n) 或 O(1) |
+| n ≈ 10⁸ | 最多 O(n) at best O(n) |
+| n ≥ 10⁹ | O(log n) 或 O(1) |
 
 例：[[Concatenation of Array|1929]] 的 `n ≤ 1000`，连 O(n²) 都能过；但输出就有 2n 个元素，O(n) 已经是下界。
 E.g. 1929 has `n ≤ 1000`, so even O(n²) would pass; but the output alone has 2n elements, so O(n) is already the floor.
@@ -76,8 +78,8 @@ E.g. 1929 has `n ≤ 1000`, so even O(n²) would pass; but the output alone has 
 1. **顺序执行相加 Sequential blocks add:** 先遍历一遍再遍历一遍 = O(n) + O(n) = O(n)
 2. **嵌套循环相乘 Nested loops multiply:** 外层 n 次 × 内层 n 次 = O(n²)
 3. **每次减半 Halving each step:** `while (n > 1) n /= 2;` 是 O(log n)
-4. **看总工作量，不只是循环层数 Count total work, not loop depth:** 双指针看起来有两个指针，但两个指针各自最多走 n 步，总共 O(n)。[[Remove Element|27]] 的 `while` 里每步都让 `left++` 或 `right--`，所以也是 O(n)。
-   Two pointers may look like two loops, but each pointer moves at most n steps, O(n) in total. In 27's `while`, every step does `left++` or `right--`, so it's O(n).
+4. **看总工作量，不只是循环层数 Count total work, not loop depth:** 双指针看起来有两个指针，但两个指针各自最多走 n 步，总共 O(n)。[[Remove Element|27]] 的相向写法（另一种写法）里，`while` 每步都让 `left++` 或 `right--`，所以也是 O(n)。
+   Two pointers may look like two loops, but each pointer moves at most n steps, O(n) in total. In 27's opposite-pointer alternative, every step of the `while` does `left++` or `right--`, so it's O(n).
 5. **库函数也有成本 Library calls have costs:** `list.contains(x)` 是 O(n)，`list.add(0, x)` 是 O(n)，`str + str` 在循环里会变成 O(n²)
    `list.contains(x)` is O(n), `list.add(0, x)` is O(n), and string `+` inside a loop can become O(n²).
 
@@ -132,6 +134,7 @@ while (lo <= hi) {
     if (nums[mid] == target) return mid;
     if (nums[mid] < target) lo = mid + 1; else hi = mid - 1;
 }
+return -1;                            // 没找到 not found
 
 // O(n) time 而不是 O(n²)：两个指针总共走 n 步 two pointers take n steps combined
 int left = 0, right = n - 1;
@@ -177,8 +180,8 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 **Q3.** 动态数组 push 的“均摊 O(1)”和 `HashMap.get` 的“平均 O(1)”有什么区别？ How does a dynamic array's amortized O(1) push differ from `HashMap.get`'s average O(1)?
 
 > [!success]- Answer
-> 均摊是对**一串操作**的保证：任何 n 次 push 总共 O(n)，没有坏运气。平均是对**输入分布**的期望：如果很多 key 哈希冲突，`get` 就会变慢（Java 8+ 的 `HashMap` 冲突多时会把桶转成红黑树，最坏 O(log n)）。
-> Amortized is a guarantee over **a sequence of operations**: any n pushes cost O(n) total, no bad luck possible. Average is an expectation over **the input distribution**: if many keys collide, `get` slows down (Java 8+ `HashMap` turns crowded buckets into red-black trees, so worst case O(log n)).
+> 均摊是对**一串操作**的保证：任何 n 次 push 总共 O(n)，没有坏运气。平均是对**输入分布**的期望：如果很多 key 哈希冲突，`get` 就会变慢（Java 8+ 的 `HashMap` 在桶长度 ≥ 8 且表容量 ≥ 64 时把桶转成红黑树；key 可比较时最坏 O(log n)，否则仍可能退化到 O(n)）。
+> Amortized is a guarantee over **a sequence of operations**: any n pushes cost O(n) total, no bad luck possible. Average is an expectation over **the input distribution**: if many keys collide, `get` slows down (Java 8+ `HashMap` turns a bucket into a red-black tree once it holds ≥ 8 entries and the table has ≥ 64 buckets; with `Comparable` keys that caps the worst case at O(log n), otherwise it can still degrade to O(n)).
 
 **Q4.** 双指针里有一个 `while` 循环，循环里有时动 `left` 有时动 `right`，为什么是 O(n) 不是 O(n²)？ Why are two pointers O(n), not O(n²)?
 

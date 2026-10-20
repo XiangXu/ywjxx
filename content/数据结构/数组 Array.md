@@ -114,7 +114,7 @@ void delete(int[] a, int size, int k) {
 > [!note] Java 数组常用工具 Handy Java array tools
 > | 写法 Code | 作用 What it does |
 > | --- | --- |
-> | `new int[n]` | 长度 `n`，全部为 0（对象数组为 `null`） length `n`, all zeros (`null` for object arrays) |
+> | `new int[n]` | 长度 `n`，全部为默认值：数字 0、`boolean` 为 `false`、对象为 `null` length `n`, all defaults: 0, `false`, or `null` |
 > | `a.length` | 长度，是字段不是方法 a field, not a method (`list.size()` 才是方法) |
 > | `Arrays.copyOf(a, newLen)` | 复制并改变长度，多出的补 0 copy with a new length, padding with 0 |
 > | `System.arraycopy(src, sp, dst, dp, len)` | 批量复制，源和目标重叠时也正确 bulk copy, correct even when ranges overlap |
@@ -142,8 +142,8 @@ void delete(int[] a, int size, int k) {
 - **size ≠ capacity:** 动态数组里 `[size, capacity)` 的格子是垃圾数据，不能读 → in a dynamic array, slots in `[size, capacity)` are garbage.
 - **平移方向 Shift direction:** 插入从后往前，删除从前往后（3.1、3.2） → insert back-to-front, delete front-to-back.
 - **原地覆盖前先保存 Save before overwriting:** 如 [[Replace Elements with Greatest Element on Right Side|1299]] 要先存 `temp` 再写 `arr[i]` → e.g. 1299 saves `temp` before writing `arr[i]`.
-- **遍历时删除 Removing while iterating:** 在 `for-each` 里调用 `list.remove(...)` 会抛 `ConcurrentModificationException`；用快慢指针原地过滤，或用 `Iterator.remove()` / `removeIf` → use read/write pointers, `Iterator.remove()` or `removeIf`.
-- **`int[]` 不能直接放进 `List`:** `Arrays.asList(intArray)` 得到的是 `List<int[]>`，只有一个元素 → gives a `List<int[]>` with one element; use `Arrays.stream(a).boxed().toList()`.
+- **遍历时删除 Removing while iterating:** 在 `for-each` 里调用 `list.remove(...)` 通常会抛 `ConcurrentModificationException`；用快慢指针原地过滤，或用 `Iterator.remove()` / `removeIf` → use read/write pointers, `Iterator.remove()` or `removeIf`.
+- **`int[]` 不能直接放进 `List`:** `Arrays.asList(intArray)` 得到的是 `List<int[]>`，只有一个元素 → gives a `List<int[]>` with one element; use `Arrays.stream(a).boxed().toList()` (Java 16+，结果不可修改 unmodifiable; 旧版本 older: `.collect(Collectors.toList())`).
 
 ## 7. ❓ 复习题 Review Questions
 
