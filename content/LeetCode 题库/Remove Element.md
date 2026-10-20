@@ -165,6 +165,7 @@ The same "fast reads, slow writes" template solves a whole family of in-place fi
 ## 8. 🔗 相关题目 Related
 
 - [[📌 LeetCode 总览]]
+- 🧠 套路 Pattern: [[双指针 Two Pointers|双指针 Two Pointers]] · [[数组 Array|数组 Array]]
 - 上一题 Previous: [[Max Consecutive Ones|485. Max Consecutive Ones]]
 - 同一模板 Same template: 26. Remove Duplicates from Sorted Array, 283. Move Zeroes
 - 下一题 Next note: [[Replace Elements with Greatest Element on Right Side|1299. Replace Elements with Greatest Element on Right Side]]

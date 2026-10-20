@@ -154,6 +154,7 @@ class Solution {
 ## 8. 🔗 相关题目 Related
 
 - [[📌 LeetCode 总览]]
+- 🧠 套路 Pattern: [[一次遍历 One Pass|一次遍历 One Pass]]（后缀最值 suffix max） · [[数组 Array|数组 Array]]
 - 上一题 Previous: [[Remove Element|27. Remove Element]]
 - 同为一次遍历 Also one pass: [[Max Consecutive Ones|485. Max Consecutive Ones]]
 - 下一题 Next note: [[Concatenation of Array|1929. Concatenation of Array]]

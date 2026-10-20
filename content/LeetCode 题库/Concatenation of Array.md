@@ -142,6 +142,7 @@ class Solution {
 ## 8. 🔗 相关题目 Related
 
 - [[📌 LeetCode 总览]]
+- 🧠 套路 Pattern: [[一次遍历 One Pass|一次遍历 One Pass]]（下标映射 index mapping） · [[数组 Array|数组 Array]]
 - 上一题 Previous: [[Replace Elements with Greatest Element on Right Side|1299. Replace Elements with Greatest Element on Right Side]]
 - 下一题 Next: [[Design Dynamic Array|Design Dynamic Array (Resizable Array)]]
 - 同为一次遍历 Also one pass: [[Max Consecutive Ones|485. Max Consecutive Ones]]

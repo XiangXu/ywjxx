@@ -145,6 +145,7 @@ class Solution {
 ## 8. 🔗 相关题目 Related
 
 - [[📌 LeetCode 总览]]
+- 🧠 套路 Pattern: [[一次遍历 One Pass|一次遍历 One Pass]] · [[数组 Array|数组 Array]]
 - 进阶 Next: 1004. Max Consecutive Ones III (sliding window)
 - 下一题 Next note: [[Remove Element|27. Remove Element]] (真正的双指针 real two pointers)
 
