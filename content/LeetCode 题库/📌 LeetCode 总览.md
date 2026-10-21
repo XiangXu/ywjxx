@@ -17,6 +17,8 @@ created: 2026-10-15
   - 🟡 [[Concatenation of Array|1929. Concatenation of Array]]: 下标映射，`ans[i + n] = nums[i]`，环形数组技巧的入门 · Easy
 - 👉👈 双指针 Two Pointers:
   - 🟡 [[Remove Element|27. Remove Element]]: 快慢指针原地过滤，慢指针写、快指针读 · Easy
+- 📚 栈 Stack:
+  - 🟡 [[Baseball Game|682. Baseball Game]]: 栈模拟，数字压栈，`C` 弹栈，`D`/`+` 读栈顶一两个数 · Easy
 - 🪟 滑动窗口 Sliding Window:
 - 🔍 二分查找 Binary Search:
 - 🌳 树 / DFS / BFS:

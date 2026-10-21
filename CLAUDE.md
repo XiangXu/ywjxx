@@ -92,14 +92,60 @@ paste it in verbatim. Rewrite it into a structured study note:
 - **Accuracy matters more than copying.** Fix wrong or misleading claims in the source
   material and say so in the clarifications section.
 - When adding to an existing note, merge into its structure rather than appending a blob.
-- LeetCode notes come from `模板/LeetCode 题解模板.md` (difficulty, pattern, status
-  🔴/🟡/🟢, last-reviewed).
 - Escape dollar signs in prices (`\$20`), or they render as LaTeX.
 - No underscores inside `\text{}` in math (e.g. `\text{input\_tokens}`). GitHub turns
   `\_` into `_` and fails with "'_' allowed only in math mode". Use spaces instead:
   `\text{input tokens}`.
 - Private notes go in a `_private/` folder (git-ignored). `publish: false` or
   `draft: true` hides a note from the site, but its text is still pushed to GitHub.
+
+### 🧩 LeetCode notes
+
+Xiang usually pastes **their own Java solution** ("complete <Problem> with below
+implementation"). Build the note around it:
+
+- **Keep Xiang's code as written.** Only fix formatting and add short bilingual inline
+  comments. Put better approaches (e.g. `ArrayDeque` instead of `Stack`, `int[]` +
+  pointer) under `> [!note] 其他写法 Alternatives`, and call out real bugs or bad habits
+  in Pitfalls. Don't silently rewrite the solution.
+- **File and frontmatter:** `content/LeetCode 题库/<English Title>.md`, from
+  `模板/LeetCode 题解模板.md`. `title: "<number>. <Title>"`, aliases (Chinese name,
+  `LeetCode <number>`), tags (`LeetCode`, `Interview-Prep`, plus pattern tags),
+  `difficulty`, `pattern`, `link`, `status: 🟡 review` (solved but new), `created` and
+  `last-reviewed` set to today, `publish: true`.
+- **Sections** (the template is a skeleton; follow the existing notes, e.g.
+  `Concatenation of Array.md`): `> [!abstract] TL;DR` with ⏱️/🗄️ complexity, then
+  numbered `##` sections: 📋 Problem (statement, examples table, constraints) →
+  💡 Intuition (key insight, pattern) → 🐢 Brute Force → 🚀 Optimal ("我的解法 My
+  solution", complexity, `> [!example]` trace table, alternatives) → ⚠️ Edge Cases &
+  Pitfalls (`- [x]` checklist) → 🔁 Follow-ups (similar-problems table) → ❓ Review
+  Questions → 🔗 Related → 🔁 Review Log (today's row: ✅ plus a one-line takeaway).
+- **Linking:** add a line under the matching pattern in `📌 LeetCode 总览.md`
+  (`- 🟡 [[File|<number>. Title]]: 中文 summary · Easy`; add a pattern heading if
+  needed). LeetCode notes form a **Previous/Next chain** in "Related": link back to the
+  last-added note and add a "下一题 Next" line to it. Link related concept notes in
+  `算法/` or `数据结构/`, and in that concept note's "🧩 Practice Problems" table mark
+  the solved problem as `✅ [[File\|<number>. Title]]` (escape `|` inside tables).
+
+### 🧱 Concept notes (`算法/`, `数据结构/`)
+
+From `模板/算法 & 数据结构模板.md`, numbered `##` sections: 🎯 Overview → 🧠 When to
+Use → ⚙️ How It Works → 💻 Code Template (Java) → ⏱️ Complexity → ⚠️ Common Pitfalls →
+❓ Review Questions → 🧩 Practice Problems → 🔗 Related. Add each to its
+`📌 算法总览` / `📌 数据结构总览` topic line, and use the LeetCode notes as examples.
+
+### ✅ What Fable reviews tend to catch
+
+Hedge absolutes ("always", "almost always" → "usually"), state Java version details
+(`.toList()` is Java 16+ and unmodifiable), keep code snippets complete (a missing
+`return -1`), check off-by-one and 0- vs 1-indexing, and make sure the prose matches
+the code next to it.
+
+## Commits
+
+Gitmoji prefix plus a short summary: `📝` notes/docs (e.g.
+`📝 Add LeetCode note: 682. Baseball Game`), `💄` styling, `🐛` bug fix, `✨` feature. Apply review fixes in a
+separate `📝 Apply review fixes to …` commit.
 
 ## Deploying
 
