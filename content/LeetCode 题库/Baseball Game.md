@@ -159,9 +159,9 @@ class Solution {
 
 | 题目 Problem | 和本题的关系 Connection |
 | --- | --- |
-| 20. Valid Parentheses | 栈的入门题：遇到右括号就和栈顶配对 The classic stack intro: match each closing bracket with the top |
+| [[Valid Parentheses\|20. Valid Parentheses]] | 栈的入门题：遇到右括号就和栈顶配对 The classic stack intro: match each closing bracket with the top |
 | 844. Backspace String Compare | `#` 删掉前一个字符，和 `C` 一模一样 `#` deletes the previous char, exactly like `C` |
-| 155. Min Stack | 设计一个能 O(1) 取最小值的栈 Design a stack with O(1) `getMin` |
+| [[Min Stack\|155. Min Stack]] | 设计一个能 O(1) 取最小值的栈 Design a stack with O(1) `getMin` |
 | 150. Evaluate Reverse Polish Notation | 同样是“数字压栈，操作符弹出两个数计算” Same shape: push numbers, pop two on an operator |
 
 ## 7. ❓ 复习题 Review Questions
@@ -195,6 +195,7 @@ class Solution {
 - [[📌 LeetCode 总览]]
 - 🧠 概念 Concepts: [[数组 Array|数组 Array]]（栈通常用数组实现 stacks are usually array-backed） · [[复杂度分析 Big-O|复杂度分析 Big-O]]
 - 上一题 Previous: [[Design Dynamic Array|Design Dynamic Array (Resizable Array)]]（`int[]` 版的栈就是不扩容的动态数组 the `int[]` stack is a dynamic array without resizing）
+- 下一题 Next: [[Valid Parentheses|20. Valid Parentheses]]（栈的括号匹配 stack bracket matching）
 
 ## 9. 🔁 复习记录 Review Log
 
