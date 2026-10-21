@@ -34,6 +34,7 @@ The brute force is often "for each element, scan the others again": O(n²). The 
 | ⬅️ 反向遍历 + 后缀信息 Reverse scan + suffix info | `rightMax` | [[Replace Elements with Greatest Element on Right Side\|1299]] |
 | 🔢 下标映射 / 取模 Index mapping / modulo | 无，靠公式 none, just a formula | [[Concatenation of Array\|1929]] |
 | ✍️ 写入位置 Write position | `slow` | [[Remove Element\|27]] → 见 see [[双指针 Two Pointers\|双指针]] |
+| 📚 用栈当状态 A stack as the state | `stack` | [[Valid Parentheses\|20]]、[[Baseball Game\|682]] → 见 see [[栈 Stack\|栈]] |
 
 ## 2. 🧠 什么时候用 When to Use
 
@@ -43,6 +44,7 @@ The brute force is often "for each element, scan the others again": O(n²). The 
   - “左边所有元素…… everything to the left” → 从左往右，维护前缀信息 scan left to right, keep a prefix value
   - “环形 circular”、“首尾相接 wraps around” → `i % n`
   - 暴力解内层循环在算一个“到目前为止”的量 the brute-force inner loop computes a "so far" quantity
+  - 状态需要“撤销上一步 / 和最近的配对” the state needs "undo the last one" or "match the most recent one" → 往往一个变量不够，可以用栈当状态 one variable is often not enough; a stack can serve as the state
 
 ## 3. ⚙️ 原理 How It Works
 
@@ -166,11 +168,13 @@ for (int x : nums) {
 | 238. Product of Array Except Self | 前缀积 + 后缀积 prefix + suffix product | Medium |
 | 53. Maximum Subarray | 运行最优（Kadane） running best | Medium |
 | 189. Rotate Array | 下标映射 `(i + k) % n` index mapping | Medium |
+| ✅ [[Valid Parentheses\|20. Valid Parentheses]] | 栈当状态，扫一遍配对 stack as state, match in one pass | Easy |
+| ✅ [[Baseball Game\|682. Baseball Game]] | 栈当状态，扫一遍模拟 stack as state, simulate in one pass | Easy |
 | 503. Next Greater Element II | `i % n` 绕两圈（+ 单调栈） two laps with `i % n` (+ monotonic stack) | Medium |
 
 ## 9. 🔗 相关 Related
 
 - [[📌 算法总览]]
-- 数据结构 Data structure: [[数组 Array|数组]]
+- 数据结构 Data structures: [[数组 Array|数组]] · [[栈 Stack|栈]]（状态比一个变量复杂时 when the state is more than a variable）
 - 写入位置那一类 The write-position variant: [[双指针 Two Pointers|双指针]]
 - 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析]]

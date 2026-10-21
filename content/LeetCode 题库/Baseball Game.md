@@ -193,7 +193,7 @@ class Solution {
 ## 8. 🔗 相关题目 Related
 
 - [[📌 LeetCode 总览]]
-- 🧠 概念 Concepts: [[栈 Stack|栈 Stack]] · [[数组 Array|数组 Array]]（栈通常用数组实现 stacks are usually array-backed） · [[复杂度分析 Big-O|复杂度分析 Big-O]]
+- 🧠 概念 Concepts: [[栈 Stack|栈 Stack]] · [[数组 Array|数组 Array]]（栈通常用数组实现 stacks are usually array-backed） · [[一次遍历 One Pass|一次遍历 One Pass]]（栈当状态 stack as state） · [[复杂度分析 Big-O|复杂度分析 Big-O]]
 - 上一题 Previous: [[Design Dynamic Array|Design Dynamic Array (Resizable Array)]]（`int[]` 版的栈就是不扩容的动态数组 the `int[]` stack is a dynamic array without resizing）
 - 下一题 Next: [[Valid Parentheses|20. Valid Parentheses]]（栈的括号匹配 stack bracket matching）
 

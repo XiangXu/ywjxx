@@ -124,17 +124,25 @@ implementation"). Build the note around it:
   (`- 🟡 [[File|<number>. Title]]: 中文 summary · Easy`; add a pattern heading if
   needed). LeetCode notes form a **Previous/Next chain** in "Related": link back to the
   last-added note and add a "下一题 Next" line to it.
-- **Always update 数据结构 / 算法 too.** Xiang noticed when this was skipped. Every
-  LeetCode note must link the concept notes for its data structure (`数据结构/`) and
-  pattern (`算法/`) in its "🔗 Related" Concepts line, and each of those concept notes
-  must be updated in the same change:
-  - In its "🧩 Practice Problems" table, mark the problem solved as
-    `✅ [[File\|<number>. Title]]` (escape `|` inside tables), adding a row if needed.
-  - Where it fits, cite the problem in the concept note's signals, pitfalls or examples.
+- **Always update 数据结构 and 算法 too.** Xiang noticed each time one was skipped. For
+  every LeetCode note, check **both** folders:
+  - **数据结构 (what it stores):** the data structure the solution uses, e.g. array →
+    `数组 Array`, stack → `栈 Stack`.
+  - **算法 (how it solves):** the technique or pattern, e.g. read/write pointers →
+    `双指针 Two Pointers`, running state → `一次遍历 One Pass`, amortized or
+    space/time trade-off reasoning → `复杂度分析 Big-O`. Future ones: sliding window,
+    binary search, monotonic stack, recursion, DP, etc. Skip only when the problem is
+    pure simulation with no named technique, and say so in the summary.
+  - Link every matching concept note from the LeetCode note's "🔗 Related" Concepts
+    line, and update each one in the same change: mark the problem solved in its
+    "🧩 Practice Problems" table as `✅ [[File\|<number>. Title]]` (escape `|` inside
+    tables), adding a row if needed, and cite the problem in its signals, pitfalls or
+    examples where it fits.
   - **No concept note yet** (e.g. the first stack problem → `数据结构/栈 Stack.md`)?
     Create one from the concept-note format below in the same change, add it to that
     folder's `📌 … 总览` topic line, and link it from related concept notes.
-  - Mention the 数据结构 / 算法 changes in the summary to Xiang.
+  - In the summary to Xiang, list what changed in 数据结构 and in 算法 separately (or
+    why one wasn't applicable).
 
 ### 🧱 Concept notes (`算法/`, `数据结构/`)
 
