@@ -123,9 +123,18 @@ implementation"). Build the note around it:
 - **Linking:** add a line under the matching pattern in `📌 LeetCode 总览.md`
   (`- 🟡 [[File|<number>. Title]]: 中文 summary · Easy`; add a pattern heading if
   needed). LeetCode notes form a **Previous/Next chain** in "Related": link back to the
-  last-added note and add a "下一题 Next" line to it. Link related concept notes in
-  `算法/` or `数据结构/`, and in that concept note's "🧩 Practice Problems" table mark
-  the solved problem as `✅ [[File\|<number>. Title]]` (escape `|` inside tables).
+  last-added note and add a "下一题 Next" line to it.
+- **Always update 数据结构 / 算法 too.** Xiang noticed when this was skipped. Every
+  LeetCode note must link the concept notes for its data structure (`数据结构/`) and
+  pattern (`算法/`) in its "🔗 Related" Concepts line, and each of those concept notes
+  must be updated in the same change:
+  - In its "🧩 Practice Problems" table, mark the problem solved as
+    `✅ [[File\|<number>. Title]]` (escape `|` inside tables), adding a row if needed.
+  - Where it fits, cite the problem in the concept note's signals, pitfalls or examples.
+  - **No concept note yet** (e.g. the first stack problem → `数据结构/栈 Stack.md`)?
+    Create one from the concept-note format below in the same change, add it to that
+    folder's `📌 … 总览` topic line, and link it from related concept notes.
+  - Mention the 数据结构 / 算法 changes in the summary to Xiang.
 
 ### 🧱 Concept notes (`算法/`, `数据结构/`)
 

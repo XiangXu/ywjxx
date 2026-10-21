@@ -195,7 +195,7 @@ class Solution {
 ## 8. 🔗 相关题目 Related
 
 - [[📌 LeetCode 总览]]
-- 🧠 概念 Concepts: [[复杂度分析 Big-O|复杂度分析 Big-O]]
+- 🧠 概念 Concepts: [[栈 Stack|栈 Stack]] · [[复杂度分析 Big-O|复杂度分析 Big-O]]
 - 上一题 Previous: [[Baseball Game|682. Baseball Game]]（同样是栈 also a stack）
 - 下一题 Next: [[Min Stack|155. Min Stack]]（辅助栈设计题 auxiliary-stack design）
 

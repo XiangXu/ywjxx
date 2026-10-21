@@ -215,7 +215,7 @@ class MinStack {
 ## 8. 🔗 相关题目 Related
 
 - [[📌 LeetCode 总览]]
-- 🧠 概念 Concepts: [[复杂度分析 Big-O|复杂度分析 Big-O]]（用空间换时间 trading space for time）
+- 🧠 概念 Concepts: [[栈 Stack|栈 Stack]]（辅助栈 auxiliary stack） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（用空间换时间 trading space for time）
 - 上一题 Previous: [[Valid Parentheses|20. Valid Parentheses]]（同样是栈 also a stack）
 - 同为设计题 Also a design problem: [[Design Dynamic Array|Design Dynamic Array (Resizable Array)]]
 

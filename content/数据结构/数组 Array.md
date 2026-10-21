@@ -59,7 +59,7 @@ For how dynamic arrays grow and why doubling is amortized O(1), see [[Design Dyn
 ## 2. 🧠 什么时候用 When to Use
 
 - ✅ 需要按下标快速读写 Fast access by index
-- ✅ 主要在**末尾**增删 Adding/removing mostly at the **end** (栈 stack 就常用数组实现 stacks are usually array-backed)
+- ✅ 主要在**末尾**增删 Adding/removing mostly at the **end** ([[栈 Stack|栈 stack]] 就常用数组实现 stacks are usually array-backed)
 - ✅ 需要顺序遍历、对缓存友好 Sequential scans, cache-friendly
 - ✅ 数据有序时可以二分查找 O(log n) Binary search once sorted
 - ❌ 频繁在**头部或中间**插入/删除 Frequent inserts/deletes at the **front or middle** → 考虑链表或双端队列 consider a linked list or deque (`ArrayDeque`)
@@ -184,5 +184,6 @@ void delete(int[] a, int size, int k) {
 ## 9. 🔗 相关 Related
 
 - [[📌 数据结构总览]]
+- 数据结构 Data structures: [[栈 Stack|栈 Stack]]（用数组实现 array-backed）
 - 算法 Algorithms: [[双指针 Two Pointers|双指针]] · [[一次遍历 One Pass|一次遍历]] · [[复杂度分析 Big-O|复杂度分析]]
 - 硬件背景 Hardware background: [[Computer Architecture]]
