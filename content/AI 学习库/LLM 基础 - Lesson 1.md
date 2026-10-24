@@ -38,7 +38,7 @@ LLM 不直接读字符。**Tokenizer** 先把文本切成 Token（子词片段�
 
 **Context window（上下文窗口）**：单次请求中模型能看到的最大 Token 数，**输入 + 输出合计**。
 
-- 当前 Claude Opus / Sonnet 模型：**1M tokens**（大约几本书）；Haiku 4.5：200K。
+- 当前的 Claude Opus 5.5 / Sonnet 5.5 / Haiku 5.5：**1M tokens**（大约几本书）；旧的 Haiku 4.5：200K。
 - **模型没有记忆，每次 API 调用都是无状态（stateless）的。** 聊天之所以“记得”前文，是因为客户端每次都把完整历史重新发送。
 - 所以对话越长 → 每轮输入 Token 越多 → 每轮越慢、越贵。
 - `max_tokens` 限制单次调用的输出长度。触顶时回复被截断，`stop_reason` 变成 `"max_tokens"`，而不是正常结束的 `"end_turn"`。
@@ -75,10 +75,11 @@ $$
 | --- | --- | --- | --- |
 | Claude Opus 5.5（最强，默认） | \$4.00 | \$20.00 | 1M |
 | Claude Sonnet 5.5（均衡） | \$2.00 | \$10.00 | 1M |
-| Claude Haiku 4.5（最便宜、最快） | \$1.00 | \$5.00 | 200K |
+| Claude Haiku 5.5（最便宜、最快） | \$0.10 | \$0.50 | 1M |
+| Claude Haiku 4.5（上一代） | \$1.00 | \$5.00 | 200K |
 
-> [!note] 更正
-> 课程原文写的是 “Claude Haiku 5.5，\$0.10 / \$0.50”，这个模型不存在。当前的 Haiku 是 **Haiku 4.5，\$1 / \$5**。
+> [!note] 价格说明
+> Haiku 5.5 的 \$0.10 / \$0.50 适用于 100K Token 以内的 prompt；超过 100K 时为 \$0.50 / \$2.50。
 
 ### 练习
 
@@ -88,7 +89,7 @@ $$
 > - Input：100,000 × 2,000 = 200M tokens × \$2 = **\$400**
 > - Output：100,000 × 300 = 30M tokens × \$10 = **\$300**
 > - 合计：**\$700 / 天**，约 **\$21,000 / 月**
-> - 换成 Haiku 4.5：200M × \$1 + 30M × \$5 = \$200 + \$150 = **\$350 / 天**
+> - 换成 Haiku 5.5（每次 2,000 Token，低于 100K 档）：200M × \$0.10 + 30M × \$0.50 = \$20 + \$15 = **\$35 / 天**，是 Sonnet 5.5 的 1/20
 
 ### 要点
 
@@ -193,3 +194,4 @@ content-type: application/json
 
 - [[贪心算法 vs Top-p vs Temperature 讲解区别]]
 - [[Prompt Caching]]
+- ➡️ 下一课 Next: [[Prompt 设计与结构化输出 - Lesson 2]]
