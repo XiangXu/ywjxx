@@ -17,3 +17,4 @@ created: 2026-10-16
 - 🧩 [[LLM 基础 - Lesson 1]]: Tokens, context windows, sampling, 💰 cost, and ⏱️ latency
 - 🎲 [[贪心算法 vs Top-p vs Temperature 讲解区别]]: How LLMs pick the next token (greedy, top-p, temperature)
 - ⚡ [[Prompt Caching]]: Reusing prompt prefixes to save 💸 and ⏳
+- ✍️ [[Prompt 设计与结构化输出 - Lesson 2]]: Prompt design habits, 🧾 structured JSON output, and 🛡️ prompt injection

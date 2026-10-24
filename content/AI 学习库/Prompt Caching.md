@@ -273,4 +273,4 @@ Prompt caching 缓存 prompt 前缀的处理结果，之后开头字节完全相
 
 - [[LLM 基础 - Lesson 1]]
 - [[贪心算法 vs Top-p vs Temperature 讲解区别]]
-
+- [[Prompt 设计与结构化输出 - Lesson 2]]: 稳定指令放 system，让缓存命中
