@@ -389,7 +389,7 @@ A common pipeline: reshape with temperature → filter with top-k or top-p → r
 **要点 Key takeaway:** Top-k 保留固定数量的候选；Top-p 让候选数量随分布形状变化。
 Top-k keeps a fixed number of candidates; top-p adapts the number of candidates to the shape of the distribution.
 
-## 6. 三者的区别 Comparison
+## 6. 四者的区别 Comparison
 
 | 概念 Concept | 主要作用 What it does | 类比 Analogy |
 | --- | --- | --- |

@@ -168,7 +168,7 @@ Assume **1,500 tokens are a system prompt shared by every request** and the othe
 | 缓存读取（共享前缀） Cache read (shared prefix) | 100,000 × 1,500 = 150M × \$0.20 | \$30 |
 | 普通输入（用户问题） Normal input (user question) | 100,000 × 500 = 50M × \$2 | \$100 |
 | 输出 Output | 30M × \$10 | \$300 |
-| **合计 Total** | | **≈ \$430**（原来 \$700 was \$700） |
+| **合计 Total** | | **≈ \$430** <span lang="zh">（原来 \$700）</span><span lang="en">(was \$700)</span> |
 
 输入成本从 \$400 降到约 \$130，总成本降低约 **39%**。缓存写入只在缓存过期时发生，流量持续时可以忽略。
 Input cost falls from \$400 to about \$130, cutting the total by about **39%**. Cache writes only happen when the cache expires, so with steady traffic they're negligible.
@@ -257,8 +257,8 @@ The `usage` field in the response:
 | `input_tokens` | 未缓存、按全价处理的 Token Uncached tokens at full price |
 
 > [!important] 注意 Watch out
-> 注意：`input_tokens` 只是**未缓存的部分**。
-> Note: `input_tokens` is **only the uncached part**.
+> 字段 `input_tokens` 只是**未缓存的部分**。
+> The `input_tokens` field is **only the uncached part**.
 > 总输入 = `input_tokens` + `cache_creation_input_tokens` + `cache_read_input_tokens`。
 > Total input = `input_tokens` + `cache_creation_input_tokens` + `cache_read_input_tokens`.
 

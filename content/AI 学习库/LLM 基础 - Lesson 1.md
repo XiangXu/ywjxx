@@ -216,7 +216,7 @@ content-type: application/json
 | 实验 Experiment | 做法 How | 观察 Observe |
 | --- | --- | --- |
 | A. 中英文 Token Chinese vs English tokens | 分别问 “What is a token?” 和 “什么是 token？” Ask both questions separately | 比较 `input_tokens` Compare `input_tokens` |
-| B. 截断 Truncation | 把 `max_tokens` 设为 20，问一个需要长回答的问题 Set `max_tokens` to 20 and ask for a long answer | 停止原因变为 `max_tokens` 值 The `stop_reason` becomes `max_tokens` |
+| B. 截断 Truncation | 把 `max_tokens` 设为 20，问一个需要长回答的问题 Set `max_tokens` to 20 and ask for a long answer | `stop_reason` 会变成 `max_tokens` 这个值 The `stop_reason` becomes `max_tokens` |
 | C. 延迟 vs 输出长度 Latency vs output length | 先要求一句话回答，再要求 500 字回答 Ask for a one-sentence answer, then a 500-word one | 比较延迟 Compare latency |
 
 > [!tip] 真实项目 Real projects

@@ -70,8 +70,8 @@ flowchart LR
 ```
 
 > [!tip] 怎么看这张图 Reading the diagram
-> **用户**只和入口（负载均衡器）打交道。**开发者**把代码部署到服务器，并查看日志、指标和告警。所有组件都通过**网络**相连。
-> **Users** only ever talk to the front door (the load balancer). **Developers** deploy code to the servers and look at logs, metrics, and alerts. Everything is connected over a **network**.
+> **用户**通常只和入口（负载均衡器）打交道。**开发者**把代码部署到服务器，并查看日志、指标和告警。所有组件都通过**网络**相连。
+> **Users** usually talk only to the front door (the load balancer). **Developers** deploy code to the servers and look at logs, metrics, and alerts. Everything is connected over a **network**.
 
 ## 3. 两个视角 Two Perspectives
 

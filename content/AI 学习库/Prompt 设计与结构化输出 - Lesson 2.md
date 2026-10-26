@@ -87,7 +87,7 @@ In production you usually want **data**, not prose. Three levels, from weakest t
 | --- | --- | --- |
 | 1️⃣ 只在 prompt 里要求 Ask in the prompt only | “Return only JSON with fields `category`, `priority`, `summary`.” | 大多数时候能用，但可能多出解释文字、漏字段 Works most of the time, but may add explanations or drop fields |
 | 2️⃣ 要求 + Schema + 示例 Ask + schema + example | 在 prompt 里贴 schema 和一个示例 Paste the schema and an example into the prompt | 可靠得多，但仍然**没有保证** Much more reliable, but still **not guaranteed** |
-| 3️⃣ 让 API 强制 Let the API enforce it | 请求里带 JSON Schema，或用带 `strict: true` 的工具 Send a JSON Schema (`output_config.format`) or use a `strict: true` tool (Lesson 3) | 正常结束时由**受约束解码**保证输出符合 schema 格式 On a normal finish, **constrained decoding** guarantees the schema (except `max_tokens` or `refusal`; see 3.2) |
+| 3️⃣ 让 API 强制 Let the API enforce it | 请求里带 JSON Schema（`output_config.format`），或用带 `strict: true` 的工具（第 3 课） Send a JSON Schema (`output_config.format`) or use a `strict: true` tool (Lesson 3) | 正常结束时由**受约束解码**保证输出符合 schema 格式（`max_tokens` 或 `refusal` 除外，见 3.2） On a normal finish, **constrained decoding** guarantees the schema (except `max_tokens` or `refusal`; see 3.2) |
 
 ### 3.1 第 3 层长什么样 Level 3 request
 
