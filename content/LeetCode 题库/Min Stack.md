@@ -218,6 +218,7 @@ class MinStack {
 - 🧠 概念 Concepts: [[栈 Stack|栈 Stack]]（辅助栈 auxiliary stack） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（用空间换时间 trading space for time）
 - 上一题 Previous: [[Valid Parentheses|20. Valid Parentheses]]（同样是栈 also a stack）
 - 同为设计题 Also a design problem: [[Design Dynamic Array|Design Dynamic Array (Resizable Array)]]
+- 下一题 Next: [[Reverse Linked List|206. Reverse Linked List]]（链表 + 递归，递归跑在调用栈上 linked list + recursion, which runs on the call stack）
 
 ## 9. 🔁 复习记录 Review Log
 

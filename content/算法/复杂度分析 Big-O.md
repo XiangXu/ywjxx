@@ -93,8 +93,8 @@ E.g. 1929 has `n ≤ 1000`, so even O(n²) would pass; but the output alone has 
   1929 must return a length-2n array, yet it's usually called O(1) extra space. Best to state both.
 - **原地 In place:** 直接改输入数组，只用 O(1) 额外空间（[[Remove Element|27]]、[[Replace Elements with Greatest Element on Right Side|1299]]）。
   Modify the input directly with O(1) extra space.
-- **递归栈也算 The recursion stack counts:** 递归深度 d 就是 O(d) 空间，即使没有 `new` 任何东西（递归跑在[[栈 Stack|调用栈]]上）。
-  Recursion depth d costs O(d) space even if you never call `new` (recursion runs on the [[栈 Stack|call stack]]).
+- **递归栈也算 The recursion stack counts:** 递归深度 d 就是 O(d) 空间，即使没有 `new` 任何东西（递归跑在[[栈 Stack|调用栈]]上，见[[递归 Recursion|递归]]）。例如 [[Reverse Linked List|206]] 的递归版是 O(n)，迭代版是 O(1)。
+  Recursion depth d costs O(d) space even if you never call `new` (recursion runs on the [[栈 Stack|call stack]]). For example, 206's recursive version is O(n) and its iterative version O(1).
 - **用空间换时间 Trading space for time:** 多存一点东西，换来更快的查询。[[Min Stack|155]] 多一个辅助栈，额外空间从 O(1) 变成 O(n)，换来 `getMin` 从 O(n) 降到 O(1)。反例：[[Valid Parentheses|20]] 的栈和暴力解空间都是 O(n)，时间从 O(n²) 降到 O(n) 靠的是更好的算法，不是多花空间。说空间复杂度时要说清楚多出来的这部分。
   Store a bit more to answer faster. 155 adds an auxiliary stack, going from O(1) to O(n) extra space, to bring `getMin` from O(n) to O(1). A counter-example: in 20 the stack and the brute force both use O(n) space; the drop from O(n²) to O(n) time comes from a better algorithm, not extra space. Say what the extra space buys you when you state the space complexity.
 
@@ -159,6 +159,7 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 | [[Baseball Game\|682]] | O(n) | O(n) | 栈，每个操作 O(1) stack, O(1) per operation |
 | [[Valid Parentheses\|20]] | O(n) | O(n) | 栈；暴力解反复删配对是 O(n²) stack; the repeated-deletion brute force is O(n²) |
 | [[Min Stack\|155]] | 每个操作 O(1) per operation | O(n) | 辅助栈，用空间换时间 auxiliary stack, space for time |
+| [[Reverse Linked List\|206]] | O(n) | 迭代 iterative O(1) / 递归 recursive O(n) | 递归没 `new` 也要 O(n) 调用栈 recursion costs O(n) stack with no `new` |
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
@@ -208,10 +209,12 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 - [[Design Dynamic Array|Design Dynamic Array]]: 均摊分析的标准例子 the textbook amortized example
 - ✅ [[Min Stack|155. Min Stack]]: 用空间换时间的标准例子 the textbook space-for-time example
 - ✅ [[Valid Parentheses|20. Valid Parentheses]]: 暴力 O(n²) → 栈 O(n)，每个元素最多进出一次 brute force O(n²) → stack O(n), each element in and out at most once
+- ✅ [[Reverse Linked List|206. Reverse Linked List]]: 同一题迭代 O(1)、递归 O(n) 空间，递归栈要算进去 iterative O(1) vs recursive O(n) space; count the recursion stack
 - 704. Binary Search: O(log n) 的标准例子 the textbook O(log n) example
 
 ## 9. 🔗 相关 Related
 
 - [[📌 算法总览]]
 - [[一次遍历 One Pass|一次遍历]] · [[双指针 Two Pointers|双指针]]
-- 数据结构 Data structures: [[数组 Array|数组]] · [[栈 Stack|栈]]
+- [[递归 Recursion|递归]]（递归栈的空间 recursion-stack space）
+- 数据结构 Data structures: [[数组 Array|数组]] · [[栈 Stack|栈]] · [[链表 Linked List|链表]]

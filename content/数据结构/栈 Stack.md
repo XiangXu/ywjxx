@@ -47,7 +47,7 @@ push 1, push 2, push 3          pop() → 3          peek() → 2
 
 ### 1.2 底层实现 How it's built
 
-栈只在一端操作，所以用**数组**实现最自然：栈顶就是数组末尾（概念上；`ArrayDeque` 实际是循环数组），push / pop 就是在末尾追加 / 删除，正好是数组最擅长的 O(1) 操作（见 [[数组 Array|数组 Array]]）。也可以用链表，在头部插入删除。
+栈只在一端操作，所以用**数组**实现最自然：栈顶就是数组末尾（概念上；`ArrayDeque` 实际是循环数组），push / pop 就是在末尾追加 / 删除，正好是数组最擅长的 O(1) 操作（见 [[数组 Array|数组 Array]]）。也可以用[[链表 Linked List|链表]]，在头部插入删除。
 A stack only touches one end, so an **array** is the natural fit: the top is the end of the array (conceptually; `ArrayDeque` is a circular array internally), and push/pop are append/remove-last, exactly the O(1) operations arrays are good at (see [[数组 Array|Array]]). A linked list with insert/remove at the head also works.
 
 | | 数组实现 Array-backed | 链表实现 Linked-list-backed |
@@ -84,7 +84,7 @@ A stack only touches one end, so an **array** is the natural fit: the top is the
   - **随时知道“到目前为止”的某个值 Track a "so far" value per level:** 最小值、最大值 min / max → [[Min Stack|155]]
   - **“下一个更大 / 更小” Next greater / smaller element:** 单调栈 monotonic stack（739、496、84）
   - **后缀表达式求值 Evaluate postfix (RPN):** 数字压栈，遇到运算符弹出两个 push numbers, pop two on an operator（150）
-  - **把递归改成迭代 Turn recursion into a loop:** DFS、树的遍历 DFS, tree traversal。递归本身就是用**调用栈 call stack** 实现的 Recursion itself runs on the call stack
+  - **把递归改成迭代 Turn recursion into a loop:** DFS、树的遍历 DFS, tree traversal。[[递归 Recursion|递归]]本身就是用**调用栈 call stack** 实现的 Recursion itself runs on the call stack（[[Reverse Linked List|206]] 的递归版深度 n，空间 O(n) 206's recursion is n deep, O(n) space）
 - ❌ 需要先进先出（按到达顺序处理，如 BFS）→ 用队列 Need first in, first out (e.g. BFS) → use a queue
 
 ## 3. ⚙️ 原理 How It Works
@@ -200,6 +200,6 @@ Stack algorithms are commonly **O(n) time**: each element is pushed once and pop
 ## 9. 🔗 相关 Related
 
 - [[📌 数据结构总览]]
-- 底层实现 Built on: [[数组 Array|数组 Array]]（也是 [[Design Dynamic Array|动态数组]] 的典型用途 a classic use of a dynamic array）
-- 算法 Algorithms: [[一次遍历 One Pass|一次遍历 One Pass]]（栈当状态 stack as state）
+- 底层实现 Built on: [[数组 Array|数组 Array]] 或 or [[链表 Linked List|链表 Linked List]]（也是 [[Design Dynamic Array|动态数组]] 的典型用途 a classic use of a dynamic array）
+- 算法 Algorithms: [[一次遍历 One Pass|一次遍历 One Pass]]（栈当状态 stack as state） · [[递归 Recursion|递归 Recursion]]（调用栈 the call stack）
 - 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析 Big-O]]（均摊分析 amortized analysis；[[Min Stack|155]] 用辅助栈换时间 trades space for time）

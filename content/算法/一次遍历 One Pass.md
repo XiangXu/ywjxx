@@ -170,11 +170,13 @@ for (int x : nums) {
 | 189. Rotate Array | 下标映射 `(i + k) % n` index mapping | Medium |
 | ✅ [[Valid Parentheses\|20. Valid Parentheses]] | 栈当状态，扫一遍配对 stack as state, match in one pass | Easy |
 | ✅ [[Baseball Game\|682. Baseball Game]] | 栈当状态，扫一遍模拟 stack as state, simulate in one pass | Easy |
+| ✅ [[Reverse Linked List\|206. Reverse Linked List]] | 链表上一次遍历，边走边调头 one pass over a list, flipping as it goes | Easy |
 | 503. Next Greater Element II | `i % n` 绕两圈（+ 单调栈） two laps with `i % n` (+ monotonic stack) | Medium |
 
 ## 9. 🔗 相关 Related
 
 - [[📌 算法总览]]
-- 数据结构 Data structures: [[数组 Array|数组]] · [[栈 Stack|栈]]（状态比一个变量复杂时 when the state is more than a variable）
+- 数据结构 Data structures: [[数组 Array|数组]] · [[栈 Stack|栈]]（状态比一个变量复杂时 when the state is more than a variable） · [[链表 Linked List|链表]]
+- 递归写法 The recursive alternative: [[递归 Recursion|递归]]
 - 写入位置那一类 The write-position variant: [[双指针 Two Pointers|双指针]]
 - 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析]]

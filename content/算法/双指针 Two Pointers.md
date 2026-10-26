@@ -173,6 +173,6 @@ return new int[] {-1, -1};
 ## 9. 🔗 相关 Related
 
 - [[📌 算法总览]]
-- 数据结构 Data structure: [[数组 Array|数组]]
+- 数据结构 Data structures: [[数组 Array|数组]] · [[链表 Linked List|链表]]（快慢指针找中点、判环 fast/slow pointers for the middle and cycles）
 - 同为一次遍历 Also single pass: [[一次遍历 One Pass|一次遍历]]
 - 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析]]

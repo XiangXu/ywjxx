@@ -21,6 +21,8 @@ created: 2026-10-15
   - 🟡 [[Baseball Game|682. Baseball Game]]: 栈模拟，数字压栈，`C` 弹栈，`D`/`+` 读栈顶一两个数 · Easy
   - 🟡 [[Valid Parentheses|20. Valid Parentheses]]: 左括号压入对应的右括号，右括号弹栈比较，最后栈必须为空 · Easy
   - 🟡 [[Min Stack|155. Min Stack]]: 辅助栈和主栈同步 push / pop，每层存到这层为止的最小值 · Medium
+- 🔗 链表 Linked List:
+  - 🟡 [[Reverse Linked List|206. Reverse Linked List]]: 迭代先存 next 再调头；递归先反转后面，再把自己接到尾巴，原样返回 newHead · Easy
 - 🪟 滑动窗口 Sliding Window:
 - 🔍 二分查找 Binary Search:
 - 🌳 树 / DFS / BFS:
