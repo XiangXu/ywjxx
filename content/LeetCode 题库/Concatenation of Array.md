@@ -1,5 +1,5 @@
 ---
-title: "1929. Concatenation of Array"
+title: "1929. 数组串联 Concatenation of Array"
 aliases:
   - 数组串联
   - LeetCode 1929
@@ -143,9 +143,9 @@ class Solution {
 
 - [[📌 LeetCode 总览]]
 - 🧠 套路 Pattern: [[一次遍历 One Pass|一次遍历 One Pass]]（下标映射 index mapping） · [[数组 Array|数组 Array]]
-- 上一题 Previous: [[Replace Elements with Greatest Element on Right Side|1299. Replace Elements with Greatest Element on Right Side]]
-- 下一题 Next: [[Design Dynamic Array|Design Dynamic Array (Resizable Array)]]
-- 同为一次遍历 Also one pass: [[Max Consecutive Ones|485. Max Consecutive Ones]]
+- 上一题 Previous: [[Replace Elements with Greatest Element on Right Side|1299. 将每个元素替换为右侧最大元素 Replace Elements with Greatest Element on Right Side]]
+- 下一题 Next: [[Design Dynamic Array|设计动态数组 Design Dynamic Array (Resizable Array)]]
+- 同为一次遍历 Also one pass: [[Max Consecutive Ones|485. 最大连续 1 的个数 Max Consecutive Ones]]
 
 ## 9. 🔁 复习记录 Review Log
 

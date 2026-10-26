@@ -81,7 +81,7 @@ paste it in verbatim. Rewrite it into a structured study note:
 - **File:** `content/<topic>/<Title>.md`, named in English or Chinese to match the
   folder. Add it to that folder's `📌 … 总览` overview note (one line: emoji, link,
   short summary). Link the previous note's "Related" section to it.
-- **Frontmatter:** `title`, `aliases` (Chinese and English names, plus key concepts),
+- **Frontmatter:** `title` (bilingual, `中文 English`, e.g. `提示缓存 Prompt Caching`), `aliases` (Chinese and English names, plus key concepts),
   `tags`, `created: YYYY-MM-DD`. Each alias becomes a redirect page at the site root.
 - **Body:** starts with `# <emoji> Title` (Obsidian needs it; the site hides it). Then use
   numbered `##` sections with emoji: TL;DR / `> [!abstract]` one-liner → concepts →
@@ -137,6 +137,10 @@ O(1)` and ``位置 `n` iterations`` are both fine; `是 O(n) for the output` is 
 - Don't mix two translations in one line (`迭代 iterative O(1) / 递归 recursive O(n)`); write
   `迭代 O(1) / 递归 O(n) Iterative O(1) / recursive O(n)`.
 - The English half must not contain Chinese characters (except inside links or code).
+- **Titles too:** the frontmatter `title` drives the page title, sidebar, breadcrumbs,
+  search and browser tab, so it needs both halves. Link labels that repeat a title use the
+  same bilingual form (`[[Baseball Game|682. 棒球比赛 Baseball Game]]`); number-only labels
+  like `[[Baseball Game|682]]` are fine.
 - Code and code comments stay as they are (comments can stay bilingual).
 - **Escape hatch:** wrap text by hand in `<span lang="zh">…</span><span lang="en">…</span>`
   (or `<div lang="…">` with blank lines around the Markdown) when no shape fits.
@@ -158,7 +162,7 @@ implementation"). Build the note around it:
   pointer) under `> [!note] 其他写法 Alternatives`, and call out real bugs or bad habits
   in Pitfalls. Don't silently rewrite the solution.
 - **File and frontmatter:** `content/LeetCode 题库/<English Title>.md`, from
-  `模板/LeetCode 题解模板.md`. `title: "<number>. <Title>"`, aliases (Chinese name,
+  `模板/LeetCode 题解模板.md`. `title: "<number>. <力扣中文名> <Title>"` (e.g. `682. 棒球比赛 Baseball Game`), aliases (Chinese name,
   `LeetCode <number>`), tags (`LeetCode`, `Interview-Prep`, plus pattern tags),
   `difficulty`, `pattern`, `link`, `status: 🟡 review` (solved but new), `created` and
   `last-reviewed` set to today, `publish: true`.
@@ -170,7 +174,7 @@ implementation"). Build the note around it:
   Pitfalls (`- [x]` checklist) → 🔁 Follow-ups (similar-problems table) → ❓ Review
   Questions → 🔗 Related → 🔁 Review Log (today's row: ✅ plus a one-line takeaway).
 - **Linking:** add a line under the matching pattern in `📌 LeetCode 总览.md`
-  (`- 🟡 [[File|<number>. Title]]: 中文 summary · Easy`; add a pattern heading if
+  (`- 🟡 [[File|<number>. 中文名 Title]]: 中文 summary English summary · Easy`; add a pattern heading if
   needed). LeetCode notes form a **Previous/Next chain** in "Related": link back to the
   last-added note and add a "下一题 Next" line to it.
 - **Always update 数据结构 and 算法 too.** Xiang noticed each time one was skipped. For
@@ -184,7 +188,7 @@ implementation"). Build the note around it:
     pure simulation with no named technique, and say so in the summary.
   - Link every matching concept note from the LeetCode note's "🔗 Related" Concepts
     line, and update each one in the same change: mark the problem solved in its
-    "🧩 Practice Problems" table as `✅ [[File\|<number>. Title]]` (escape `|` inside
+    "🧩 Practice Problems" table as `✅ [[File\|<number>. 中文名 Title]]` (escape `|` inside
     tables), adding a row if needed, and cite the problem in its signals, pitfalls or
     examples where it fits.
   - **No concept note yet** (e.g. the first stack problem → `数据结构/栈 Stack.md`)?

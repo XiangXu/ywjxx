@@ -1,5 +1,5 @@
 ---
-title: "682. Baseball Game"
+title: "682. 棒球比赛 Baseball Game"
 aliases:
   - 棒球比赛
   - LeetCode 682
@@ -159,9 +159,9 @@ class Solution {
 
 | 题目 Problem | 和本题的关系 Connection |
 | --- | --- |
-| [[Valid Parentheses\|20. Valid Parentheses]] | 栈的入门题：遇到右括号就和栈顶配对 The classic stack intro: match each closing bracket with the top |
+| [[Valid Parentheses\|20. 有效的括号 Valid Parentheses]] | 栈的入门题：遇到右括号就和栈顶配对 The classic stack intro: match each closing bracket with the top |
 | 844. Backspace String Compare | `#` 删掉前一个字符，和 `C` 一模一样 `#` deletes the previous char, exactly like `C` |
-| [[Min Stack\|155. Min Stack]] | 设计一个能 O(1) 取最小值的栈 Design a stack with O(1) `getMin` |
+| [[Min Stack\|155. 最小栈 Min Stack]] | 设计一个能 O(1) 取最小值的栈 Design a stack with O(1) `getMin` |
 | 150. Evaluate Reverse Polish Notation | 同样是“数字压栈，操作符弹出两个数计算” Same shape: push numbers, pop two on an operator |
 
 ## 7. ❓ 复习题 Review Questions
@@ -194,8 +194,8 @@ class Solution {
 
 - [[📌 LeetCode 总览]]
 - 🧠 概念 Concepts: [[栈 Stack|栈 Stack]] · [[数组 Array|数组 Array]]（栈通常用数组实现 stacks are usually array-backed） · [[一次遍历 One Pass|一次遍历 One Pass]]（栈当状态 stack as state） · [[复杂度分析 Big-O|复杂度分析 Big-O]]
-- 上一题 Previous: [[Design Dynamic Array|Design Dynamic Array (Resizable Array)]]（`int[]` 版的栈就是不扩容的动态数组 the `int[]` stack is a dynamic array without resizing）
-- 下一题 Next: [[Valid Parentheses|20. Valid Parentheses]]（栈的括号匹配 stack bracket matching）
+- 上一题 Previous: [[Design Dynamic Array|设计动态数组 Design Dynamic Array (Resizable Array)]]（`int[]` 版的栈就是不扩容的动态数组 the `int[]` stack is a dynamic array without resizing）
+- 下一题 Next: [[Valid Parentheses|20. 有效的括号 Valid Parentheses]]（栈的括号匹配 stack bracket matching）
 
 ## 9. 🔁 复习记录 Review Log
 

@@ -1,5 +1,5 @@
 ---
-title: "Lesson 1: LLM Basics — Tokens, Context, Sampling, Cost, Latency"
+title: "第 1 课：LLM 基础——Token、上下文、采样、成本、延迟 Lesson 1: LLM Basics — Tokens, Context, Sampling, Cost, Latency"
 aliases:
   - LLM Basics
   - LLM 基础

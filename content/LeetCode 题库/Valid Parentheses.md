@@ -1,5 +1,5 @@
 ---
-title: "20. Valid Parentheses"
+title: "20. 有效的括号 Valid Parentheses"
 aliases:
   - 有效的括号
   - LeetCode 20
@@ -51,7 +51,7 @@ Given a string `s` containing only `()[]{}`, decide whether it's valid. It's val
   The most recently opened bracket must close first (`"([)]"` fails because `[` opened last but didn't close first). Last in, first out: a stack.
 - **小技巧 Trick:** 不压左括号，而是压**期望看到的右括号**。这样遇到右括号时只要比较 `stack.pop() == c`，不用再写一个“左右对应”的映射。
   Push the **closer you expect** instead of the opener. Then a closing bracket just checks `stack.pop() == c`, with no separate opener-to-closer lookup.
-- **套路 Pattern:** 栈 / 括号匹配 (stack, bracket matching)。和 [[Baseball Game|682. Baseball Game]] 一样，“和前一个配对 / 撤销前一个”就想栈。
+- **套路 Pattern:** 栈 / 括号匹配 (stack, bracket matching)。和 [[Baseball Game|682. 棒球比赛 Baseball Game]] 一样，“和前一个配对 / 撤销前一个”就想栈。
   Like 682, "match with / undo the previous one" means stack.
 
 ## 3. 🐢 暴力解 Brute Force
@@ -159,7 +159,7 @@ class Solution {
 
 | 题目 Problem | 和本题的关系 Connection |
 | --- | --- |
-| [[Baseball Game\|682. Baseball Game]] | 同样用栈“撤销 / 读前一个” Same stack idea: undo / read the previous one |
+| [[Baseball Game\|682. 棒球比赛 Baseball Game]] | 同样用栈“撤销 / 读前一个” Same stack idea: undo / read the previous one |
 | 1021. Remove Outermost Parentheses | 只有 `()`，计数器即可 Only `()`, a counter is enough |
 | 921. Minimum Add to Make Parentheses Valid | 计数没配对的左右括号 Count unmatched openers and closers |
 | 1249. Minimum Remove to Make Valid Parentheses | 栈里存下标，删掉没配对的 Store indices, remove the unmatched |
@@ -196,8 +196,8 @@ class Solution {
 
 - [[📌 LeetCode 总览]]
 - 🧠 概念 Concepts: [[栈 Stack|栈 Stack]] · [[一次遍历 One Pass|一次遍历 One Pass]]（栈当状态 stack as state） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（比暴力解的 O(n²) 快 faster than the O(n²) brute force）
-- 上一题 Previous: [[Baseball Game|682. Baseball Game]]（同样是栈 also a stack）
-- 下一题 Next: [[Min Stack|155. Min Stack]]（辅助栈设计题 auxiliary-stack design）
+- 上一题 Previous: [[Baseball Game|682. 棒球比赛 Baseball Game]]（同样是栈 also a stack）
+- 下一题 Next: [[Min Stack|155. 最小栈 Min Stack]]（辅助栈设计题 auxiliary-stack design）
 
 ## 9. 🔁 复习记录 Review Log
 

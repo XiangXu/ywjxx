@@ -1,5 +1,5 @@
 ---
-title: "Design Dynamic Array (Resizable Array)"
+title: "设计动态数组 Design Dynamic Array (Resizable Array)"
 aliases:
   - 动态数组
   - 可变长数组
@@ -249,8 +249,8 @@ class DynamicArray {
 
 - [[📌 LeetCode 总览]]
 - 🧠 概念 Concepts: [[数组 Array|数组 Array]] · [[复杂度分析 Big-O|均摊分析 Amortized analysis]]
-- 上一题 Previous: [[Concatenation of Array|1929. Concatenation of Array]]（也是“新建更大的数组 + 复制” also "allocate bigger + copy"）
-- 下一题 Next: [[Baseball Game|682. Baseball Game]]（用数组当栈 an array used as a stack）
+- 上一题 Previous: [[Concatenation of Array|1929. 数组串联 Concatenation of Array]]（也是“新建更大的数组 + 复制” also "allocate bigger + copy"）
+- 下一题 Next: [[Baseball Game|682. 棒球比赛 Baseball Game]]（用数组当栈 an array used as a stack）
 - 705 / 706. Design HashSet / HashMap: 另一个设计题。常见解法是固定桶数 + 链表；真实的哈希表（如 Java `HashMap`）超过负载因子时才扩容并重新哈希 Another design problem. Typical solutions use a fixed number of buckets with chaining; real hash tables like Java's `HashMap` double and rehash once they pass the load factor
 - 707. Design Linked List: 动态数组的对照：中间插入 O(1)（已有节点时），随机访问 O(n) The counterpart: O(1) insert at a known node, O(n) random access
 

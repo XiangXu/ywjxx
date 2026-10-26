@@ -1,5 +1,5 @@
 ---
-title: "Computer Architecture"
+title: "计算机架构 Computer Architecture"
 aliases:
   - 计算机架构
   - Computer Components

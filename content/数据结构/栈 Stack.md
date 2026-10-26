@@ -104,7 +104,7 @@ s = "([])"                 栈 stack（底 → 顶 bottom → top）
 
 ### 3.2 辅助栈：给每一层存一份快照 Auxiliary stack: a snapshot per level
 
-栈只从顶部变化，所以**某一层下面的元素，在这一层存在期间不会变**。push 时把“到这一层为止”的信息（如最小值）算好，和元素一起存，pop 时一起扔掉，就能 O(1) 查询。这就是 [[Min Stack|155. Min Stack]] 的做法。
+栈只从顶部变化，所以**某一层下面的元素，在这一层存在期间不会变**。push 时把“到这一层为止”的信息（如最小值）算好，和元素一起存，pop 时一起扔掉，就能 O(1) 查询。这就是 [[Min Stack|155. 最小栈 Min Stack]] 的做法。
 A stack only changes at the top, so **everything below a level stays fixed while that level exists**. Compute "so far" info (like the minimum) on push, store it with the element, and drop it on pop, and queries become O(1). That's how 155 works.
 
 ## 4. 💻 模板代码 Code Template
@@ -188,9 +188,9 @@ Stack algorithms are commonly **O(n) time**: each element is pushed once and pop
 
 | 题目 Problem | 练的是什么 What it practices | 难度 Difficulty |
 | --- | --- | --- |
-| ✅ [[Baseball Game\|682. Baseball Game]] | 栈模拟，撤销上一个 stack simulation, undo the last one | Easy |
-| ✅ [[Valid Parentheses\|20. Valid Parentheses]] | 括号配对 bracket matching | Easy |
-| ✅ [[Min Stack\|155. Min Stack]] | 辅助栈 auxiliary stack | Medium |
+| ✅ [[Baseball Game\|682. 棒球比赛 Baseball Game]] | 栈模拟，撤销上一个 stack simulation, undo the last one | Easy |
+| ✅ [[Valid Parentheses\|20. 有效的括号 Valid Parentheses]] | 括号配对 bracket matching | Easy |
+| ✅ [[Min Stack\|155. 最小栈 Min Stack]] | 辅助栈 auxiliary stack | Medium |
 | 844. Backspace String Compare | `#` 删除前一个字符 `#` deletes the previous char | Easy |
 | 232. Implement Queue using Stacks | 两个栈实现队列 a queue from two stacks | Easy |
 | 150. Evaluate Reverse Polish Notation | 数字压栈，运算符弹两个 push numbers, pop two on an operator | Medium |

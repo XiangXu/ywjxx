@@ -242,7 +242,7 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 
 | 题目 Problem | 练的是什么 What it practices | 难度 Difficulty |
 | --- | --- | --- |
-| ✅ [[Reverse Linked List\|206. Reverse Linked List]] | 后序递归，相信合同 post-order, trust the contract | Easy |
+| ✅ [[Reverse Linked List\|206. 反转链表 Reverse Linked List]] | 后序递归，相信合同 post-order, trust the contract | Easy |
 | 21. Merge Two Sorted Lists | 小的那个节点 + 合并剩下的 smaller node + merge the rest | Easy |
 | 104. Maximum Depth of Binary Tree | 子结果加工 `max + 1` processing the child results | Easy |
 | 226. Invert Binary Tree | 树上的递归交换 swapping recursively on a tree | Easy |

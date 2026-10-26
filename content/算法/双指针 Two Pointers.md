@@ -78,7 +78,7 @@ Start with `left = 0`, `right = n - 1`; each step moves one (or both) pointers b
 
 ## 4. 💻 模板代码 Code Template
 
-**同向：原地过滤 Same direction: filter in place**（[[Remove Element|27. Remove Element]]）
+**同向：原地过滤 Same direction: filter in place**（[[Remove Element|27. 移除元素 Remove Element]]）
 
 ```java
 int slow = 0;                            // 下一个写入位置 next write slot
@@ -165,7 +165,7 @@ return new int[] {-1, -1};
 
 | 题目 Problem | 类型 Type | 难度 Difficulty |
 | --- | --- | --- |
-| ✅ [[Remove Element\|27. Remove Element]] | 同向 / 相向填坑 both | Easy |
+| ✅ [[Remove Element\|27. 移除元素 Remove Element]] | 同向 / 相向填坑 both | Easy |
 | 26. Remove Duplicates from Sorted Array | 同向 same direction | Easy |
 | 283. Move Zeroes | 同向 same direction | Easy |
 | 344. Reverse String | 相向 opposite | Easy |

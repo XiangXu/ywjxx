@@ -1,5 +1,5 @@
 ---
-title: "1299. Replace Elements with Greatest Element on Right Side"
+title: "1299. 将每个元素替换为右侧最大元素 Replace Elements with Greatest Element on Right Side"
 aliases:
   - 将每个元素替换为右侧最大元素
   - LeetCode 1299
@@ -155,9 +155,9 @@ class Solution {
 
 - [[📌 LeetCode 总览]]
 - 🧠 套路 Pattern: [[一次遍历 One Pass|一次遍历 One Pass]]（后缀最值 suffix max） · [[数组 Array|数组 Array]]
-- 上一题 Previous: [[Remove Element|27. Remove Element]]
-- 同为一次遍历 Also one pass: [[Max Consecutive Ones|485. Max Consecutive Ones]]
-- 下一题 Next note: [[Concatenation of Array|1929. Concatenation of Array]]
+- 上一题 Previous: [[Remove Element|27. 移除元素 Remove Element]]
+- 同为一次遍历 Also one pass: [[Max Consecutive Ones|485. 最大连续 1 的个数 Max Consecutive Ones]]
+- 下一题 Next note: [[Concatenation of Array|1929. 数组串联 Concatenation of Array]]
 
 ## 9. 🔁 复习记录 Review Log
 

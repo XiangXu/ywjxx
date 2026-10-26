@@ -1,5 +1,5 @@
 ---
-title: "LLM Decoding — Temperature, Top-p, and Greedy Decoding"
+title: "大模型解码：温度、Top-p 与贪心解码 LLM Decoding — Temperature, Top-p, and Greedy Decoding"
 aliases:
   - LLM Sampling
   - Temperature and Top-p

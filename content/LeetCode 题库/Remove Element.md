@@ -1,5 +1,5 @@
 ---
-title: "27. Remove Element"
+title: "27. 移除元素 Remove Element"
 aliases:
   - 移除元素
   - LeetCode 27
@@ -133,7 +133,7 @@ The same "fast reads, slow writes" template solves a whole family of in-place fi
 | 283. Move Zeroes | `nums[right] != 0`，然后把尾部填 0（或直接交换） Keep `nums[right] != 0`, then zero-fill the tail (or swap) |
 
 > [!important] 和 485 对比 Compare with 485
-> [[Max Consecutive Ones|485. Max Consecutive Ones]] 只有一个下标，计数器记录当前连续段的长度，窗口左边界是隐含的；这题的 `left` 是**真正的第二个指针**，它指向数组里的一个位置并往里写数据。
+> [[Max Consecutive Ones|485. 最大连续 1 的个数 Max Consecutive Ones]] 只有一个下标，计数器记录当前连续段的长度，窗口左边界是隐含的；这题的 `left` 是**真正的第二个指针**，它指向数组里的一个位置并往里写数据。
 > 485 has only one index; its counter tracks the current run's length, so the left edge is only implied. Here `left` is a **real second pointer**: it points into the array and is written through.
 
 ## 7. ❓ 复习题 Review Questions
@@ -166,9 +166,9 @@ The same "fast reads, slow writes" template solves a whole family of in-place fi
 
 - [[📌 LeetCode 总览]]
 - 🧠 套路 Pattern: [[双指针 Two Pointers|双指针 Two Pointers]] · [[数组 Array|数组 Array]]
-- 上一题 Previous: [[Max Consecutive Ones|485. Max Consecutive Ones]]
+- 上一题 Previous: [[Max Consecutive Ones|485. 最大连续 1 的个数 Max Consecutive Ones]]
 - 同一模板 Same template: 26. Remove Duplicates from Sorted Array, 283. Move Zeroes
-- 下一题 Next note: [[Replace Elements with Greatest Element on Right Side|1299. Replace Elements with Greatest Element on Right Side]]
+- 下一题 Next note: [[Replace Elements with Greatest Element on Right Side|1299. 将每个元素替换为右侧最大元素 Replace Elements with Greatest Element on Right Side]]
 
 ## 9. 🔁 复习记录 Review Log
 

@@ -1,5 +1,5 @@
 ---
-title: "155. Min Stack"
+title: "155. 最小栈 Min Stack"
 aliases:
   - 最小栈
   - LeetCode 155
@@ -181,7 +181,7 @@ class MinStack {
 
 | 题目 Problem | 和本题的关系 Connection |
 | --- | --- |
-| [[Valid Parentheses\|20. Valid Parentheses]] | 栈的基本用法 Basic stack usage |
+| [[Valid Parentheses\|20. 有效的括号 Valid Parentheses]] | 栈的基本用法 Basic stack usage |
 | 716. Max Stack | 还要支持 `peekMax()` / `popMax()`（Premium）；`popMax` 做不到 O(1)，常见解法是双向链表 + `TreeMap`，O(log n) Also supports `peekMax()` / `popMax()` (Premium); `popMax` can't be O(1), a common solution is a doubly linked list + `TreeMap` in O(log n) |
 | 232. Implement Queue using Stacks | 也是用两个栈设计数据结构 Another two-stack design |
 | 739. Daily Temperatures | 单调栈，同样是“栈里维护有序信息” Monotonic stack: ordered info kept on a stack |
@@ -216,9 +216,9 @@ class MinStack {
 
 - [[📌 LeetCode 总览]]
 - 🧠 概念 Concepts: [[栈 Stack|栈 Stack]]（辅助栈 auxiliary stack） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（用空间换时间 trading space for time）
-- 上一题 Previous: [[Valid Parentheses|20. Valid Parentheses]]（同样是栈 also a stack）
-- 同为设计题 Also a design problem: [[Design Dynamic Array|Design Dynamic Array (Resizable Array)]]
-- 下一题 Next: [[Reverse Linked List|206. Reverse Linked List]]（链表 + 递归，递归跑在调用栈上 linked list + recursion, which runs on the call stack）
+- 上一题 Previous: [[Valid Parentheses|20. 有效的括号 Valid Parentheses]]（同样是栈 also a stack）
+- 同为设计题 Also a design problem: [[Design Dynamic Array|设计动态数组 Design Dynamic Array (Resizable Array)]]
+- 下一题 Next: [[Reverse Linked List|206. 反转链表 Reverse Linked List]]（链表 + 递归，递归跑在调用栈上 linked list + recursion, which runs on the call stack）
 
 ## 9. 🔁 复习记录 Review Log
 

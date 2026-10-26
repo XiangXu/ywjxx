@@ -1,5 +1,5 @@
 ---
-title: "Prompt Caching（提示缓存）"
+title: "提示缓存 Prompt Caching"
 aliases:
   - Prompt Caching
   - 提示缓存

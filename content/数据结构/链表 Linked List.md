@@ -102,7 +102,7 @@ Every operation rewires `next`. One rule: **connect the new link before breaking
   a ──► b      →      a ──► x ──► b           a ──► b ──► c   →   a ─────► c
 ```
 
-如果反过来先写 `a.next = x`，`b` 以及后面的节点就丢了。[[Reverse Linked List|206. Reverse Linked List]] 里先存 `next` 也是同一个道理。
+如果反过来先写 `a.next = x`，`b` 以及后面的节点就丢了。[[Reverse Linked List|206. 反转链表 Reverse Linked List]] 里先存 `next` 也是同一个道理。
 Do `a.next = x` first and `b` (and everything after) is lost. Saving `next` first in 206 follows the same rule.
 
 ### 3.2 反转：三个指针 Reversal: three pointers
@@ -223,7 +223,7 @@ while (fast != null && fast.next != null) {
 
 | 题目 Problem | 练的是什么 What it practices | 难度 Difficulty |
 | --- | --- | --- |
-| ✅ [[Reverse Linked List\|206. Reverse Linked List]] | 指针反转，迭代 + 递归 pointer reversal, iterative + recursive | Easy |
+| ✅ [[Reverse Linked List\|206. 反转链表 Reverse Linked List]] | 指针反转，迭代 + 递归 pointer reversal, iterative + recursive | Easy |
 | 21. Merge Two Sorted Lists | 哑节点拼新链表 dummy head to build a list | Easy |
 | 203. Remove Linked List Elements | 哑节点删除 dummy head deletion | Easy |
 | 876. Middle of the Linked List | 快慢指针 fast/slow pointers | Easy |

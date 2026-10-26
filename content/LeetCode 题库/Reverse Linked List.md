@@ -1,5 +1,5 @@
 ---
-title: "206. Reverse Linked List"
+title: "206. 反转链表 Reverse Linked List"
 aliases:
   - 反转链表
   - LeetCode 206
@@ -291,7 +291,7 @@ So `return newHead` isn't "copying whatever came from below"; it's **this level'
 
 - [[📌 LeetCode 总览]]
 - 🧠 概念 Concepts: [[链表 Linked List|链表 Linked List]]（指针反转 pointer reversal） · [[递归 Recursion|递归 Recursion]]（相信合同、后序处理 trust the contract, post-order work） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（递归栈也算空间 the recursion stack counts）
-- 上一题 Previous: [[Min Stack|155. Min Stack]]（栈；递归本身跑在调用栈上 stacks; recursion runs on the call stack）
+- 上一题 Previous: [[Min Stack|155. 最小栈 Min Stack]]（栈；递归本身跑在调用栈上 stacks; recursion runs on the call stack）
 
 ## 9. 🔁 复习记录 Review Log
 

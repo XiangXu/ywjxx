@@ -177,10 +177,10 @@ void delete(int[] a, int size, int k) {
 | 题目 Problem | 练的是什么 What it practices |
 | --- | --- |
 | [[Design Dynamic Array\|Design Dynamic Array]] | size vs capacity，翻倍扩容 doubling growth |
-| [[Concatenation of Array\|1929. Concatenation of Array]] | 下标映射，`i % n` Index mapping with `i % n` |
-| [[Max Consecutive Ones\|485. Max Consecutive Ones]] | 一次遍历 + 计数器 one pass with a counter |
-| [[Replace Elements with Greatest Element on Right Side\|1299. Replace Elements with Greatest Element on Right Side]] | 从右往左，原地覆盖 right-to-left, overwrite in place |
-| [[Remove Element\|27. Remove Element]] | 快慢指针原地删除 read/write pointers |
+| [[Concatenation of Array\|1929. 数组串联 Concatenation of Array]] | 下标映射，`i % n` Index mapping with `i % n` |
+| [[Max Consecutive Ones\|485. 最大连续 1 的个数 Max Consecutive Ones]] | 一次遍历 + 计数器 one pass with a counter |
+| [[Replace Elements with Greatest Element on Right Side\|1299. 将每个元素替换为右侧最大元素 Replace Elements with Greatest Element on Right Side]] | 从右往左，原地覆盖 right-to-left, overwrite in place |
+| [[Remove Element\|27. 移除元素 Remove Element]] | 快慢指针原地删除 read/write pointers |
 
 ## 9. 🔗 相关 Related
 

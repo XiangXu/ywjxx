@@ -1,5 +1,5 @@
 ---
-title: "Application Architecture"
+title: "应用架构 Application Architecture"
 aliases:
   - 应用架构
   - Production Application Architecture

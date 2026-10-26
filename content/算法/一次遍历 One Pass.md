@@ -166,17 +166,17 @@ for (int x : nums) {
 
 | 题目 Problem | 变体 Variant | 难度 Difficulty |
 | --- | --- | --- |
-| ✅ [[Max Consecutive Ones\|485. Max Consecutive Ones]] | 运行计数 running counter | Easy |
-| ✅ [[Replace Elements with Greatest Element on Right Side\|1299. Replace Elements with Greatest Element on Right Side]] | 反向 + 后缀最值 reverse + suffix max | Easy |
-| ✅ [[Concatenation of Array\|1929. Concatenation of Array]] | 下标映射 index mapping | Easy |
+| ✅ [[Max Consecutive Ones\|485. 最大连续 1 的个数 Max Consecutive Ones]] | 运行计数 running counter | Easy |
+| ✅ [[Replace Elements with Greatest Element on Right Side\|1299. 将每个元素替换为右侧最大元素 Replace Elements with Greatest Element on Right Side]] | 反向 + 后缀最值 reverse + suffix max | Easy |
+| ✅ [[Concatenation of Array\|1929. 数组串联 Concatenation of Array]] | 下标映射 index mapping | Easy |
 | 121. Best Time to Buy and Sell Stock | 前缀最小值 prefix min | Easy |
 | 1480. Running Sum of 1d Array | 前缀和 prefix sum | Easy |
 | 238. Product of Array Except Self | 前缀积 + 后缀积 prefix + suffix product | Medium |
 | 53. Maximum Subarray | 运行最优（Kadane） running best | Medium |
 | 189. Rotate Array | 下标映射 `(i + k) % n` index mapping | Medium |
-| ✅ [[Valid Parentheses\|20. Valid Parentheses]] | 栈当状态，扫一遍配对 stack as state, match in one pass | Easy |
-| ✅ [[Baseball Game\|682. Baseball Game]] | 栈当状态，扫一遍模拟 stack as state, simulate in one pass | Easy |
-| ✅ [[Reverse Linked List\|206. Reverse Linked List]] | 链表上一次遍历，边走边调头 one pass over a list, flipping as it goes | Easy |
+| ✅ [[Valid Parentheses\|20. 有效的括号 Valid Parentheses]] | 栈当状态，扫一遍配对 stack as state, match in one pass | Easy |
+| ✅ [[Baseball Game\|682. 棒球比赛 Baseball Game]] | 栈当状态，扫一遍模拟 stack as state, simulate in one pass | Easy |
+| ✅ [[Reverse Linked List\|206. 反转链表 Reverse Linked List]] | 链表上一次遍历，边走边调头 one pass over a list, flipping as it goes | Easy |
 | 503. Next Greater Element II | `i % n` 绕两圈（+ 单调栈） two laps with `i % n` (+ monotonic stack) | Medium |
 
 ## 9. 🔗 相关 Related

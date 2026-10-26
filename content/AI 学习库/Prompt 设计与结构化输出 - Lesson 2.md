@@ -1,5 +1,5 @@
 ---
-title: "Lesson 2: Prompt Design and Structured Output"
+title: "第 2 课：Prompt 设计与结构化输出 Lesson 2: Prompt Design and Structured Output"
 aliases:
   - Prompt Design
   - Prompt 设计

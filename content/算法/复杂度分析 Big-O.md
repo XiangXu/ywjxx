@@ -207,9 +207,9 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 
 - 本题库全部题目都可以用来练习报复杂度，见第 5 节表格 → Every problem so far works for practicing this; see the table in section 5.
 - [[Design Dynamic Array|Design Dynamic Array]]: 均摊分析的标准例子 the textbook amortized example
-- ✅ [[Min Stack|155. Min Stack]]: 用空间换时间的标准例子 the textbook space-for-time example
-- ✅ [[Valid Parentheses|20. Valid Parentheses]]: 暴力 O(n²) → 栈 O(n)，每个元素最多进出一次 brute force O(n²) → stack O(n), each element in and out at most once
-- ✅ [[Reverse Linked List|206. Reverse Linked List]]: 同一题迭代 O(1)、递归 O(n) 空间，递归栈要算进去 iterative O(1) vs recursive O(n) space; count the recursion stack
+- ✅ [[Min Stack|155. 最小栈 Min Stack]]: 用空间换时间的标准例子 the textbook space-for-time example
+- ✅ [[Valid Parentheses|20. 有效的括号 Valid Parentheses]]: 暴力 O(n²) → 栈 O(n)，每个元素最多进出一次 brute force O(n²) → stack O(n), each element in and out at most once
+- ✅ [[Reverse Linked List|206. 反转链表 Reverse Linked List]]: 同一题迭代 O(1)、递归 O(n) 空间，递归栈要算进去 iterative O(1) vs recursive O(n) space; count the recursion stack
 - 704. Binary Search: O(log n) 的标准例子 the textbook O(log n) example
 
 ## 9. 🔗 相关 Related
