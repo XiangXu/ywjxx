@@ -33,18 +33,24 @@ The brute force is often "for each element, scan the others again": O(n²). The 
 | 🧮 运行计数 / 最值 Running counter / best-so-far | `count`, `max` | [[Max Consecutive Ones\|485]] |
 | ⬅️ 反向遍历 + 后缀信息 Reverse scan + suffix info | `rightMax` | [[Replace Elements with Greatest Element on Right Side\|1299]] |
 | 🔢 下标映射 / 取模 Index mapping / modulo | 无，靠公式 none, just a formula | [[Concatenation of Array\|1929]] |
-| ✍️ 写入位置 Write position | `slow` | [[Remove Element\|27]] → 见 see [[双指针 Two Pointers\|双指针]] |
-| 📚 用栈当状态 A stack as the state | `stack` | [[Valid Parentheses\|20]]、[[Baseball Game\|682]] → 见 see [[栈 Stack\|栈]] |
+| ✍️ 写入位置 Write position | `slow` | [[Remove Element\|27]] → 见 see [[双指针 Two Pointers\|双指针 Two Pointers]] |
+| 📚 用栈当状态 A stack as the state | `stack` | [[Valid Parentheses\|20]]、[[Baseball Game\|682]] → 见 see [[栈 Stack\|栈 Stack]] |
 
 ## 2. 🧠 什么时候用 When to Use
 
 - 🔎 题目信号 Signals in the problem:
-  - “最长连续…… longest consecutive…”、“出现次数 count of…” → 运行计数器 running counter
-  - “右边所有元素中最大/最小 the max/min of everything to the right” → **从右往左**扫，维护后缀最值 scan **right to left**, keep a suffix max
-  - “左边所有元素…… everything to the left” → 从左往右，维护前缀信息 scan left to right, keep a prefix value
-  - “环形 circular”、“首尾相接 wraps around” → `i % n`
-  - 暴力解内层循环在算一个“到目前为止”的量 the brute-force inner loop computes a "so far" quantity
-  - 状态需要“撤销上一步 / 和最近的配对” the state needs "undo the last one" or "match the most recent one" → 往往一个变量不够，可以用栈当状态 one variable is often not enough; a stack can serve as the state
+  - “最长连续……”、“出现次数” → 运行计数器
+    "Longest consecutive…", "count of…" → a running counter
+  - “右边所有元素中最大/最小” → **从右往左**扫，维护后缀最值
+    "The max/min of everything to the right" → scan **right to left**, keep a suffix max
+  - “左边所有元素……” → 从左往右扫，维护前缀信息
+    "Everything to the left" → scan left to right, keep a prefix value
+  - “环形”、“首尾相接” → `i % n`
+    "Circular", "wraps around" → `i % n`
+  - 暴力解的内层循环在算一个“到目前为止”的量
+    The brute-force inner loop computes a "so far" quantity
+  - 状态需要“撤销上一步 / 和最近的配对” → 往往一个变量不够，可以用栈当状态
+    The state needs "undo the last one" or "match the most recent one" → one variable is often not enough; a stack can serve as the state
 
 ## 3. ⚙️ 原理 How It Works
 
@@ -134,31 +140,31 @@ for (int x : nums) {
 
 **Q1.** 怎么判断该从左往右还是从右往左扫？ How do you choose the scan direction?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 看每个位置需要哪一边的信息。需要“左边所有元素”的信息就从左扫；需要“右边所有元素”就从右扫，这样需要的信息都已经走过、可以用变量记住。
 > Ask which side each position needs. Info about everything to the left → scan left to right; everything to the right → scan right to left, so the needed info is already behind you and fits in a variable.
 
-**Q2.** 1299 里为什么要先 `arr[i] = rightMax` 再更新 `rightMax`，而 485 里是先更新 `count` 再更新 `max`？ Why does 1299 use the state before updating it, while 485 updates the state first?
+**Q2.** 为什么 1299 里要先 `arr[i] = rightMax` 再更新 `rightMax`，而 485 里是先更新 `count` 再更新 `max`？ Why does 1299 use the state before updating it, while 485 updates the state first?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 看状态是否应包含当前元素。1299 要的是“**严格**在右边”的最大值，不能含自己，所以先用后更新。485 的当前这段连续 1 **包含**当前元素，所以先 `count++` 再和 `max` 比。
 > It depends on whether the state should include the current element. 1299 wants the max **strictly** to the right, excluding itself: use, then update. 485's current run **includes** the current element: `count++` first, then compare with `max`.
 
 **Q3.** 如果题目要求“每个元素替换成右边最大值”但不允许修改原数组，空间复杂度是多少？ If you can't modify the input in 1299, what's the space complexity?
 
-> [!success]- Answer
-> 需要一个新的输出数组，O(n)。但按惯例输出数组不算“额外空间”，所以仍然说 O(1) 额外空间。见 [[复杂度分析 Big-O|复杂度分析]]。
+> [!success]- 答案 Answer
+> 需要一个新的输出数组，O(n)。但按惯例输出数组不算“额外空间”，所以仍然说 O(1) 额外空间。见 [[复杂度分析 Big-O|复杂度分析 Big-O]]。
 > You need a new output array: O(n). By convention the output isn't counted as extra space, so it's still O(1) extra. See [[复杂度分析 Big-O|Big-O analysis]].
 
 **Q4.** 为什么 `i % n` 能处理环形数组？ Why does `i % n` handle circular arrays?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > `i % n` 把 `n, n+1, …` 映射回 `0, 1, …`，所以下标走过末尾会自动绕回开头。让 `i` 从 `0` 走到 `2n - 1`，每个位置都能“往后看一整圈”，效果等同于把数组复制一份接在后面（1929），但不占额外空间。
 > `i % n` maps `n, n+1, …` back to `0, 1, …`, so walking past the end wraps to the start. Looping `i` from `0` to `2n - 1` lets every position look a full lap ahead, the same as appending a copy (1929) without the extra space.
 
 ## 8. 🧩 经典题 Practice Problems
 
-| 题目 Problem | 变体 Variant | 难度 |
+| 题目 Problem | 变体 Variant | 难度 Difficulty |
 | --- | --- | --- |
 | ✅ [[Max Consecutive Ones\|485. Max Consecutive Ones]] | 运行计数 running counter | Easy |
 | ✅ [[Replace Elements with Greatest Element on Right Side\|1299. Replace Elements with Greatest Element on Right Side]] | 反向 + 后缀最值 reverse + suffix max | Easy |
@@ -176,7 +182,7 @@ for (int x : nums) {
 ## 9. 🔗 相关 Related
 
 - [[📌 算法总览]]
-- 数据结构 Data structures: [[数组 Array|数组]] · [[栈 Stack|栈]]（状态比一个变量复杂时 when the state is more than a variable） · [[链表 Linked List|链表]]
-- 递归写法 The recursive alternative: [[递归 Recursion|递归]]
-- 写入位置那一类 The write-position variant: [[双指针 Two Pointers|双指针]]
-- 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析]]
+- 数据结构 Data structures: [[数组 Array|数组 Array]] · [[栈 Stack|栈 Stack]]（状态比一个变量复杂时 when the state is more than a variable） · [[链表 Linked List|链表 Linked List]]
+- 递归写法 The recursive alternative: [[递归 Recursion|递归 Recursion]]
+- 写入位置那一类 The write-position variant: [[双指针 Two Pointers|双指针 Two Pointers]]
+- 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析 Big-O]]

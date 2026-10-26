@@ -29,7 +29,7 @@ publish: true
 
 ### 1.1 两部分 Two parts
 
-| 部分 Part | 作用 What it does | [[Reverse Linked List\|206]] 里 In 206 |
+| 部分 Part | 作用 What it does | 在 [[Reverse Linked List\|206]] 里 In 206 |
 | --- | --- | --- |
 | **递归出口 Base case** | 不再调用自己，直接返回答案 answers directly, no further call | `head == null \|\| head.next == null` → `return head` |
 | **递归步骤 Recursive case** | 调用自己解决更小的问题，再结合本层 call itself on a smaller problem, then combine | `reverseList(head.next)`，再把自己接到尾巴 then attach itself at the tail |
@@ -47,7 +47,7 @@ Every recursive call must move **closer** to the base case (a shorter list, a sm
 > 盒子一层比一层小，最后一定会拆到礼物，这就是“每次调用都要更接近 base case”。如果盒子永远拆不完，礼物就永远找不到，程序里就是 `StackOverflowError`。
 > Each box is smaller than the last, so you eventually reach a gift: that's "every call moves closer to the base case". If the boxes never ended, you'd never find the gift; in code, that's a `StackOverflowError`.
 
-### 1.2 相信合同 Trust the contract（recursive leap of faith）
+### 1.2 相信合同 Trust the contract (recursive leap of faith)
 
 这是最难但最重要的一点。站在某一层看，子调用就是一个**已经写好、能用的函数**：只关心它的**结果**，不关心它的**过程**。
 This is the hardest and most important part. From any one level, the child call is **a finished function that works**: care about its **result**, not its **process**.
@@ -158,14 +158,14 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 
 - **时间 Time ≈ 调用次数 × 每次调用的工作量** number of calls × work per call. 画出递归树来数调用次数。
   Draw the recursion tree to count calls.
-- **空间 Space ≈ 最大递归深度 × 每帧大小** max depth × frame size, 再加上额外分配的内存 plus anything allocated. 即使没 `new` 任何对象，深度 d 也要 O(d)（见 [[复杂度分析 Big-O|复杂度分析]]）。
+- **空间 Space ≈ 最大递归深度 × 每帧大小** max depth × frame size, 再加上额外分配的内存 plus anything allocated. 即使没 `new` 任何对象，深度 d 也要 O(d)（见 [[复杂度分析 Big-O|复杂度分析 Big-O]]）。
   Even with no `new`, depth d costs O(d).
 
 | 例子 Example | 调用次数 Calls | ⏱️ Time | 🗄️ Space（深度 depth） |
 | --- | --- | --- | --- |
-| [[Reverse Linked List\|206]] 反转链表 | n | O(n) | O(n) |
-| 104 树的最大深度 | n（每个节点一次 once per node） | O(n) | O(h)，h 是树高 tree height（平衡 balanced O(log n)，链状 skewed O(n)） |
-| 509 朴素斐波那契 naive Fibonacci | 约 φⁿ ≈ 1.618ⁿ，通常写成 O(2ⁿ)（上界 upper bound；更紧 tighter: O(φⁿ)） | O(2ⁿ) | O(n) |
+| [[Reverse Linked List\|206]] 反转链表 Reverse Linked List | n | O(n) | O(n) |
+| 104 树的最大深度 Maximum Depth of Binary Tree | n（每个节点一次 once per node） | O(n) | O(h)，h 是树高（平衡时 O(log n)，链状时 O(n)） O(h) for tree height h (balanced O(log n), skewed O(n)) |
+| 509 朴素斐波那契 Naive Fibonacci | 约 φⁿ ≈ 1.618ⁿ，通常写成上界 O(2ⁿ)，更紧的界是 O(φⁿ) About φⁿ ≈ 1.618ⁿ, usually written as the upper bound O(2ⁿ); the tighter bound is O(φⁿ) | O(2ⁿ) | O(n) |
 | 509 记忆化 memoized | 每个 n 算一次 each n once | O(n) | O(n) |
 
 > [!example] 递归树 Recursion tree: `F(5)`，`F(n) = F(n-1) + F(n-2)`，`F(0) = 0`，`F(1) = 1`
@@ -201,7 +201,7 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 - **没有出口或出口不全 Missing or incomplete base case:** 无限递归 → `StackOverflowError`；漏掉 `null` 的情况 → NPE。206 只写 `head.next == null` 的话，空链表输入就会 NPE → infinite recursion, or an NPE on a missed `null` case.
 - **出口要覆盖子调用能走到的所有最小输入 Base cases must cover every input the calls can reach:** 斐波那契调用 `F(n-1)` 和 `F(n-2)`，所以 `F(0)` 和 `F(1)` 两个出口都要有。只写 `F(1) = 1` 的话，`F(2)` 会调用 `F(0)`，`F(0)` 又调用 `F(-1)`，一直往负数走下去直到栈溢出。`if (n <= 1) return n;` 一行就覆盖了两个 → Fibonacci calls `F(n-1)` and `F(n-2)`, so it needs both `F(0)` and `F(1)`. With only `F(1)`, `F(2)` calls `F(0)`, which calls `F(-1)`, and it runs into negatives until the stack overflows. `if (n <= 1) return n;` covers both in one line.
 - **在脑子里展开每一层 Unrolling every level in your head:** 层数一多就乱了。写的时候只看一层，相信合同；验证时再用 2 到 3 个节点的小例子手推 → write one level and trust the contract; check with a 2–3 element example afterwards.
-- **递归太深 Too deep:** 64 位 HotSpot 默认线程栈通常约 1 MB（取决于平台和 `-Xss`），大约能撑几千到几万层（取决于每帧大小）。Java **不做尾调用优化**，尾递归写法也一样会溢出 → Java does **not** optimize tail calls, so tail recursion overflows too. 太深就改成循环或显式栈 switch to a loop or an explicit stack.
+- **递归太深 Too deep:** 64 位 HotSpot 默认线程栈通常约 1 MB（取决于平台和 `-Xss`），大约能撑几千到几万层（取决于每帧大小）。Java **不做尾调用优化**，尾递归写法也一样会溢出；太深就改成循环或显式栈 → the default thread stack on 64-bit HotSpot is usually about 1 MB (it depends on the platform and `-Xss`), enough for a few thousand to tens of thousands of frames depending on frame size. Java does **not** optimize tail calls, so tail recursion overflows too; switch to a loop or an explicit stack.
 - **重复子问题 Repeated subproblems:** 朴素 `fib(n)` 把同一个 `fib(k)` 算很多次，变成指数级。用记忆化（memo）或改成 DP → memoize or switch to DP.
 - **共享的可变状态 Shared mutable state:** 递归里改了全局变量或传进来的集合，回来时没恢复（回溯里要“撤销选择”） → undo changes on the way back, as backtracking does.
 - **子调用之后数据结构已经变了 The structure changed under you:** 206 里子调用会改 `head.next` 后面的指针，但不会改 `head.next` 本身，所以 `head.next.next = head` 才成立。用之前想清楚子调用改了什么 → know what the child call mutated before using it.
@@ -210,37 +210,37 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 
 **Q1.** 写递归要回答哪三个问题？ What three questions define a recursive function?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > ① 合同：函数做什么、返回什么；② 出口：最小输入怎么直接回答；③ 本层：拿到子问题结果后怎么结合自己得出本层结果。
 > ① The contract: what it does and returns. ② The base case: how the smallest input is answered directly. ③ This level: how to combine the child's result with yourself.
 
-**Q2.** 206 的递归里，`newHead` 看起来是从最底层一路传上来的，为什么说每一层都在“自己推理”？ In 206, why is `return newHead` each level's own reasoning, not just copying?
+**Q2.** 在 206 的递归里，`newHead` 看起来是从最底层一路传上来的，为什么说每一层都在“自己推理”？ In 206, why is `return newHead` each level's own reasoning, not just copying?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 每一层只知道合同：子调用返回的是子链表反转后的头。本层把自己接在尾部，头部不受影响，所以整条链表的新头还是 `newHead`。如果本层改的是头部（比如把自己放在前面），返回值就要变。
 > Each level only knows the contract: the child returns the reversed sublist's head. This level attaches at the tail, so the head is unaffected and the whole list's new head is still `newHead`. If the level changed the front instead, the return value would have to change.
 
 **Q3.** 一个递归函数没有 `new` 任何对象，为什么空间不是 O(1)？ A recursive function allocates nothing; why isn't its space O(1)?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 每层调用都在调用栈上占一帧（参数、局部变量、返回地址），最大深度是 d 就需要 O(d) 空间。206 的递归版深度是 n，所以是 O(n)。
 > Each call takes a stack frame (parameters, locals, return address). Max depth d means O(d) space; 206's recursion is n deep, so O(n).
 
 **Q4.** 尾递归在 Java 里能省栈空间吗？ Does tail recursion save stack space in Java?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 不能。HotSpot JVM 不做尾调用优化，尾递归每层仍然占一帧，深度大时一样 `StackOverflowError`。需要 O(1) 空间就改写成循环。
 > No. HotSpot doesn't do tail-call optimization, so each call still takes a frame and deep recursion still overflows. For O(1) space, rewrite it as a loop.
 
 **Q5.** 为什么朴素递归的斐波那契很慢？怎么改？ Why is naive recursive Fibonacci slow, and how do you fix it?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > `fib(n)` 调用 `fib(n-1)` 和 `fib(n-2)`，同一个子问题被反复计算，调用次数随 n 指数增长。用数组记住算过的结果（记忆化），每个 `fib(k)` 只算一次，变成 O(n)；再进一步就是自底向上的动态规划。
 > `fib(n)` calls `fib(n-1)` and `fib(n-2)`, recomputing the same subproblems, so calls grow exponentially. Memoize results so each `fib(k)` is computed once, giving O(n); going bottom-up from there is dynamic programming.
 
 ## 8. 🧩 经典题 Practice Problems
 
-| 题目 Problem | 练的是什么 What it practices | 难度 |
+| 题目 Problem | 练的是什么 What it practices | 难度 Difficulty |
 | --- | --- | --- |
 | ✅ [[Reverse Linked List\|206. Reverse Linked List]] | 后序递归，相信合同 post-order, trust the contract | Easy |
 | 21. Merge Two Sorted Lists | 小的那个节点 + 合并剩下的 smaller node + merge the rest | Easy |
@@ -255,5 +255,5 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 - [[📌 算法总览]]
 - 运行机制 How it runs: [[栈 Stack|栈 Stack]]（调用栈 the call stack；递归可以改成显式栈 recursion can become an explicit stack）
 - 数据结构 Data structures: [[链表 Linked List|链表 Linked List]]（天然递归的结构 a naturally recursive structure）
-- 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析]]（递归栈也算空间 the recursion stack counts as space）
-- 对比 Compare with: [[一次遍历 One Pass|一次遍历]]（206 的迭代写法 206's iterative version）
+- 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析 Big-O]]（递归栈也算空间 the recursion stack counts as space）
+- 对比 Compare with: [[一次遍历 One Pass|一次遍历 One Pass]]（206 的迭代写法 iterative version）

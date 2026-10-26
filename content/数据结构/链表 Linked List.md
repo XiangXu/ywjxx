@@ -128,7 +128,7 @@ When the head might be removed or replaced, put a fake `dummy` node in front so 
 
 ### 3.4 快慢指针 Fast and slow pointers
 
-链表不能用下标，找中点、找倒数第 k 个、判断有没有环都靠[[双指针 Two Pointers|双指针]]：`slow` 每次走一步，`fast` 每次走两步。`fast` 到尾时 `slow` 在中间；有环的话两者一定会相遇（141）。
+链表不能用下标，找中点、找倒数第 k 个、判断有没有环都靠[[双指针 Two Pointers|双指针 Two Pointers]]：`slow` 每次走一步，`fast` 每次走两步。`fast` 到尾时 `slow` 在中间；有环的话两者一定会相遇（141）。
 Without indices, finding the middle, the k-th from the end, or a cycle uses two pointers: `slow` moves one step, `fast` moves two. When `fast` reaches the end, `slow` is in the middle; if there's a cycle they must meet (141).
 
 ## 4. 💻 模板代码 Code Template
@@ -190,38 +190,38 @@ while (fast != null && fast.next != null) {
 - **空链表和单节点 Empty and single-node lists:** 每次写完都用 `[]`、`[1]`、`[1, 2]` 过一遍 → test with `[]`, `[1]` and `[1, 2]` every time.
 - **忘了断开旧指针，形成环 Forgetting to cut the old pointer:** 反转、重排时新尾巴的 `next` 要设成 `null`，否则遍历死循环 → set the new tail's `next` to `null`, or traversal loops forever (206's `head.next = null`).
 - **头节点可能变化却返回了 `head`** Returning `head` when the head changed: 用 dummy，返回 `dummy.next` → use a dummy and return `dummy.next`.
-- **`java.util.LinkedList.get(i)` 是 O(n)**: 在循环里 `list.get(i)` 整体变 O(n²)；要遍历用迭代器或 for-each → looping with `get(i)` is O(n²); use an iterator or for-each.
-- **递归太深 Recursion too deep:** 递归处理链表每个节点一层，很长的链表可能 `StackOverflowError` → one frame per node; very long lists can overflow, see [[递归 Recursion|递归]].
+- **`LinkedList.get(i)` 是 O(n) 的 `LinkedList.get(i)` is O(n)**: 在循环里 `list.get(i)` 整体变 O(n²)；要遍历用迭代器或 for-each → looping with `get(i)` is O(n²); use an iterator or for-each.
+- **递归太深 Recursion too deep:** 递归处理链表每个节点一层，很长的链表可能 `StackOverflowError` → one frame per node; very long lists can overflow, see [[递归 Recursion|递归 Recursion]].
 
 ## 7. ❓ 复习题 Review Questions
 
 **Q1.** 链表“插入 O(1)”有什么前提？ When is a linked-list insert really O(1)?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 已经拿到了插入位置的前一个节点（或用双向链表拿到了那个节点本身）。如果要先从头找到第 i 个位置，查找就是 O(n)。
 > When you already hold the node before the insertion point (or, in a doubly linked list, the node itself). If you first have to find position i from the head, that search is O(n).
 
 **Q2.** 在 `a` 后面插入 `x`，两行代码的顺序为什么不能反？ Why can't the two lines of "insert x after a" be swapped?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 先写 `a.next = x` 的话，原来的 `a.next`（以及后面整段）就没有引用了，`x.next = a.next` 只会让 `x` 指向自己。必须先 `x.next = a.next` 再 `a.next = x`。
 > With `a.next = x` first, the old `a.next` (and everything after) has no reference left, and `x.next = a.next` would make `x` point at itself. Do `x.next = a.next` first, then `a.next = x`.
 
 **Q3.** 什么时候用哑节点？ When do you use a dummy head?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 头节点可能被删除、替换，或者要从空开始拼一条新链表时（合并、过滤）。dummy 让头节点也有“前一个”，省掉特殊判断，最后返回 `dummy.next`。
 > When the head might be deleted or replaced, or you're building a new list from scratch (merging, filtering). The dummy gives the head a predecessor, removing special cases; return `dummy.next`.
 
 **Q4.** 链表和数组遍历都是 O(n)，为什么数组实际更快？ Both are O(n) to scan; why is an array faster in practice?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 数组连续存放，一条 cache line 能带进多个元素，CPU 还能预取；链表节点分散，每走一步都可能是一次缓存未命中。
 > Arrays are contiguous, so one cache line brings in several elements and the CPU can prefetch. Linked-list nodes are scattered, so each step may be a cache miss.
 
 ## 8. 🧩 经典题 Practice Problems
 
-| 题目 Problem | 练的是什么 What it practices | 难度 |
+| 题目 Problem | 练的是什么 What it practices | 难度 Difficulty |
 | --- | --- | --- |
 | ✅ [[Reverse Linked List\|206. Reverse Linked List]] | 指针反转，迭代 + 递归 pointer reversal, iterative + recursive | Easy |
 | 21. Merge Two Sorted Lists | 哑节点拼新链表 dummy head to build a list | Easy |
@@ -238,4 +238,4 @@ while (fast != null && fast.next != null) {
 - [[📌 数据结构总览]]
 - 对比 Compare with: [[数组 Array|数组 Array]]（连续内存 vs 分散节点 contiguous vs scattered）
 - 数据结构 Data structures: [[栈 Stack|栈 Stack]]（可以用链表实现 can be linked-list-backed）
-- 算法 Algorithms: [[递归 Recursion|递归 Recursion]]（链表天然是递归结构 a list is a node plus a smaller list） · [[双指针 Two Pointers|双指针]]（快慢指针 fast/slow） · [[复杂度分析 Big-O|复杂度分析]]
+- 算法 Algorithms: [[递归 Recursion|递归 Recursion]]（链表天然是递归结构 a list is a node plus a smaller list） · [[双指针 Two Pointers|双指针 Two Pointers]]（快慢指针 fast/slow） · [[复杂度分析 Big-O|复杂度分析 Big-O]]

@@ -23,7 +23,7 @@ last-reviewed: 2026-10-26
 
 > [!abstract] TL;DR
 > **迭代：** 用 `prev`、`curr`、`next` 三个指针从头走到尾，每一步把 `curr.next` 调头指向 `prev`，最后 `prev` 就是新头。**递归：** 先相信 `reverseList(head.next)` 把后面那段反转好并返回新头 `newHead`，本层只做两件事：把自己接到那段的尾巴上（`head.next.next = head; head.next = null`），然后原样返回 `newHead`。
-> **Iterative:** walk `prev`, `curr` and `next` from head to tail, flipping `curr.next` to point at `prev` at each step; at the end `prev` is the new head. **Recursive:** trust `reverseList(head.next)` to reverse the rest and return its new head `newHead`; this level only appends itself to that part's tail (`head.next.next = head; head.next = null`) and returns `newHead` unchanged. ⏱️ O(n) · 🗄️ 迭代 iterative O(1) / 递归 recursive O(n) 调用栈 call stack
+> **Iterative:** walk `prev`, `curr` and `next` from head to tail, flipping `curr.next` to point at `prev` at each step; at the end `prev` is the new head. **Recursive:** trust `reverseList(head.next)` to reverse the rest and return its new head `newHead`; this level only appends itself to that part's tail (`head.next.next = head; head.next = null`) and returns `newHead` unchanged. ⏱️ O(n) · 🗄️ O(1) iterative / O(n) recursive (call stack)
 
 ## 1. 📋 题目 Problem
 
@@ -59,7 +59,7 @@ public class ListNode {
   No node moves and no `val` changes; just **flip every `next` arrow**. `1 → 2 → 3` becomes `1 ← 2 ← 3`, and the old tail 3 becomes the new head.
 - **难点 The hard part:** 单链表只能往后走。一旦把 `curr.next` 改成指向 `prev`，就再也找不到后面的节点了，所以**改之前要先把 `curr.next` 存起来**。
   A singly linked list only goes forward. Once `curr.next` points back at `prev`, the rest of the list is unreachable, so **save `curr.next` before overwriting it**.
-- **套路 Pattern:** 链表指针操作 linked-list pointer manipulation。迭代版是“边走边改”的 [[一次遍历 One Pass|一次遍历]]；递归版是“先解决子问题，回来时再处理自己”的[[递归 Recursion|递归]]（后序 post-order）。
+- **套路 Pattern:** 链表指针操作 linked-list pointer manipulation。迭代版是“边走边改”的 [[一次遍历 One Pass|一次遍历 One Pass]]；递归版是“先解决子问题，回来时再处理自己”的[[递归 Recursion|递归 Recursion]]（后序 post-order）。
   The iterative version is a one pass that rewires as it goes; the recursive version solves the subproblem first and handles the current node on the way back (post-order recursion).
 
 ## 3. 🐢 暴力解 Brute Force
@@ -85,7 +85,7 @@ public ListNode reverseList(ListNode head) {
 ```
 
 - ⏱️ Time: O(n)，两趟 two passes
-- 🗄️ Space: O(n)，栈里存了全部节点 the stack holds every node。最优解可以做到 O(1) the optimal solution needs only O(1)
+- 🗄️ Space: O(n)，栈里存了全部节点，而最优解只需要 O(1) 空间 the stack holds every node, while the optimal solution needs only O(1)
 
 ## 4. 🚀 最优解 Optimal Solution
 
@@ -156,7 +156,7 @@ class Solution {
 > | 层 Level (`head`) | 调用 Call | 子调用交回 Child returns | 本层做的事 This level's work | 之后链表 List after | 返回 Returns |
 > | --- | --- | --- | --- | --- | --- |
 > | 3 | 触底 base case | — | 无 none | `3 → null` | 3 |
-> | 2 | `reverseList(3)` | `3` | `3.next = 2`，`2.next = null` | `3 → 2 → null`（1 仍指向 2 still points to 2） | 3 |
+> | 2 | `reverseList(3)` | `3` | `3.next = 2`，`2.next = null` | `3 → 2 → null`（节点 1 仍指向 2 Node 1 still points to 2） | 3 |
 > | 1 | `reverseList(2)` | `3 → 2` | `2.next = 1`，`1.next = null` | `3 → 2 → 1 → null` | 3 |
 >
 > 每一层拿到的 `newHead` 都是 3，每一层也都原样返回 3。
@@ -239,9 +239,9 @@ So `return newHead` isn't "copying whatever came from below"; it's **this level'
 - [x] 空链表 Empty list (`head == null`): 迭代版不进循环，返回 `prev = null`；递归版由 `head == null` 直接返回 → iterative skips the loop and returns `null`; recursive returns at the `head == null` check
 - [x] 只有一个节点 Single node: 两种写法都原样返回 `head` → both return `head` as is
 - [x] ⚠️ 先存 `next` 再改指针 Save `next` before rewiring: 如果先写 `curr.next = prev`，后面的节点就丢了 → write `curr.next = prev` first and the rest of the list is lost
-- [x] ⚠️ 返回 `prev`，不是 `curr` Return `prev`, not `curr`: 循环结束时 `curr` 一定是 `null` → `curr` is always `null` when the loop ends
+- [x] ⚠️ 返回 `prev` 而不是 `curr` Return `prev`, not `curr`: 循环结束时 `curr` 一定是 `null` → `curr` is always `null` when the loop ends
 - [x] ⚠️ 递归版不能省 `head.next = null` Don't drop `head.next = null`: 省掉的话最后 1 和 2 互相指向，形成环，打印或遍历时死循环 → without it, 1 and 2 point at each other, forming a cycle and an infinite loop when traversed
-- [x] ⚠️ 递归的 base case 必须包含 `head == null` The base case must cover `head == null`: 只写 `head.next == null` 的话，空链表输入时 `null.next` 抛 NPE → with only `head.next == null`, an empty input throws an NPE
+- [x] ⚠️ 递归的 base case 必须包含 `head == null` The base case must cover `head == null`: 只写 `head.next == null` 的话，空链表输入时 `null.next` 抛空指针异常 → with only `head.next == null`, an empty input throws an NPE
 - [x] 递归深度 Recursion depth: 每个节点一层，n ≤ 5000 时 JVM 默认栈通常够用；链表长到十万级时可能 `StackOverflowError`，用迭代版 → one frame per node; fine at n ≤ 5000 with the default JVM stack, but a list in the hundreds of thousands can overflow, so use the iterative version
 
 ## 6. 🔁 进阶 Follow-ups
@@ -259,31 +259,31 @@ So `return newHead` isn't "copying whatever came from below"; it's **this level'
 
 **Q1.** 迭代版为什么一定要先 `ListNode next = curr.next`？ Why must the iterative version save `curr.next` first?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 单链表只能往后走。`curr.next = prev` 之后，`curr` 和后面节点的唯一联系就断了，不提前存下来就找不到下一个节点。
 > A singly linked list only goes forward. After `curr.next = prev`, the only link from `curr` to the rest is gone, so without saving it you can't reach the next node.
 
 **Q2.** 递归版里，为什么每一层都能直接 `return newHead`？ Why can every level just `return newHead`?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 按合同，`newHead` 是子链表反转后的头。本层把自己接到子链表的**尾巴**上，头不变，所以整条链表反转后的头还是 `newHead`。这是每一层自己推出来的，不是“照搬”。
 > By contract, `newHead` is the head of the reversed sublist. This level attaches itself at the sublist's **tail**, so the head doesn't change and the whole reversed list's head is still `newHead`. Each level deduces this itself.
 
 **Q3.** `head.next.next = head` 是什么意思？为什么这时 `head.next` 还能用？ What does `head.next.next = head` mean, and why is `head.next` still valid?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 子调用只改了从 `head.next` 开始的那一段，没碰 `head` 本身，所以 `head.next` 仍指向原来的下一个节点，而它现在是反转后子链表的尾巴。`head.next.next = head` 就是让这个尾巴指回我。
 > The child call only rewired the part starting at `head.next` and never touched `head`, so `head.next` still points at the old next node, which is now the reversed sublist's tail. `head.next.next = head` makes that tail point back at me.
 
 **Q4.** 两种写法的空间复杂度分别是多少？ What's the space complexity of each?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 迭代 O(1)，只有几个指针。递归 O(n)，因为递归深度是 n，每层在[[栈 Stack|调用栈]]上占一帧，即使没有 `new` 任何对象。
 > Iterative is O(1): a few pointers. Recursive is O(n): recursion depth is n and each level takes a frame on the call stack, even though nothing is allocated with `new`.
 
 **Q5.** 去掉 `head.next = null` 会怎样？ What happens without `head.next = null`?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 原头节点 1 仍然指向 2，而 2 已经指向 1，形成 `1 ⇄ 2` 的环。返回的链表遍历到最后会在 1 和 2 之间死循环。
 > The old head 1 still points at 2 while 2 points at 1, forming a `1 ⇄ 2` cycle. Traversing the result loops forever between them.
 

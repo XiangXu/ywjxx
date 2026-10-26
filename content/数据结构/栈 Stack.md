@@ -47,14 +47,14 @@ push 1, push 2, push 3          pop() → 3          peek() → 2
 
 ### 1.2 底层实现 How it's built
 
-栈只在一端操作，所以用**数组**实现最自然：栈顶就是数组末尾（概念上；`ArrayDeque` 实际是循环数组），push / pop 就是在末尾追加 / 删除，正好是数组最擅长的 O(1) 操作（见 [[数组 Array|数组 Array]]）。也可以用[[链表 Linked List|链表]]，在头部插入删除。
+栈只在一端操作，所以用**数组**实现最自然：栈顶就是数组末尾（概念上；`ArrayDeque` 实际是循环数组），push / pop 就是在末尾追加 / 删除，正好是数组最擅长的 O(1) 操作（见 [[数组 Array|数组 Array]]）。也可以用[[链表 Linked List|链表 Linked List]]，在头部插入删除。
 A stack only touches one end, so an **array** is the natural fit: the top is the end of the array (conceptually; `ArrayDeque` is a circular array internally), and push/pop are append/remove-last, exactly the O(1) operations arrays are good at (see [[数组 Array|Array]]). A linked list with insert/remove at the head also works.
 
 | | 数组实现 Array-backed | 链表实现 Linked-list-backed |
 | --- | --- | --- |
-| push / pop | O(1)（扩容时 O(n)，均摊 O(1) amortized） | O(1) |
+| push / pop | O(1)（扩容时 O(n)，均摊仍是 O(1) Resizing is O(n), amortized O(1)） | O(1) |
 | 内存 Memory | 连续，缓存友好 contiguous, cache-friendly | 每个节点多一个指针 an extra pointer per node |
-| Java | `ArrayDeque`、自己用 `int[]` + `size` | `LinkedList`（也实现了 `Deque` also implements `Deque`） |
+| Java | `ArrayDeque`，或自己用 `int[]` 和一个计数器 `ArrayDeque`, or your own `int[]` with a size counter | `LinkedList`（它也实现了 `Deque` 接口 it also implements `Deque`） |
 
 ### 1.3 Java 里用哪个 Which one in Java
 
@@ -65,12 +65,12 @@ A stack only touches one end, so an **array** is the natural fit: the top is the
 | `int[] st = new int[n]; int size = 0;` | ⚡ 知道最大容量时通常最快，没有装箱 Usually the fastest when the max size is known; no boxing |
 
 > [!note] `Stack` 和 `ArrayDeque` 的方法对照 Method comparison
-> | 操作 | `Stack` | `ArrayDeque`（当栈用 as a stack） |
+> | 操作 Operation | `Stack` | `ArrayDeque`（当栈用 as a stack） |
 > | --- | --- | --- |
 > | 压栈 push | `push(x)` | `push(x)`（= `addFirst`） |
-> | 出栈 pop | `pop()`，空栈抛 `EmptyStackException` | `pop()`，空栈抛 `NoSuchElementException` |
-> | 看栈顶 peek | `peek()`，空栈抛 `EmptyStackException` | `peek()`，空栈返回 `null` returns `null` |
-> | 存 `null` | 可以 allowed | ❌ 抛 `NullPointerException` throws NPE |
+> | 出栈 pop | `pop()`，栈为空时抛 `EmptyStackException` 异常 `pop()`; throws `EmptyStackException` when empty | `pop()`，栈为空时抛 `NoSuchElementException` 异常 `pop()`; throws `NoSuchElementException` when empty |
+> | 看栈顶 peek | `peek()`，栈为空时抛 `EmptyStackException` 异常 `peek()`; throws `EmptyStackException` when empty | `peek()`，栈为空时返回 `null`，不抛异常 `peek()`; returns `null` when empty instead of throwing |
+> | 存 `null` Storing `null` | 可以 Allowed | ❌ 会抛空指针异常 Throws `NullPointerException` |
 > | 遍历顺序 Iteration order | 栈底 → 栈顶 bottom → top | 栈顶 → 栈底 top → bottom |
 >
 > 在 LeetCode 上把 `Stack` 换成 `ArrayDeque` 基本只要改声明那一行，但要注意上表的空栈行为和遍历顺序；`Stack` 的 `empty()`、`search()`、`get(i)` 在 `Deque` 上不存在。
@@ -82,10 +82,10 @@ A stack only touches one end, so an **array** is the natural fit: the top is the
   - **配对 / 嵌套 Matching and nesting:** 括号、标签、表达式 brackets, tags, expressions → [[Valid Parentheses|20]]
   - **撤销 / 删除上一个 Undo / delete the previous one:** 退格、作废上一次得分 backspace, cancel the last score → [[Baseball Game|682]]
   - **随时知道“到目前为止”的某个值 Track a "so far" value per level:** 最小值、最大值 min / max → [[Min Stack|155]]
-  - **“下一个更大 / 更小” Next greater / smaller element:** 单调栈 monotonic stack（739、496、84）
-  - **后缀表达式求值 Evaluate postfix (RPN):** 数字压栈，遇到运算符弹出两个 push numbers, pop two on an operator（150）
-  - **把递归改成迭代 Turn recursion into a loop:** DFS、树的遍历 DFS, tree traversal。[[递归 Recursion|递归]]本身就是用**调用栈 call stack** 实现的 Recursion itself runs on the call stack（[[Reverse Linked List|206]] 的递归版深度 n，空间 O(n) 206's recursion is n deep, O(n) space）
-- ❌ 需要先进先出（按到达顺序处理，如 BFS）→ 用队列 Need first in, first out (e.g. BFS) → use a queue
+  - **“下一个更大 / 更小” Next greater / smaller element:** 单调栈（739、496、84） A monotonic stack (739, 496, 84)
+  - **后缀表达式求值 Evaluate postfix (RPN):** 数字压栈，遇到运算符弹出两个（150） Push numbers and pop two on an operator (150)
+  - **把递归改成迭代 Turn recursion into a loop:** DFS、树的遍历都可以改用显式栈，因为[[递归 Recursion|递归 Recursion]]本身就跑在**调用栈**上（[[Reverse Linked List|206]] 的递归版深度是 n，空间 O(n)） → DFS and tree traversals can use an explicit stack, because [[递归 Recursion|recursion]] itself runs on the **call stack** ([[Reverse Linked List|206]]'s recursion is n deep, O(n) space)
+- ❌ 需要先进先出（按到达顺序处理，如 BFS），用队列 → Need first in, first out (e.g. BFS): use a queue
 
 ## 3. ⚙️ 原理 How It Works
 
@@ -162,31 +162,31 @@ Stack algorithms are commonly **O(n) time**: each element is pushed once and pop
 
 **Q1.** 为什么数组很适合实现栈？ Why is an array a good fit for a stack?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 栈只在一端操作。把数组末尾当栈顶，push / pop 就是末尾追加 / 删除，都是 O(1)，不需要平移元素，而且内存连续、缓存友好。
 > A stack works at one end only. With the array's end as the top, push/pop are append/remove-last, both O(1) with no shifting, and the memory is contiguous and cache-friendly.
 
 **Q2.** Java 里为什么推荐 `ArrayDeque` 而不是 `Stack`？ Why prefer `ArrayDeque` over `Stack` in Java?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > `Stack` 继承自 `Vector`，大部分方法都同步，单线程下有不必要的同步开销（通常很小）；还暴露了 `get(i)`、`add(i, x)` 等方法，可以绕过栈的规则。`ArrayDeque` 没有同步开销，官方文档也推荐用 `Deque` 做栈。
 > `Stack` extends `Vector`: most methods are synchronized (unnecessary, though usually small, overhead single-threaded) and it exposes `get(i)` / `add(i, x)` that bypass stack rules. `ArrayDeque` has no locking, and the Javadoc recommends `Deque` for stacks.
 
 **Q3.** 循环里有一个 `while` 不断 pop，为什么单调栈仍然是 O(n)？ With a `while` popping inside the loop, why is a monotonic stack still O(n)?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 看总工作量：每个元素最多被 push 一次、pop 一次，所以所有 `while` 加起来最多 pop n 次，总共 O(n)。
 > Count total work: each element is pushed once and popped at most once, so all the `while` loops together pop at most n times. O(n) overall.
 
 **Q4.** 栈和队列分别适合什么场景？ When do you use a stack vs a queue?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 栈后进先出，适合“最近的先处理”：配对、撤销、DFS。队列先进先出，适合“按到达顺序处理”：BFS、任务调度。
 > A stack (LIFO) handles the most recent first: matching, undo, DFS. A queue (FIFO) handles things in arrival order: BFS, task scheduling.
 
 ## 8. 🧩 经典题 Practice Problems
 
-| 题目 Problem | 练的是什么 What it practices | 难度 |
+| 题目 Problem | 练的是什么 What it practices | 难度 Difficulty |
 | --- | --- | --- |
 | ✅ [[Baseball Game\|682. Baseball Game]] | 栈模拟，撤销上一个 stack simulation, undo the last one | Easy |
 | ✅ [[Valid Parentheses\|20. Valid Parentheses]] | 括号配对 bracket matching | Easy |
@@ -200,6 +200,6 @@ Stack algorithms are commonly **O(n) time**: each element is pushed once and pop
 ## 9. 🔗 相关 Related
 
 - [[📌 数据结构总览]]
-- 底层实现 Built on: [[数组 Array|数组 Array]]（也是 [[Design Dynamic Array|动态数组]] 的典型用途 a classic use of a dynamic array） 或 or [[链表 Linked List|链表 Linked List]]
+- 底层实现 Built on: [[数组 Array|数组 Array]]（也是 [[Design Dynamic Array|动态数组 dynamic array]] 的典型用途 a classic use of a dynamic array） 或 or [[链表 Linked List|链表 Linked List]]
 - 算法 Algorithms: [[一次遍历 One Pass|一次遍历 One Pass]]（栈当状态 stack as state） · [[递归 Recursion|递归 Recursion]]（调用栈 the call stack）
 - 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析 Big-O]]（均摊分析 amortized analysis；[[Min Stack|155]] 用辅助栈换时间 trades space for time）

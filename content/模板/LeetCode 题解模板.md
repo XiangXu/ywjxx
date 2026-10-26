@@ -16,7 +16,8 @@ last-reviewed: {{date:YYYY-MM-DD}}
 # 🧩 {{title}}
 
 ## 1. 📋 题目 Problem
-> 用一两句话概括题意 / Summarize the problem in 1–2 sentences.
+> 用一两句话概括题意。
+> Summarize the problem in 1–2 sentences.
 
 ## 2. 💡 思路 Intuition
 - 关键观察 Key insight:

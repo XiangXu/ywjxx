@@ -36,10 +36,14 @@ publish: true
 ## 2. 🧠 什么时候用 When to Use
 
 - 🔎 题目信号 Signals in the problem:
-  - “**原地** in place”、“**O(1) 额外空间** O(1) extra space”、“返回新长度 return the new length” → 同向读写指针 read/write pointers
-  - “**有序数组** sorted array” + 找一对 find a pair → 相向指针 opposite pointers
-  - “反转 reverse”、“回文 palindrome” → 相向指针 opposite pointers
-  - 暴力解是两层循环，而且内层循环在“重新扫已经扫过的部分” the brute force is a nested loop that rescans what it already saw
+  - “**原地**”、“**O(1) 额外空间**”、“返回新长度” → 同向读写指针
+    "**In place**", "**O(1) extra space**", "return the new length" → read/write pointers
+  - “**有序数组**” + 找一对 → 相向指针
+    "**Sorted array**" + find a pair → opposite pointers
+  - “反转”、“回文” → 相向指针
+    "Reverse", "palindrome" → opposite pointers
+  - 暴力解是两层循环，而且内层循环在“重新扫已经扫过的部分”
+    The brute force is a nested loop that rescans what it already saw
 
 ## 3. ⚙️ 原理 How It Works
 
@@ -87,7 +91,7 @@ for (int fast = 0; fast < nums.length; fast++) {
 return slow;                             // 结果长度 result length
 ```
 
-| 题目 Problem | `keep(...)` 条件 |
+| 题目 Problem | 保留条件 `keep(...)` condition |
 | --- | --- |
 | 27. Remove Element | `nums[fast] != val` |
 | 26. Remove Duplicates from Sorted Array | `slow == 0 \|\| nums[fast] != nums[slow - 1]` |
@@ -122,7 +126,7 @@ return new int[] {-1, -1};
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
-- **`left < right` 还是 `left <= right`？** 两个指针指向同一个元素时还要不要处理？反转、两数之和用 `<`（一个元素不能和自己配对）；[[Remove Element|27]] 的相向写法里 `right` 是开区间 `nums.length`，所以 `left < right` 正好覆盖每个元素。
+- **`left < right` 还是 `left <= right`？ `left < right` or `left <= right`?** 两个指针指向同一个元素时还要不要处理？反转、两数之和用 `<`（一个元素不能和自己配对）；[[Remove Element|27]] 的相向写法里 `right` 是开区间 `nums.length`，所以 `left < right` 正好覆盖每个元素。
   Do you still need to process the element when both pointers meet? Reverse and pair-sum use `<` (an element can't pair with itself). In 27's opposite-pointer version `right` starts at `nums.length` (exclusive), so `left < right` covers every element.
 - **换过来的元素还没检查 The swapped-in element is unchecked:** 27 的相向写法用末尾元素填坑后**不能** `left++`，因为新来的值也可能等于 `val`。
   In 27's opposite version, after filling the hole from the end you must **not** `left++`: the new value might also equal `val`.
@@ -135,31 +139,31 @@ return new int[] {-1, -1};
 
 **Q1.** 读写指针为什么能原地完成，不会覆盖还没读的数据？ Why can read/write pointers work in place without overwriting unread data?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 因为 `slow ≤ fast` 始终成立：写的位置永远不在读的位置之后。被覆盖的 `nums[slow]` 要么已经读过（被丢弃或已复制到前面），要么就是 `fast` 自己。
 > Because `slow ≤ fast` always holds: the write position never passes the read position. The overwritten `nums[slow]` was either already read (discarded or copied forward) or is `fast` itself.
 
 **Q2.** 有序数组找两数之和等于 target，为什么 `sum < target` 时可以放心 `left++`？ On a sorted array, why is `left++` safe when `sum < target`?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > `nums[right]` 是当前还可能配对的最大值。`nums[left]` 和最大的都凑不够，和更小的更凑不够，所以 `nums[left]` 不可能在答案里，排除它不会漏解。
 > `nums[right]` is the largest value still available. If `nums[left]` falls short even with it, it falls short with anything smaller, so `nums[left]` can't be in any answer and dropping it loses nothing.
 
-**Q3.** 27. Remove Element 的两种写法各在什么情况下更好？ When is each version of 27 better?
+**Q3.** 两种写法在 27. Remove Element 里各在什么情况下更好？ When is each version of 27 better?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 读写指针：要保持顺序，或 `val` 很多时。相向填坑：`val` 很少时写入次数更少（写入次数 = `val` 的个数），但不保序。两者都是 O(n) 时间 O(1) 空间。
 > Read/write: when order must be kept, or when `val` is common. Fill-from-end: fewer writes when `val` is rare (writes = number of `val`s), but order isn't kept. Both are O(n) time, O(1) space.
 
-**Q4.** 26. Remove Duplicates from Sorted Array 的保留条件为什么和 `nums[slow - 1]` 比，而不是和 `nums[fast - 1]` 比？ Why compare with `nums[slow - 1]` rather than `nums[fast - 1]`?
+**Q4.** 在 26. Remove Duplicates from Sorted Array 里，保留条件为什么和 `nums[slow - 1]` 比，而不是和 `nums[fast - 1]` 比？ Why compare with `nums[slow - 1]` rather than `nums[fast - 1]`?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > `nums[slow - 1]` 是结果里最后一个保留的值，题意就是“和已保留的最后一个不同才保留”。在有序数组里两种写法结果一样（重复值相邻），但和 `slow - 1` 比更能推广到 80. Remove Duplicates II（每个值最多保留两个：和 `nums[slow - 2]` 比）。
 > `nums[slow - 1]` is the last kept value, which is exactly the rule: keep it only if it differs from the last kept one. On sorted input both work (duplicates are adjacent), but comparing against `slow - 1` generalizes to 80. Remove Duplicates II (keep at most two: compare with `nums[slow - 2]`).
 
 ## 8. 🧩 经典题 Practice Problems
 
-| 题目 Problem | 类型 Type | 难度 |
+| 题目 Problem | 类型 Type | 难度 Difficulty |
 | --- | --- | --- |
 | ✅ [[Remove Element\|27. Remove Element]] | 同向 / 相向填坑 both | Easy |
 | 26. Remove Duplicates from Sorted Array | 同向 same direction | Easy |
@@ -173,6 +177,6 @@ return new int[] {-1, -1};
 ## 9. 🔗 相关 Related
 
 - [[📌 算法总览]]
-- 数据结构 Data structures: [[数组 Array|数组]] · [[链表 Linked List|链表]]（快慢指针找中点、判环 fast/slow pointers for the middle and cycles）
-- 同为一次遍历 Also single pass: [[一次遍历 One Pass|一次遍历]]
-- 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析]]
+- 数据结构 Data structures: [[数组 Array|数组 Array]] · [[链表 Linked List|链表 Linked List]]（快慢指针找中点、判环 fast/slow pointers for the middle and cycles）
+- 同为一次遍历 Also single pass: [[一次遍历 One Pass|一次遍历 One Pass]]
+- 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析 Big-O]]

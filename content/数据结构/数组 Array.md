@@ -53,7 +53,7 @@ The address of element `i` is **base + i × element size**. `a[2]` is at `1000 +
 | 末尾追加 Append | 没有空位就不行 only if there's room | 均摊 O(1) amortized |
 | 实现 How | 一块连续内存 one block | 静态数组 + size/capacity，满了翻倍复制 a static array + size/capacity, doubled and copied when full |
 
-动态数组的扩容细节、为什么翻倍是均摊 O(1)，见 [[Design Dynamic Array|Design Dynamic Array]] 和 [[复杂度分析 Big-O|复杂度分析]]。
+动态数组的扩容细节、为什么翻倍是均摊 O(1)，见 [[Design Dynamic Array|Design Dynamic Array]] 和 [[复杂度分析 Big-O|复杂度分析 Big-O]]。
 For how dynamic arrays grow and why doubling is amortized O(1), see [[Design Dynamic Array|Design Dynamic Array]] and [[复杂度分析 Big-O|Big-O analysis]].
 
 ## 2. 🧠 什么时候用 When to Use
@@ -62,10 +62,11 @@ For how dynamic arrays grow and why doubling is amortized O(1), see [[Design Dyn
 - ✅ 主要在**末尾**增删 Adding/removing mostly at the **end** ([[栈 Stack|栈 stack]] 就常用数组实现 stacks are usually array-backed)
 - ✅ 需要顺序遍历、对缓存友好 Sequential scans, cache-friendly
 - ✅ 数据有序时可以二分查找 O(log n) Binary search once sorted
-- ❌ 频繁在**头部或中间**插入/删除 Frequent inserts/deletes at the **front or middle** → 考虑链表或双端队列 consider a linked list or deque (`ArrayDeque`)
-- ❌ 按值查找很频繁 Frequent lookups by value → 考虑哈希表 consider a hash map
+- ❌ 频繁在**头部或中间**插入/删除，考虑链表或双端队列（`ArrayDeque`） → Frequent inserts/deletes at the **front or middle**: consider a linked list or deque (`ArrayDeque`)
+- ❌ 按值查找很频繁，考虑哈希表 → Frequent lookups by value: consider a hash map
 
-- 🔎 题目信号 Signals: “原地 in place”、“O(1) 额外空间 O(1) extra space”、“返回新长度 return the new length”，通常意味着要用 [[双指针 Two Pointers|双指针]] 在数组内部覆盖写入。
+- 🔎 题目信号 Signals: “原地”、“O(1) 额外空间”、“返回新长度”，通常意味着要用 [[双指针 Two Pointers|双指针 Two Pointers]] 在数组内部覆盖写入。
+  "In place", "O(1) extra space" and "return the new length" usually mean [[双指针 Two Pointers|two pointers]] overwriting inside the array.
   "In place", "O(1) extra space" or "return the new length" usually means overwriting within the array using [[双指针 Two Pointers|two pointers]].
 
 ## 3. ⚙️ 原理 How It Works
@@ -114,9 +115,9 @@ void delete(int[] a, int size, int k) {
 > [!note] Java 数组常用工具 Handy Java array tools
 > | 写法 Code | 作用 What it does |
 > | --- | --- |
-> | `new int[n]` | 长度 `n`，全部为默认值：数字 0、`boolean` 为 `false`、对象为 `null` length `n`, all defaults: 0, `false`, or `null` |
-> | `a.length` | 长度，是字段不是方法 a field, not a method (`list.size()` 才是方法) |
-> | `Arrays.copyOf(a, newLen)` | 复制并改变长度，多出的补 0 copy with a new length, padding with 0 |
+> | `new int[n]` | 长度 `n`，全部为默认值：数字 0、`boolean` 为 `false`、对象为 `null` Length `n`, all defaults: 0, `false`, or `null` |
+> | `a.length` | 长度，是字段不是方法（`list.size()` 才是方法） A field, not a method (`list.size()` is the method) |
+> | `Arrays.copyOf(a, newLen)` | 复制并改变长度，多出的补 0 Copies with a new length, padding with 0 |
 > | `System.arraycopy(src, sp, dst, dp, len)` | 批量复制，源和目标重叠时也正确 bulk copy, correct even when ranges overlap |
 > | `Arrays.fill(a, v)` | 全部设为 `v` set every slot to `v` |
 > | `Arrays.sort(a)` | 排序，`int[]` 用双轴快排 sorts; dual-pivot quicksort for `int[]` |
@@ -127,7 +128,7 @@ void delete(int[] a, int size, int k) {
 | 操作 Operation | 静态数组 Static | 动态数组 Dynamic (`ArrayList`) |
 | --- | --- | --- |
 | 按下标读/写 Get/set by index | O(1) | O(1) |
-| 末尾追加 Append | O(1)（有空位时 if there's room） | 均摊 O(1) amortized，扩容那次 O(n) |
+| 末尾追加 Append | O(1)（有空位时 if there's room） | 均摊 O(1)，扩容的那一次是 O(n) Amortized O(1); O(n) for the push that resizes |
 | 删除末尾 Remove last | O(1) | O(1) |
 | 头部/中间插入 Insert at front/middle | O(n) | O(n) |
 | 头部/中间删除 Delete at front/middle | O(n) | O(n) |
@@ -149,25 +150,25 @@ void delete(int[] a, int size, int k) {
 
 **Q1.** 为什么数组按下标访问是 O(1)，而链表是 O(n)？ Why is indexed access O(1) for arrays but O(n) for linked lists?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 数组连续存放，`a[i]` 的地址 = 起始地址 + i × 元素大小，一步算出。链表节点散落在内存各处，只能从头顺着 `next` 走 `i` 步。
 > Arrays are contiguous, so `a[i]`'s address is base + i × size, computed in one step. Linked-list nodes are scattered, so you must follow `next` `i` times from the head.
 
 **Q2.** 在数组头部插入为什么是 O(n)？ Why is inserting at the front O(n)?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 所有现有元素都要右移一格腾出位置，共 n 次移动。若经常需要头部操作，用 `ArrayDeque`（环形数组，头尾都是均摊 O(1)）。
 > Every existing element shifts right by one to make room: n moves. For frequent front operations, use `ArrayDeque` (a circular array with amortized O(1) at both ends).
 
 **Q3.** 中间插入时为什么要从后往前挪？ Why shift from the back when inserting?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 从前往后的话，`a[k+1] = a[k]` 会先覆盖掉原来的 `a[k+1]`，后面复制的全是同一个值。从后往前，每个位置被覆盖前都已经被复制走了。
 > Front-to-back, `a[k+1] = a[k]` overwrites the old `a[k+1]` before it's moved, so every later slot gets the same value. Back-to-front, each slot is copied out before it's overwritten.
 
 **Q4.** 遍历数组和遍历链表都是 O(n)，为什么实际中数组快很多？ Both scans are O(n); why is the array much faster in practice?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 缓存局部性。数组连续，CPU 一次加载一条 cache line 就拿到多个元素，硬件还能预取；链表每个节点可能都是一次缓存未命中。Big-O 忽略了这种常数差异。
 > Cache locality. Contiguous elements arrive several per cache line and the hardware prefetches ahead; each linked-list node can be a cache miss. Big-O hides this constant-factor difference.
 
@@ -176,7 +177,7 @@ void delete(int[] a, int size, int k) {
 | 题目 Problem | 练的是什么 What it practices |
 | --- | --- |
 | [[Design Dynamic Array\|Design Dynamic Array]] | size vs capacity，翻倍扩容 doubling growth |
-| [[Concatenation of Array\|1929. Concatenation of Array]] | 下标映射 index mapping，`i % n` |
+| [[Concatenation of Array\|1929. Concatenation of Array]] | 下标映射，`i % n` Index mapping with `i % n` |
 | [[Max Consecutive Ones\|485. Max Consecutive Ones]] | 一次遍历 + 计数器 one pass with a counter |
 | [[Replace Elements with Greatest Element on Right Side\|1299. Replace Elements with Greatest Element on Right Side]] | 从右往左，原地覆盖 right-to-left, overwrite in place |
 | [[Remove Element\|27. Remove Element]] | 快慢指针原地删除 read/write pointers |
@@ -185,5 +186,5 @@ void delete(int[] a, int size, int k) {
 
 - [[📌 数据结构总览]]
 - 数据结构 Data structures: [[栈 Stack|栈 Stack]]（用数组实现 array-backed） · [[链表 Linked List|链表 Linked List]]（连续 vs 分散，对比见第 1、4 题 contiguous vs scattered, see Q1 and Q4）
-- 算法 Algorithms: [[双指针 Two Pointers|双指针]] · [[一次遍历 One Pass|一次遍历]] · [[复杂度分析 Big-O|复杂度分析]]
+- 算法 Algorithms: [[双指针 Two Pointers|双指针 Two Pointers]] · [[一次遍历 One Pass|一次遍历 One Pass]] · [[复杂度分析 Big-O|复杂度分析 Big-O]]
 - 硬件背景 Hardware background: [[Computer Architecture]]

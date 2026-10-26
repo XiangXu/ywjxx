@@ -90,7 +90,7 @@ class Solution {
 > 每次 `count++` 后立刻更新就没有这个问题。
 > If you only update `max` when you hit a `0`, the final run is never compared when the array ends in `1`s, which is wrong whenever that run is the longest, so you'd need an extra `Math.max` after the loop. Updating right after `count++` avoids that.
 
-> [!note] 另一种写法 Alternative: 只在段结束时比较
+> [!note] 另一种写法 Alternative: 只在段结束时比较 Compare only when a run ends
 > ```java
 > for (int num : nums) {
 >     if (num == 1) count++;
@@ -126,19 +126,19 @@ class Solution {
 
 **Q1.** 为什么空间复杂度是 O(1)？ Why is the space O(1)?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 只用了 `max` 和 `count` 两个变量，和输入长度无关。
 > Only two integers are stored, regardless of the input size.
 
 **Q2.** 把 `max = Math.max(max, count)` 移到 `else` 分支里会出什么错？ What breaks if you move the `Math.max` into the `else` branch?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 数组以 1 结尾时，最后一段不会被比较；若它恰好最长就会出错，例如 `[1,1,0,1,1,1]` 会返回 2 而不是 3。需要在 `return` 前再做一次 `Math.max(max, count)`。
 > The final run is never compared when the array ends with 1s, so the answer is wrong whenever that run is the longest: `[1,1,0,1,1,1]` returns 2 instead of 3. You'd need one more `Math.max(max, count)` before returning.
 
 **Q3.** 如果允许把最多一个 0 变成 1，思路怎么改？ How would you change the approach if you may flip at most one `0`?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 用滑动窗口：右指针一直扩展，记录窗口里 0 的个数；超过 1 个时移动左指针直到只剩 1 个 0。答案是窗口的最大长度 `right - left + 1`。仍然是 O(n) 时间、O(1) 空间。
 > Use a sliding window: expand `right`, count zeros in the window, and when there are more than one, move `left` until only one remains. The answer is the largest `right - left + 1`. Still O(n) time, O(1) space.
 

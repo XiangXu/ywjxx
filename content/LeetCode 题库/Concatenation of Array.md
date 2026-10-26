@@ -39,7 +39,7 @@ Given `nums` of length `n`, return `ans` of length `2n` where `ans[i] == nums[i]
 - **关键观察 Key insight:** 输出的每个位置都能直接算出来源：`ans[j] = nums[j % n]`。不需要任何技巧，按下标映射填就行。
   Every output slot maps straight back to an input slot: `ans[j] = nums[j % n]`. No trick needed, just fill by index.
 - **套路 Pattern:** 模拟 / 下标映射 (simulation by index mapping)。这题的价值在于练熟数组下标，以及认识“把数组复制一份接在后面”这个处理**环形数组**的常用技巧（见第 6 节）。
-  The value here is index fluency, plus meeting the "append a copy of the array" trick that's commonly used for **circular arrays** (see section 6).
+  Simulation by index mapping. The value here is index fluency, plus meeting the "append a copy of the array" trick that's commonly used for **circular arrays** (see section 6).
 
 ## 3. 🐢 暴力解 Brute Force
 
@@ -114,8 +114,8 @@ class Solution {
 
 | 题目 Problem | 和本题的关系 Connection |
 | --- | --- |
-| 1470. Shuffle the Array | 也是下标映射：`ans[2i] = nums[i]`，`ans[2i + 1] = nums[i + n]` Also index mapping |
-| 1920. Build Array from Permutation | 下标映射：`ans[i] = nums[nums[i]]` Index mapping |
+| 1470. Shuffle the Array | 也是下标映射：`ans[2i] = nums[i]`，`ans[2i + 1] = nums[i + n]` Also index mapping: `ans[2i] = nums[i]`, `ans[2i + 1] = nums[i + n]` |
+| 1920. Build Array from Permutation | 下标映射：`ans[i] = nums[nums[i]]` Index mapping: `ans[i] = nums[nums[i]]` |
 | 189. Rotate Array | 新位置是 `(i + k) % n`，同样是取模 The new position is `(i + k) % n`, modulo again |
 | 503. Next Greater Element II | 环形数组，用 `i % n` 遍历两圈 Circular array, two laps with `i % n` |
 
@@ -123,19 +123,19 @@ class Solution {
 
 **Q1.** 为什么空间复杂度通常说是 O(1) 额外空间，而不是 O(n)？ Why is the extra space usually called O(1) rather than O(n)?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 题目要求返回的输出数组一般不算在额外空间里。除了 `result`，代码只用了循环变量 `i`。如果把输出也算上，就是 O(n)。
 > The required output array usually isn't counted as extra space. Apart from `result`, the code only uses the loop variable `i`. Counting the output, it's O(n).
 
 **Q2.** 用一个循环、只写一行赋值，怎么写？ How would you write it with one loop and a single assignment?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 遍历输出数组，`ans[j] = nums[j % n]`，`j` 从 `0` 到 `2n - 1`。
 > Loop over the output: `ans[j] = nums[j % n]` for `j` from `0` to `2n - 1`.
 
 **Q3.** 这个“复制一份接在后面”的技巧在哪类题里有用？ Where is the "append a copy" trick useful?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 环形数组的题，比如 503. Next Greater Element II：从每个位置往后看一整圈。实际写代码时通常不真的复制，而是遍历 `2n` 次并用 `i % n` 取值，省掉复制数组的 O(n) 额外空间（单调栈本身仍是 O(n)）。
 > Circular-array problems like 503. Next Greater Element II, where each position looks a full lap ahead. In practice you usually don't copy at all: loop `2n` times and read `nums[i % n]`, which saves the O(n) copy (the monotonic stack itself is still O(n)).
 

@@ -40,7 +40,7 @@ Remove every occurrence of `val` from `nums` **in place** and return `k`, the nu
 
 - **关键观察 Key insight:** 不需要真的“删除”。只要把要保留的元素按顺序挪到数组前面，前 `k` 个位置就是答案。
   Nothing actually gets deleted. Move the elements you keep to the front, and the first `k` slots are the answer.
-- **套路 Pattern:** 同向双指针 / 快慢指针 (same-direction two pointers, fast/slow)。
+- **套路 Pattern:** 同向双指针 / 快慢指针 Same-direction two pointers (fast/slow).
   - `right` (快 fast): 读指针，每一步都前进 → the reader, moves every step
   - `left` (慢 slow): 写指针，只有写入时才前进 → the writer, moves only after a write
 - **不变量 Invariant:** `nums[0..left-1]` 永远是目前为止保留下来的元素，而且 `left <= right`，所以写入不会覆盖还没读过的元素。
@@ -130,7 +130,7 @@ The same "fast reads, slow writes" template solves a whole family of in-place fi
 | 27. Remove Element (本题 this one) | `nums[right] != val` |
 | 26. Remove Duplicates from Sorted Array | `left == 0 \|\| nums[right] != nums[left - 1]` (和上一个保留的不同；第一个总是保留 differs from the last kept; the first is always kept) |
 | 80. Remove Duplicates from Sorted Array II | `left < 2 \|\| nums[right] != nums[left - 2]` (最多保留两个 keep at most two) |
-| 283. Move Zeroes | `nums[right] != 0`，然后把尾部填 0（或直接交换）then zero-fill the tail (or swap) |
+| 283. Move Zeroes | `nums[right] != 0`，然后把尾部填 0（或直接交换） Keep `nums[right] != 0`, then zero-fill the tail (or swap) |
 
 > [!important] 和 485 对比 Compare with 485
 > [[Max Consecutive Ones|485. Max Consecutive Ones]] 只有一个下标，计数器记录当前连续段的长度，窗口左边界是隐含的；这题的 `left` 是**真正的第二个指针**，它指向数组里的一个位置并往里写数据。
@@ -140,25 +140,25 @@ The same "fast reads, slow writes" template solves a whole family of in-place fi
 
 **Q1.** 为什么 `nums[left] = nums[right]` 不会覆盖还没读过的数据？ Why can't `nums[left] = nums[right]` overwrite data that hasn't been read yet?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 因为 `left` 只有在写入后才加一，而 `right` 每一步都加一，所以始终 `left <= right`。被写入的位置 `left` 要么就是当前的 `right`，要么已经被读过了。
 > `left` only advances after a write while `right` advances every step, so `left <= right` always holds. The slot being written is either the current `right` or one that has already been read.
 
 **Q2.** 为什么返回 `left` 就是答案？ Why is `left` the answer?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > `left` 每保留一个元素加一次，所以循环结束时它等于保留的元素个数 `k`，同时 `nums[0..k-1]` 正好就是这些元素。
 > `left` goes up once per kept element, so after the loop it equals `k`, and `nums[0..k-1]` holds exactly those elements.
 
 **Q3.** 什么时候用相向双指针的写法更好？它的代价是什么？ When is the opposite-direction version better, and what does it cost?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 当 `val` 很少出现时：它只在遇到 `val` 时写一次，而快慢指针版会把几乎每个保留的元素都复制一遍。代价是元素顺序会被打乱，这题允许，但像 Move Zeroes 这种要求保持顺序的题就不行。
 > When `val` is rare: it writes only once per `val`, while the fast/slow version copies nearly every kept element. The cost is that order isn't preserved. That's fine here, but not for problems like Move Zeroes that require keeping the order.
 
 **Q4.** 相向写法里，用末尾元素填坑后为什么不能马上 `left++`？ In the opposite-direction version, why not advance `left` right after filling the hole?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 填过来的元素可能也等于 `val`，必须在下一轮再检查一次。例如 `[3,3]`、`val = 3`：如果填完就 `left++`，会错误地保留一个 3。
 > The element moved in from the end might also equal `val`, so it has to be checked on the next iteration. With `[3,3]` and `val = 3`, advancing right away would wrongly keep a 3.
 

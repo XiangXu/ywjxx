@@ -132,7 +132,7 @@ class DynamicArray {
 | 操作 Operation | ⏱️ Time |
 | --- | --- |
 | `get` / `set` / `popback` / `getSize` / `getCapacity` | O(1) |
-| `pushback` | 均摊 O(1) amortized; 触发扩容的那一次 O(n) worst case for the one that resizes |
+| `pushback` | 均摊 O(1)，触发扩容的那一次是 O(n) Amortized O(1); O(n) for the one push that resizes |
 | `resize` | O(n) |
 
 - 🗄️ Space: O(capacity)。翻倍扩容下，capacity 不超过 `max(初始容量, 2 × 最大 size)`，即 O(max(初始容量, n))。
@@ -166,7 +166,7 @@ class DynamicArray {
 >     arr = java.util.Arrays.copyOf(arr, capacity);  // 新数组，多出的格子补 0 pads with 0
 > }
 > ```
-> **更紧凑的 push/pop Compact push/pop:**
+> **更紧凑的写法 Compact push/pop:**
 > ```java
 > public void pushback(int n) {
 >     if (length == capacity) resize();
@@ -182,11 +182,11 @@ class DynamicArray {
 
 - [x] **先扩容再写** Resize *before* writing: `length == capacity` 时直接写 `arr[length]` 会 `ArrayIndexOutOfBoundsException` → writing first throws.
 - [x] **只复制 `length` 个，不是 `capacity` 个** Copy `length` elements: 这题里扩容只在满时发生，两者相等；但一般来说用 `length` 更准确也更省（后面的格子本来就没用；复制 `capacity` 个也不会出错，只是白做功） → they're equal here because resize only happens when full; in general `length` is tighter and skips pointless copying (copying `capacity` would still be correct, just wasted work).
-- [x] **pop 不缩容** Popping doesn't shrink capacity (Example 3 的最后输出 `2`).
-- [x] **popback 先减再读** Decrement, then read: 最后一个元素在 `length - 1`，不是 `length` → the last element is at `length - 1`.
+- [x] **弹出不缩容** Popping doesn't shrink capacity: 示例 3 最后的容量仍是 `2` → Example 3 ends with capacity `2`.
+- [x] **`popback` 先减再读** Decrement, then read: 最后一个元素在 `length - 1`，不是 `length` → the last element is at `length - 1`.
 - [x] **`popback` 里的 `if (length > 0)`** The guard: 题目保证非空，所以它不会生效。但如果真的空了，它会悄悄返回 `arr[0]` 的旧值，反而掩盖了 bug。真实代码里应该抛异常（`ArrayList.remove` 会抛 `IndexOutOfBoundsException`）→ the problem guarantees non-empty, so it never triggers. If it did, it would silently return a stale `arr[0]` and hide the bug; real code should throw instead.
 - [x] **`resize()` 的可见性** Visibility of `resize()`: 题目把 `void resize()` 列为类的方法之一，我写成了 `private`；按题目签名写成 `public` 更稳妥 → the spec lists `resize()` as one of the class's methods, so `public` matches the signature.
-- [x] **get/set 不检查 `i < length`** No bounds check against `length`: 题目保证合法。注意 `i` 在 `[length, capacity)` 时 Java 不会报错，会读到旧值；`ArrayList.get` 会检查 `i < size` → guaranteed valid here; note that Java won't complain for `i` in `[length, capacity)`, while `ArrayList.get` checks against `size`.
+- [x] **`get` / `set` 不检查 `i < length`** No bounds check against `length`: 题目保证合法。注意 `i` 在 `[length, capacity)` 时 Java 不会报错，会读到旧值；`ArrayList.get` 会检查 `i < size` → guaranteed valid here; note that Java won't complain for `i` in `[length, capacity)`, while `ArrayList.get` checks against `size`.
 
 ## 6. 🔁 进阶 Follow-ups
 
@@ -195,10 +195,10 @@ class DynamicArray {
 > | | 本题 This problem | `java.util.ArrayList` |
 > | --- | --- | --- |
 > | 增长因子 Growth factor | ×2 | ×1.5（`old + (old >> 1)`） |
-> | 默认容量 Default capacity | 构造时给定 given | 10（无参构造），第一次 `add` 时才分配 10 (no-arg constructor), allocated lazily on the first `add` |
-> | 元素类型 Element type | `int`（基本类型） | `Object[]`，泛型 + 自动装箱 generics + boxing |
+> | 默认容量 Default capacity | 构造时给定 given | 默认 10（无参构造），第一次 `add` 时才分配 Default 10 (no-arg constructor), allocated lazily on the first `add` |
+> | 元素类型 Element type | `int`（基本类型 primitive） | `Object[]`，泛型 + 自动装箱 `Object[]` with generics + boxing |
 > | 删除后清空 Clears on remove | 不需要 not needed | 把空位设为 `null`，让 GC 回收对象 sets the slot to `null` so the object can be GC'd |
-> | 缩容 Shrinks | 否 No | 不会自动缩，可手动 `trimToSize()` never automatically; call `trimToSize()` |
+> | 缩容 Shrinks | 否 No | 不会自动缩，可手动调用 `trimToSize()` Never automatically; call `trimToSize()` |
 >
 > C++ `std::vector` 的增长因子由实现决定：libstdc++ (GCC) 和 libc++ (Clang 自带的库) 是 ×2，MSVC STL 是 ×1.5。增长因子取决于标准库而不是编译器；C++ 标准只要求 `push_back` 均摊 O(1)，不规定具体因子。
 > C++ `std::vector`'s factor is implementation-defined: ×2 in libstdc++ (GCC) and libc++ (Clang's own library), ×1.5 in the MSVC STL. It depends on the standard library, not the compiler; the C++ standard only requires amortized O(1) `push_back`, not a specific factor.
@@ -210,38 +210,38 @@ class DynamicArray {
 
 - **在中间插入/删除** Insert/remove in the middle: 需要把后面的元素整体平移，O(n)。这就是 `ArrayList.add(i, x)` 慢、链表擅长的场景。
   Shifts every later element: O(n). That's why `ArrayList.add(i, x)` is slow and where linked lists shine.
-- **为什么有人选 ×1.5 而不是 ×2？** Why ×1.5? 浪费的空闲空间更少；而且因子小于黄金比例 (~1.618) 时，之前释放的旧内存块加起来最终能容纳新数组，分配器有机会复用它们（理论上的启发式，实际取决于分配器）。
+- **为什么有人选 ×1.5 而不是 ×2？ Why ×1.5 instead of ×2?** 浪费的空闲空间更少；而且因子小于黄金比例 (~1.618) 时，之前释放的旧内存块加起来最终能容纳新数组，分配器有机会复用它们（理论上的启发式，实际取决于分配器）。
   Less idle space; and with a factor below the golden ratio (~1.618), earlier freed blocks can eventually add up to fit a new array, so the allocator can reuse them (a theoretical heuristic; it depends on the allocator).
 
 ## 7. ❓ 复习题 Review Questions
 
 **Q1.** size 和 capacity 有什么区别？什么时候它们相等？ What's the difference between size and capacity, and when are they equal?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > capacity 是底层数组的长度（能放多少），size 是实际存了多少。数组刚好满时两者相等，这时下一次 `pushback` 会触发扩容。
 > Capacity is the backing array's length (how much fits); size is how much is actually stored. They're equal exactly when the array is full, and the next `pushback` will resize.
 
 **Q2.** `pushback` 最坏 O(n)，为什么说它是 O(1)？ `pushback` can be O(n), so why call it O(1)?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 说的是**均摊** O(1)。翻倍扩容下，推 `n` 个元素的复制总数 `1 + 2 + 4 + …` 小于 `2n`，平均到每次 push 是常数。单次 push 最坏仍是 O(n)（刚好触发扩容的那次）。
 > It's **amortized** O(1). With doubling, the total copies for `n` pushes, `1 + 2 + 4 + …`, stay under `2n`, a constant per push on average. A single push is still O(n) in the worst case (the one that triggers the resize).
 
 **Q3.** 如果每次扩容只加 10 格，推 `n` 个元素的总时间是多少？ If each resize adds just 10 slots, what's the total time for `n` pushes?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > O(n²)。大约每 10 次 push 复制一次，第 k 次复制约 `10k` 个元素，总共约 `n²/20`。常数小了，但仍是平方级。
 > O(n²). There's a copy about every 10 pushes, and the k-th copies about `10k` elements, about `n²/20` in total. A smaller constant, but still quadratic.
 
 **Q4.** `popback` 之后为什么不用把 `arr[length]` 清零？`ArrayList` 为什么要设为 `null`？ Why not zero out the slot after `popback`, and why does `ArrayList` set it to `null`?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > `length` 之后的格子在逻辑上已经不存在，下次 push 会覆盖，`int` 留着没有坏处。`ArrayList` 存的是对象引用，如果不设为 `null`，数组还引用着那个对象，GC 就回收不了它，造成内存泄漏（loitering）。
 > Slots past `length` are logically gone and the next push overwrites them, so a leftover `int` is harmless. `ArrayList` holds object references: if the slot isn't nulled, the array still references the object and the GC can't reclaim it (a memory leak known as loitering).
 
 **Q5.** 要支持缩容，什么时候缩？ When should a shrinking dynamic array shrink?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > size 降到 capacity 的 1/4 时容量减半。如果在 1/2 时就减半，在边界上交替 push/pop 会每次都复制，退化成 O(n)。
 > Halve the capacity when size drops to 1/4. Halving at 1/2 means alternating push/pop at the boundary copies every time, degrading to O(n) per operation.
 
@@ -251,11 +251,11 @@ class DynamicArray {
 - 🧠 概念 Concepts: [[数组 Array|数组 Array]] · [[复杂度分析 Big-O|均摊分析 Amortized analysis]]
 - 上一题 Previous: [[Concatenation of Array|1929. Concatenation of Array]]（也是“新建更大的数组 + 复制” also "allocate bigger + copy"）
 - 下一题 Next: [[Baseball Game|682. Baseball Game]]（用数组当栈 an array used as a stack）
-- 705 / 706. Design HashSet / HashMap: 另一个设计题。常见解法是固定桶数 + 链表；真实的哈希表（如 Java `HashMap`）超过负载因子时才倍增 rehash Another design problem. Typical solutions use a fixed number of buckets with chaining; real hash tables like Java's `HashMap` double and rehash once they pass the load factor
+- 705 / 706. Design HashSet / HashMap: 另一个设计题。常见解法是固定桶数 + 链表；真实的哈希表（如 Java `HashMap`）超过负载因子时才扩容并重新哈希 Another design problem. Typical solutions use a fixed number of buckets with chaining; real hash tables like Java's `HashMap` double and rehash once they pass the load factor
 - 707. Design Linked List: 动态数组的对照：中间插入 O(1)（已有节点时），随机访问 O(n) The counterpart: O(1) insert at a known node, O(n) random access
 
 ## 9. 🔁 复习记录 Review Log
 
 | 📅 Date | ⏱️ Time spent | ✅ Solved alone? | 📝 Notes |
 | --- | --- | --- | --- |
-| 2026-10-20 |  | ✅ | 翻倍扩容 + 复制一次写对；`resize()` 写成了 private，按签名应为 public Doubling + copy right first time; made `resize()` private, signature says public |
+| 2026-10-20 |  | ✅ | 翻倍扩容 + 复制一次写对；`resize()` 写成了 private，按签名应为 `public` Doubling + copy right first time; made `resize()` private, signature says public |

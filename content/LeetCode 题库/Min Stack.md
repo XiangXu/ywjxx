@@ -40,7 +40,7 @@ Design a stack that supports the following, **each in O(1) time**:
 
 示例 Example:
 
-| 调用 Call | 返回 Returns | 栈 Stack (底 → 顶 bottom → top) |
+| 调用 Call | 返回 Returns | 栈（底 → 顶） Stack (bottom → top) |
 | --- | --- | --- |
 | `push(-2)` | | `[-2]` |
 | `push(0)` | | `[-2, 0]` |
@@ -60,7 +60,7 @@ Design a stack that supports the following, **each in O(1) time**:
 - **关键观察 Key insight:** 栈只会从顶部变化，所以“某一层以下的元素”在这一层存在期间**永远不变**。那么每一层的最小值也不变，可以在 push 时算好、存起来，pop 时一起扔掉。
   A stack only changes at the top, so everything below a given level stays **fixed** while that level exists. The minimum at each level never changes either, so compute it on push, store it, and discard it on pop.
 - **套路 Pattern:** 辅助栈 auxiliary stack / 用空间换时间 trade space for time。“给每一层记一份快照”这个思路也用在撤销（undo）操作和持久化数据结构里。
-  "Snapshot some state per level" also shows up in undo features and persistent data structures.
+  Auxiliary stack, trading space for time. "Snapshot some state per level" also shows up in undo features and persistent data structures.
 
 ## 3. 🐢 暴力解 Brute Force
 
@@ -76,7 +76,7 @@ public int getMin() {
 }
 ```
 
-- ⏱️ Time: `push` / `pop` / `top` O(1)，`getMin` O(n)，不满足题目要求 doesn't meet the O(1) requirement
+- ⏱️ Time: `push` / `pop` / `top` O(1)，`getMin` O(n)，不满足题目要求 Doesn't meet the O(1) requirement: `getMin` is O(n), while `push`, `pop` and `top` are O(1)
 - 🗄️ Space: O(n)
 
 ## 4. 🚀 最优解 Optimal Solution
@@ -168,7 +168,7 @@ class MinStack {
 
 - [x] 第一次 push 时 `minStack` 为空 First push with an empty `minStack`: `Stack.peek()` 会抛 `EmptyStackException`（若用 `ArrayDeque` 则返回 `null`，拆箱时 NPE），所以要先判断 `isEmpty()` → `Stack.peek()` throws `EmptyStackException` (`ArrayDeque.peek()` returns `null`, then unboxing throws an NPE), so check `isEmpty()` first
 - [x] 重复的最小值 Duplicate minimums (push 1, push 1, pop): 我的写法每层都存，不受影响 → my version stores every level, so it's unaffected
-- [x] ⚠️ 省空间版必须用 `<=`，不能用 `<` The space-saving version needs `<=`, not `<`: 如果用 `<`，push 1、push 1 只记一次 1，pop 一次就把 1 从 `minStack` 弹掉了，但栈里还有一个 1 → with `<`, two 1s are recorded once, so one pop removes 1 from `minStack` while a 1 is still in the stack
+- [x] ⚠️ 省空间版必须用 `<=` 而不是 `<` The space-saving version needs `<=`, not `<`: 如果用 `<`，push 1、push 1 只记一次 1，pop 一次就把 1 从 `minStack` 弹掉了，但栈里还有一个 1 → with `<`, two 1s are recorded once, so one pop removes 1 from `minStack` while a 1 is still in the stack
 - [x] ⚠️ 两个 `Integer` 用 `==` 比较的是引用 Two `Integer`s compared with `==` compare references: `stack.pop() == minStack.peek()` 在 -128 到 127 之间碰巧对（默认有缓存），超出范围通常就错。用 `.equals()`，或者像上面那样先存进 `int` → it happens to work for -128..127 (cached by default) and usually breaks outside that range; use `.equals()` or unbox to `int` first
 - [x] 负数和 `int` 极值 Negatives and `int` extremes: 只比较、不做加减，不会溢出 → we only compare, never add or subtract, so nothing overflows
 - [x] 空栈调用 `pop` / `top` / `getMin` Calling on an empty stack: 题目保证不会发生 → the problem guarantees it won't happen
@@ -190,25 +190,25 @@ class MinStack {
 
 **Q1.** 为什么一个 `min` 变量不够？ Why isn't a single `min` variable enough?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > push 时可以更新 `min`，但 pop 掉当前最小值后，不知道下一个最小值是什么，只能遍历整个栈，变成 O(n)。辅助栈把“每一层的最小值”都存了下来。
 > Push can update `min`, but after popping the current minimum you don't know the next one without scanning the stack, which is O(n). The auxiliary stack keeps the minimum for every level.
 
 **Q2.** 为什么 `minStack` 每一层存的值在之后不需要改？ Why does a `minStack` entry never need updating later?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 栈只从顶部变化。某一层存在的时候，它下面的元素一个都不会变，所以“到这一层为止的最小值”也不会变。
 > A stack only changes at the top. While a level exists, nothing below it changes, so "the minimum up to this level" can't change either.
 
 **Q3.** 省空间版为什么要用 `<=` 而不是 `<`？ Why does the space-saving version use `<=` rather than `<`?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 有重复最小值时（如 push 1、push 1），用 `<` 只会在 `minStack` 记一次 1。第一次 pop 就把它弹掉，但栈里还剩一个 1，`getMin()` 就错了。用 `<=` 每个重复的最小值都记一次。
 > With duplicate minimums (push 1, push 1), `<` records 1 only once. The first pop removes it while a 1 remains in the stack, so `getMin()` is wrong. `<=` records each duplicate.
 
 **Q4.** `stack.pop() == minStack.peek()` 有什么问题？ What's wrong with `stack.pop() == minStack.peek()`?
 
-> [!success]- Answer
+> [!success]- 答案 Answer
 > 两边都是 `Integer`，`==` 比较的是引用。`Integer` 默认只缓存 -128 到 127，范围内碰巧相等，超出范围即使值相同通常也返回 `false`（除非两边恰好是同一个对象）。要用 `.equals()` 或先拆箱成 `int`。
 > Both sides are `Integer`, so `==` compares references. `Integer` caches only -128..127 by default, so it works by accident in that range and usually returns `false` for equal values outside it (unless both sides are the same object). Use `.equals()` or unbox to `int`.
 
