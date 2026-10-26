@@ -1,0 +1,10 @@
+{
+  "name": "bilingual",
+  "version": "1.0.0",
+  "description": "Splits paired 中文 / English text so the site can switch languages",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./index.js"
+  }
+}

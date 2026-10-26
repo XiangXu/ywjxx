@@ -435,6 +435,72 @@ body[data-slug="index"] .center > hr {
   }
 }
 
+// 中 / EN switch (plugins/bilingual adds it next to the dark-mode button).
+// Same size as the other toolbar icons; it shows the language you're reading
+// and switches to the other one.
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius);
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s var(--ease);
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+  }
+
+  span {
+    display: none;
+    min-width: 1.5rem;
+    padding: 0.0625rem 0.25rem;
+    border: 1.5px solid var(--darkgray);
+    border-radius: 5px;
+    color: var(--darkgray);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+    text-align: center;
+  }
+}
+
+:root[data-lang="zh"] .lang-toggle [data-opt="zh"],
+:root[data-lang="en"] .lang-toggle [data-opt="en"] {
+  display: inline-block;
+}
+
+// Show one language. <html data-lang> is set before the first paint;
+// [lang] spans come from the build (paired 中文 / English text), from
+// hand-written <span lang="…"> markup, and from the script (titles, UI).
+// Scoped to body so <html lang> itself never matches.
+:root[data-lang="en"] body [lang|="zh"],
+:root[data-lang="zh"] body [lang|="en"],
+body .lang-none {
+  display: none !important;
+}
+
+// "This note is only in Chinese for now" on single-language notes.
+.lang-notice {
+  margin: 0 0 1.5rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--gray);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
 // Explorer
 .explorer {
   button.desktop-explorer h2 {
@@ -1174,6 +1240,7 @@ ul.section-ul {
   }
 
   // 44px touch targets in the bar
+  .lang-toggle,
   .darkmode,
   .readermode,
   .explorer button.mobile-explorer,
@@ -1181,6 +1248,7 @@ ul.section-ul {
     min-width: 44px;
     height: 44px;
   }
+  .lang-toggle,
   .darkmode,
   .readermode {
     width: 44px;

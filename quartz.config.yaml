@@ -120,6 +120,25 @@ plugins:
     enabled: false
   - source: ./plugins/publish-filter
     enabled: true
+  # 中 / EN language switch (see plugins/bilingual). Runs after latex so math is
+  # already rendered. `titles`: English names for titles and folders the
+  # automatic "中文 English" split can't handle.
+  - source: ./plugins/bilingual
+    enabled: true
+    order: 95
+    options:
+      defaultLanguage: en
+      titles:
+        AI 学习库: AI Library
+        LeetCode 题库: LeetCode
+        算法: Algorithms
+        数据结构: Data Structures
+        系统设计: System Design
+        AI 学习库总览: AI Library Overview
+        LeetCode 总览: LeetCode Overview
+        算法总览: Algorithms Overview
+        数据结构总览: Data Structures Overview
+        系统设计总览: System Design Overview
   - source: "@quartz-community/explicit-publish"
     enabled: false
   # Case redirects are off: on Netlify's case-sensitive build FS they emit e.g.

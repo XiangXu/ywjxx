@@ -25,6 +25,7 @@ npm run format                       # prettier --write
 - `quartz.config.yaml`: site settings, theme, and plugin list/options.
 - `quartz/styles/custom.scss`: all custom styling.
 - `plugins/publish-filter/`: local plugin that drops notes with `publish: false` or `draft: true`.
+- `plugins/bilingual/`: local plugin for the 中 / EN language switch (see "Bilingual notes").
 - `quartz/`: the Quartz engine. Don't edit it; it's updated with `npx quartz upgrade`.
 
 ## How Xiang likes to work
@@ -85,8 +86,9 @@ paste it in verbatim. Rewrite it into a structured study note:
 - **Body:** starts with `# <emoji> Title` (Obsidian needs it; the site hides it). Then use
   numbered `##` sections with emoji: TL;DR / `> [!abstract]` one-liner → concepts →
   examples → "Clarifications to the lesson text" (correct anything inaccurate in the
-  source) → review questions with folded `> [!success]- Answer` callouts → `🔗 Related`.
-- **Style:** bilingual (中文 + English), headings like `## 1. 核心概念 Overview`. Use
+  source) → review questions with folded `> [!success]- 答案 Answer` callouts → `🔗 Related`.
+- **Style:** bilingual (中文 + English) in the shapes listed under "🌐 Bilingual notes" below,
+  so the site's 中 / EN switch works. Headings like `## 1. 核心概念 Overview`. Use
   Obsidian callouts (`tip`, `note`, `important`, `warning`, `example`), tables for
   comparisons, and Java analogies where helpful (the lessons already use them).
 - **Accuracy matters more than copying.** Fix wrong or misleading claims in the source
@@ -98,6 +100,53 @@ paste it in verbatim. Rewrite it into a structured study note:
   `\text{input tokens}`.
 - Private notes go in a `_private/` folder (git-ignored). `publish: false` or
   `draft: true` hides a note from the site, but its text is still pushed to GitHub.
+
+### 🌐 Bilingual notes (中 / EN switch)
+
+The site has a 中 / EN button in the toolbar (English by default, remembered per browser).
+`plugins/bilingual` splits each note at build time: it finds a Chinese half and its English
+half and wraps them in `<span lang="zh">` / `<span lang="en">`; `custom.scss` hides the
+other language. Obsidian still shows both. **Every new note must be fully bilingual:** every
+heading, sentence, label, table cell, callout title and link label needs both halves, written
+in one of these shapes:
+
+| Shape                                                | Example                                                                    |
+| ---------------------------------------------------- | -------------------------------------------------------------------------- |
+| Heading / short phrase: `中文 English`               | `## 2. 💡 思路 Intuition`, a table cell `题目 Problem`                     |
+| Chinese line(s), then English line(s)                | `给定数组 nums…`⏎`Given nums…` (also several 中 lines, then the English)   |
+| Chinese paragraph(s)/list, then an English paragraph | the 中 block, a blank line, then the EN block                              |
+| Bold label before the text                           | `**关键观察 Key insight:** 中文…`⏎`  English…`                             |
+| Label, then `中文 → English`                         | `- [x] 空数组 Empty array: 返回 0 → returns 0`                             |
+| One line `中文 English`                              | `**Q1.** 为什么…？ Why…?`, `计数器遇 0 清零 Reset the counter on 0 · Easy` |
+| Aside in parentheses                                 | `（栈当状态 stack as state）`, `(本题 this one)`                           |
+| Link label                                           | `[[栈 Stack\|栈 Stack]]`, never a Chinese-only `[[栈 Stack\|栈]]`          |
+
+Rules that keep the automatic split right:
+
+- **End the Chinese half with Chinese** (a character or `，。）`), not with code or `O(n)`.
+  Between the halves, code or notation goes to the Chinese half when the English half starts
+  with a capital letter, and to the English half when it starts lowercase. `均摊 O(1) Amortized
+O(1)` and ``位置 `n` iterations`` are both fine; `是 O(n) for the output` is not.
+- **Start the Chinese half with Chinese.** Leading numbers, emoji, links and `Q1.` are shared;
+  leading code belongs to the Chinese half, so repeat it in English
+  (`` `get()` 不检查 `get()` doesn't check ``). Because leading numbers are shared, write
+  `元素 17 右边…` or `一小时缓存 1-hour TTL`, not `17 右边…` or `1 小时 TTL 1-hour TTL`.
+- Don't bold a whole line in a line pair (`**中文句子。**`⏎`**English sentence.**` doesn't
+  split); bold a phrase inside each line instead.
+- Keep a label's Chinese part short (≤ 10 characters, no `，。；`), and put its colon at the end.
+- Don't mix two translations in one line (`迭代 iterative O(1) / 递归 recursive O(n)`); write
+  `迭代 O(1) / 递归 O(n) Iterative O(1) / recursive O(n)`.
+- The English half must not contain Chinese characters (except inside links or code).
+- Code and code comments stay as they are (comments can stay bilingual).
+- **Escape hatch:** wrap text by hand in `<span lang="zh">…</span><span lang="en">…</span>`
+  (or `<div lang="…">` with blank lines around the Markdown) when no shape fits.
+- Notes written in one language (the older AI and system design notes) get a "only in
+  Chinese / English for now" notice instead. `bilingual: true` / `false` in frontmatter
+  overrides the detection.
+- New folder or `📌` overview title? Add its English name to `titles` under
+  `./plugins/bilingual` in `quartz.config.yaml`.
+- **Check both languages before pushing:** open the note on the local site and switch
+  中 / EN (look for leftover Chinese in EN, missing labels, duplicated code).
 
 ### 🧩 LeetCode notes
 

@@ -27,6 +27,7 @@ ywjxx/
 │   ├── 模板/                   🧰 note templates (never published)
 │   └── attachments/           🖼️ pasted images (created by Obsidian on first paste)
 ├── 🔌 plugins/publish-filter/  🔒 hides `publish: false` / `draft: true` notes from the site
+├── 🌐 plugins/bilingual/       中 / EN language switch
 ├── ⚙️ quartz.config.yaml       🎛️ site settings, theme colors, fonts, plugins
 ├── 🎨 quartz/styles/custom.scss 💅 the custom "study notebook" design
 ├── 🏗️ quartz/                  Quartz engine (avoid editing; updated via `npx quartz upgrade`)
@@ -95,6 +96,21 @@ The static site lands in `public/` 📁 (git-ignored).
 
 Supported on the website ✅: wikilinks & aliases · backlinks · tags · callouts (`> [!tip]`) · embedded images & notes · LaTeX math (`$x^2$`, `$$…$$`) · code highlighting · tables · graph view · hover previews
 
+### 🌐 Two languages: 中 / EN
+
+The site has a **中 / EN** button next to the 🌙 button. Readers see English by default, and their choice is remembered. Notes stay bilingual in Obsidian; at build time `plugins/bilingual` finds each Chinese half and its English half and the site shows one of them:
+
+```markdown
+## 2. 💡 思路 Intuition ← heading: 中文 English
+
+输出的每个位置都能直接算出来源。 ← a Chinese line…
+Every output slot maps back to an input. ← …then its English line
+
+- **关键观察 Key insight:** 中文… → English… ← label, then 中文 → English
+```
+
+✍️ Write every sentence, heading, label and table cell in both languages using these shapes (the full list of shapes and rules is in `CLAUDE.md` → "Bilingual notes"). When nothing fits, wrap text by hand: `<span lang="zh">…</span><span lang="en">…</span>`. Notes written in only one language show a small "only in Chinese for now" notice in the other language. Add `bilingual: false` to a note's frontmatter to turn the split off.
+
 > 💲 **Tip:** to write a price, escape the dollar sign (`\$20`). Otherwise two prices on one line get rendered as a math formula. It still looks normal in Obsidian.
 
 ---
@@ -149,6 +165,7 @@ Netlify reads everything from `netlify.toml`:
 | 💅 Layout & components      | `quartz/styles/custom.scss`                                     |
 | 🏠 Homepage                 | `content/index.md` (`> [!hero]` banner + `> [!topics]` cards)   |
 | 🧩 Sidebar widgets          | `quartz.config.yaml` → each plugin's `layout:` block            |
+| 🌐 English names for titles | `quartz.config.yaml` → `./plugins/bilingual` → `titles`         |
 
 🌙 Dark mode follows your system setting by default. Use the ☀️/🌙 button next to the search box to switch.
 
