@@ -22,8 +22,8 @@ publish: true
 # 🌀 递归 Recursion
 
 > [!abstract] TL;DR
-> 递归就是函数调用自己去解决**规模更小的同一个问题**。写递归只回答三个问题：**① 函数的合同是什么**（输入什么、返回什么）、**② 最小的情况怎么直接回答**（base case）、**③ 拿到子问题的结果后，本层怎么得出自己的结果**。写的时候**相信子调用按合同返回**，不要在脑子里展开每一层。空间至少是 O(递归深度)，因为每层都占[[栈 Stack|调用栈]]的一帧。
-> Recursion is a function calling itself on **a smaller instance of the same problem**. Writing one means answering three questions: **① what's the contract** (input, return value), **② how is the smallest case answered directly** (the base case), and **③ given the subproblem's result, how does this level produce its own**. While writing, **trust the child call to keep the contract** instead of unrolling every level in your head. Space is at least O(depth), since each level takes a frame on the call stack.
+> 递归就是函数调用自己去解决**规模更小的同一个问题**。写递归只回答三个问题：**① 函数的合同是什么**（输入什么、返回什么）、**② 最小的情况怎么直接回答**（base case）、**③ 拿到子问题的结果后，本层怎么得出自己的结果**。写的时候**相信子调用按合同返回**，不要在脑子里展开每一层。在 Java 里空间至少是 O(递归深度)，因为每层都占[[栈 Stack|调用栈]]的一帧。
+> Recursion is a function calling itself on **a smaller instance of the same problem**. Writing one means answering three questions: **① what's the contract** (input, return value), **② how is the smallest case answered directly** (the base case), and **③ given the subproblem's result, how does this level produce its own**. While writing, **trust the child call to keep the contract** instead of unrolling every level in your head. In Java, space is at least O(depth), since each level takes a frame on the call stack.
 
 ## 1. 🎯 核心概念 Overview
 
@@ -165,7 +165,7 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 | --- | --- | --- | --- |
 | [[Reverse Linked List\|206]] 反转链表 | n | O(n) | O(n) |
 | 104 树的最大深度 | n（每个节点一次 once per node） | O(n) | O(h)，h 是树高 tree height（平衡 balanced O(log n)，链状 skewed O(n)） |
-| 509 朴素斐波那契 naive Fibonacci | 约 φⁿ ≈ 1.618ⁿ，通常写成 O(2ⁿ) | O(2ⁿ) | O(n) |
+| 509 朴素斐波那契 naive Fibonacci | 约 φⁿ ≈ 1.618ⁿ，通常写成 O(2ⁿ)（上界 upper bound；更紧 tighter: O(φⁿ)） | O(2ⁿ) | O(n) |
 | 509 记忆化 memoized | 每个 n 算一次 each n once | O(n) | O(n) |
 
 > [!example] 递归树 Recursion tree: `F(5)`，`F(n) = F(n-1) + F(n-2)`，`F(0) = 0`，`F(1) = 1`
@@ -201,7 +201,7 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 - **没有出口或出口不全 Missing or incomplete base case:** 无限递归 → `StackOverflowError`；漏掉 `null` 的情况 → NPE。206 只写 `head.next == null` 的话，空链表输入就会 NPE → infinite recursion, or an NPE on a missed `null` case.
 - **出口要覆盖子调用能走到的所有最小输入 Base cases must cover every input the calls can reach:** 斐波那契调用 `F(n-1)` 和 `F(n-2)`，所以 `F(0)` 和 `F(1)` 两个出口都要有。只写 `F(1) = 1` 的话，`F(2)` 会调用 `F(0)`，`F(0)` 又调用 `F(-1)`，一直往负数走下去直到栈溢出。`if (n <= 1) return n;` 一行就覆盖了两个 → Fibonacci calls `F(n-1)` and `F(n-2)`, so it needs both `F(0)` and `F(1)`. With only `F(1)`, `F(2)` calls `F(0)`, which calls `F(-1)`, and it runs into negatives until the stack overflows. `if (n <= 1) return n;` covers both in one line.
 - **在脑子里展开每一层 Unrolling every level in your head:** 层数一多就乱了。写的时候只看一层，相信合同；验证时再用 2 到 3 个节点的小例子手推 → write one level and trust the contract; check with a 2–3 element example afterwards.
-- **递归太深 Too deep:** JVM 默认线程栈通常几百 KB 到 1 MB，大约能撑几千到几万层（取决于每帧大小）。Java **不做尾调用优化**，尾递归写法也一样会溢出 → Java does **not** optimize tail calls, so tail recursion overflows too. 太深就改成循环或显式栈 switch to a loop or an explicit stack.
+- **递归太深 Too deep:** 64 位 HotSpot 默认线程栈通常约 1 MB（取决于平台和 `-Xss`），大约能撑几千到几万层（取决于每帧大小）。Java **不做尾调用优化**，尾递归写法也一样会溢出 → Java does **not** optimize tail calls, so tail recursion overflows too. 太深就改成循环或显式栈 switch to a loop or an explicit stack.
 - **重复子问题 Repeated subproblems:** 朴素 `fib(n)` 把同一个 `fib(k)` 算很多次，变成指数级。用记忆化（memo）或改成 DP → memoize or switch to DP.
 - **共享的可变状态 Shared mutable state:** 递归里改了全局变量或传进来的集合，回来时没恢复（回溯里要“撤销选择”） → undo changes on the way back, as backtracking does.
 - **子调用之后数据结构已经变了 The structure changed under you:** 206 里子调用会改 `head.next` 后面的指针，但不会改 `head.next` 本身，所以 `head.next.next = head` 才成立。用之前想清楚子调用改了什么 → know what the child call mutated before using it.
@@ -247,7 +247,7 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 | 104. Maximum Depth of Binary Tree | 子结果加工 `max + 1` processing the child results | Easy |
 | 226. Invert Binary Tree | 树上的递归交换 swapping recursively on a tree | Easy |
 | 509. Fibonacci Number | 重复子问题、记忆化 repeated subproblems, memoization | Easy |
-| 24. Swap Nodes in Pairs | 和 206 同样的“先处理后面再接自己” same shape as 206 | Medium |
+| 24. Swap Nodes in Pairs | 和 206 类似，先处理后面再接自己 a similar shape to 206 | Medium |
 | 50. Pow(x, n) | 分治，O(log n) divide and conquer | Medium |
 
 ## 9. 🔗 相关 Related

@@ -200,6 +200,6 @@ Stack algorithms are commonly **O(n) time**: each element is pushed once and pop
 ## 9. 🔗 相关 Related
 
 - [[📌 数据结构总览]]
-- 底层实现 Built on: [[数组 Array|数组 Array]] 或 or [[链表 Linked List|链表 Linked List]]（也是 [[Design Dynamic Array|动态数组]] 的典型用途 a classic use of a dynamic array）
+- 底层实现 Built on: [[数组 Array|数组 Array]]（也是 [[Design Dynamic Array|动态数组]] 的典型用途 a classic use of a dynamic array） 或 or [[链表 Linked List|链表 Linked List]]
 - 算法 Algorithms: [[一次遍历 One Pass|一次遍历 One Pass]]（栈当状态 stack as state） · [[递归 Recursion|递归 Recursion]]（调用栈 the call stack）
 - 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析 Big-O]]（均摊分析 amortized analysis；[[Min Stack|155]] 用辅助栈换时间 trades space for time）

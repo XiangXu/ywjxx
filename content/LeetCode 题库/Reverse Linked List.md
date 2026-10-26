@@ -250,7 +250,7 @@ So `return newHead` isn't "copying whatever came from below"; it's **this level'
 | --- | --- |
 | 92. Reverse Linked List II | 只反转第 `left` 到 `right` 个节点，需要 dummy 头和接回两端 reverse only positions `left..right`; needs a dummy head and reconnecting both ends |
 | 25. Reverse Nodes in k-Group | 每 k 个一组反转，本题的循环套在外层循环里 reverse every k nodes; this loop inside an outer loop (Hard) |
-| 24. Swap Nodes in Pairs | 两两交换，递归写法和本题一样“先处理后面再接自己” swap pairs; the recursive version has the same shape |
+| 24. Swap Nodes in Pairs | 两两交换，递归写法结构相似：先处理后面，再交换这一对接上去 swap pairs; the recursive version has a similar shape (recurse on the rest, then swap this pair onto it) |
 | 234. Palindrome Linked List | 快慢指针找中点，再反转后半段比较 find the middle with fast/slow pointers, reverse the second half, compare |
 | 143. Reorder List | 找中点 + 反转后半段 + 交替合并 middle + reverse + merge |
 | 21. Merge Two Sorted Lists | 同样能用迭代（dummy 头）或递归写 also solvable iteratively (dummy head) or recursively |

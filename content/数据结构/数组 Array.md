@@ -184,6 +184,6 @@ void delete(int[] a, int size, int k) {
 ## 9. 🔗 相关 Related
 
 - [[📌 数据结构总览]]
-- 数据结构 Data structures: [[栈 Stack|栈 Stack]]（用数组实现 array-backed） · [[链表 Linked List|链表 Linked List]]（连续 vs 分散，对比见第 3 题 contiguous vs scattered）
+- 数据结构 Data structures: [[栈 Stack|栈 Stack]]（用数组实现 array-backed） · [[链表 Linked List|链表 Linked List]]（连续 vs 分散，对比见第 1、4 题 contiguous vs scattered, see Q1 and Q4）
 - 算法 Algorithms: [[双指针 Two Pointers|双指针]] · [[一次遍历 One Pass|一次遍历]] · [[复杂度分析 Big-O|复杂度分析]]
 - 硬件背景 Hardware background: [[Computer Architecture]]

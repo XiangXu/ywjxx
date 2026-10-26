@@ -40,7 +40,7 @@ head
 ```
 
 ```java
-// LeetCode 的标准定义 LeetCode's standard definition
+// LeetCode 定义的简化版（省略了无参构造）Simplified LeetCode definition (no-arg constructor omitted)
 public class ListNode {
     int val;
     ListNode next;
@@ -134,6 +134,8 @@ Without indices, finding the middle, the k-th from the end, or a cycle uses two 
 ## 4. 💻 模板代码 Code Template
 
 ```java
+// ①–④ 是互相独立的片段 ①–④ are independent snippets
+
 // ① 遍历 Traverse
 for (ListNode p = head; p != null; p = p.next) {
     // 用 p.val use p.val
@@ -149,7 +151,7 @@ while (curr != null) {
 }
 // prev 是新头 prev is the new head
 
-// ③ 哑节点：删除所有值为 val 的节点 Dummy head: remove every node equal to val (203)
+// ③ 哑节点：删除所有值为 val 的节点 Dummy head: remove every node equal to val (203)，val 是方法参数 val is the method parameter
 ListNode dummy = new ListNode(0, head);
 ListNode p = dummy;
 while (p.next != null) {
