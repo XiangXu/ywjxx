@@ -160,6 +160,8 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 | [[Valid Parentheses\|20]] | O(n) | O(n) | 栈；暴力解反复删配对是 O(n²) Stack; the repeated-deletion brute force is O(n²) |
 | [[Min Stack\|155]] | 每个操作 O(1) Per operation: O(1) | O(n) | 辅助栈，用空间换时间 auxiliary stack, space for time |
 | [[Reverse Linked List\|206]] | O(n) | O(1) 迭代 / O(n) 递归 O(1) iterative / O(n) recursive | 递归即使不 `new` 也要 O(n) 的调用栈 Recursion costs an O(n) call stack even with no `new` |
+| [[Design Singly Linked List\|设计单链表 Design Singly Linked List]] | 头插 / 尾插 O(1)，`get` / `remove` O(i) Head / tail insert O(1), `get` / `remove` O(i) | O(n) | 多存一个 `tail` 引用，尾插从 O(n) 变 O(1) One extra `tail` reference turns O(n) appends into O(1) |
+| [[Merge Two Sorted Lists\|21]] | O(n + m) | O(1) 迭代 / O(n + m) 递归 O(1) iterative / O(n + m) recursive | 两个输入大小不同，复杂度要写两个变量 Two inputs of different sizes need two variables |
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
@@ -210,6 +212,8 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 - ✅ [[Min Stack|155. 最小栈 Min Stack]]: 用空间换时间的标准例子 the textbook space-for-time example
 - ✅ [[Valid Parentheses|20. 有效的括号 Valid Parentheses]]: 暴力 O(n²) → 栈 O(n)，每个元素最多进出一次 brute force O(n²) → stack O(n), each element in and out at most once
 - ✅ [[Reverse Linked List|206. 反转链表 Reverse Linked List]]: 同一题迭代 O(1)、递归 O(n) 空间，递归栈要算进去 iterative O(1) vs recursive O(n) space; count the recursion stack
+- ✅ [[Design Singly Linked List|设计单链表 Design Singly Linked List]]: 一个 `tail` 引用换来 O(1) 尾插；和动态数组对比各操作的代价 one `tail` reference buys O(1) appends; compare each operation's cost with a dynamic array
+- ✅ [[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]]: 两个输入要用 n、m 两个变量；递归栈占 O(n + m) 空间 Two inputs need two variables; the recursion stack takes O(n + m) space
 - 704. Binary Search: O(log n) 的标准例子 the textbook O(log n) example
 
 ## 9. 🔗 相关 Related

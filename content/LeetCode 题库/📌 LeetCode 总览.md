@@ -23,6 +23,8 @@ created: 2026-10-15
   - 🟡 [[Min Stack|155. 最小栈 Min Stack]]: 辅助栈和主栈同步压入弹出，每层存到这层为止的最小值 An auxiliary stack pushed and popped in lockstep, each level storing the minimum so far · Medium
 - 🔗 链表 Linked List:
   - 🟡 [[Reverse Linked List|206. 反转链表 Reverse Linked List]]: 迭代先存 `next` 再调头；递归先反转后面，再把自己接到尾巴，原样返回 `newHead` Iteratively, save `next` before flipping; recursively, reverse the rest, attach yourself at its tail, and return `newHead` unchanged · Easy
+  - 🟡 [[Design Singly Linked List|设计单链表 Design Singly Linked List]]: 自己实现链表，详见下方设计题 Build the list yourself; see Design below · Easy
+  - 🟡 [[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]]: 递归选较小的头、`next` 交给子调用、返回自己；迭代用哑节点加尾指针拉拉链 Recursively, pick the smaller head, let the child build its `next`, and return yourself; iteratively, zip with a dummy head and a tail pointer · Easy
 - 🪟 滑动窗口 Sliding Window:
 - 🔍 二分查找 Binary Search:
 - 🌳 树 Trees / DFS / BFS:
@@ -32,6 +34,7 @@ created: 2026-10-15
 - ⛰️ 堆 Heap / Top-K:
 - 🏗️ 设计 Design:
   - 🟡 [[Design Dynamic Array|设计动态数组 Design Dynamic Array]]: `int[]` 加 size、capacity 两个计数器，满了翻倍复制，均摊 O(1) 的 `pushback` An `int[]` with size and capacity counters that doubles when full, for amortized O(1) `pushback` · Easy
+  - 🟡 [[Design Singly Linked List|设计单链表 Design Singly Linked List]]: 哑节点加尾指针；`remove` 从哑节点走 index 步停在目标前一个，删尾巴时把 `tail` 退回来 A dummy head plus a tail pointer; `remove` walks index steps from the dummy to stop before the target and moves `tail` back when removing the last node · Easy
 
 ## 🚦 状态说明 Status Legend
 - 🔴 todo: 还没做出来 Not solved yet

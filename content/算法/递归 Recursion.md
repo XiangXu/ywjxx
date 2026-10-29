@@ -103,6 +103,9 @@ reverseList(1)                      ┐
 | 信息流向 Information flows | 父 → 子，靠参数传下去 parent → child via parameters | 子 → 父，靠返回值交上来 child → parent via the return value |
 | 例子 Example | 打印链表、带 `prev` 参数的反转写法 print a list, the reversal with a `prev` parameter | [[Reverse Linked List\|206]] 的 `newHead` 写法、104 maxDepth |
 
+两者也可以混在一起：[[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]] 在调用**之前**选出本层的节点，在调用**之后**把子结果接到它后面。
+The two can mix: 21 picks this level's node **before** the call and hangs the child's result after it **after** the call.
+
 ### 3.3 子结果怎么用 Using the child's result
 
 所有后序递归都是“**拿到子结果 → 结合自己 → 得出本层结果**”，区别只在加工多少：
@@ -112,7 +115,11 @@ Every post-order recursion is "**take the child's result → combine with yourse
 return Math.max(left, right) + 1;   // 104 maxDepth: 加工 +1 processed
 return newHead;                     // 206 reverseList: 不用加工 passed through unchanged
 return l1.val + sum(l1.next);       // 链表求和 list sum: 加上自己 add yourself
+return list1;                       // 21 merge: 自己就是新头，前后混合 I am the new head; 21 mixes both (after list1.next = merge(...))
 ```
+
+返回值是谁，取决于本层把自己放在哪：[[Reverse Linked List|206]] 接在子结果的**尾巴**，头没变，返回 `newHead`；[[Merge Two Sorted Lists|21]] 放在子结果的**前面**，自己成了头，返回自己。
+What to return depends on where this level puts itself: 206 attaches at the child's **tail**, so the head is unchanged and it returns `newHead`; 21 goes in **front** of the child's result, so it becomes the head and returns itself.
 
 ## 4. 💻 模板代码 Code Template
 
@@ -164,6 +171,7 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 | 例子 Example | 调用次数 Calls | ⏱️ Time | 🗄️ Space（深度 depth） |
 | --- | --- | --- | --- |
 | [[Reverse Linked List\|206]] 反转链表 Reverse Linked List | n | O(n) | O(n) |
+| [[Merge Two Sorted Lists\|21]] 合并两个有序链表 Merge Two Sorted Lists | 最多 n + m 次 At most n + m | O(n + m) | O(n + m) |
 | 104 树的最大深度 Maximum Depth of Binary Tree | n（每个节点一次 once per node） | O(n) | O(h)，h 是树高（平衡时 O(log n)，链状时 O(n)） O(h) for tree height h (balanced O(log n), skewed O(n)) |
 | 509 朴素斐波那契 Naive Fibonacci | 约 φⁿ ≈ 1.618ⁿ，通常写成上界 O(2ⁿ)，更紧的界是 O(φⁿ) About φⁿ ≈ 1.618ⁿ, usually written as the upper bound O(2ⁿ); the tighter bound is O(φⁿ) | O(2ⁿ) | O(n) |
 | 509 记忆化 memoized | 每个 n 算一次 each n once | O(n) | O(n) |
@@ -243,7 +251,7 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 | 题目 Problem | 练的是什么 What it practices | 难度 Difficulty |
 | --- | --- | --- |
 | ✅ [[Reverse Linked List\|206. 反转链表 Reverse Linked List]] | 后序递归，相信合同 post-order, trust the contract | Easy |
-| 21. Merge Two Sorted Lists | 小的那个节点 + 合并剩下的 smaller node + merge the rest | Easy |
+| ✅ [[Merge Two Sorted Lists\|21. 合并两个有序链表 Merge Two Sorted Lists]] | 选在前、连在后，返回自己 choose before, connect after, return yourself | Easy |
 | 104. Maximum Depth of Binary Tree | 子结果加工 `max + 1` processing the child results | Easy |
 | 226. Invert Binary Tree | 树上的递归交换 swapping recursively on a tree | Easy |
 | 509. Fibonacci Number | 重复子问题、记忆化 repeated subproblems, memoization | Easy |

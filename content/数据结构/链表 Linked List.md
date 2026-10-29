@@ -126,7 +126,18 @@ prev        curr   next
 头节点可能被删除或替换时，在前面放一个假节点 `dummy`，所有节点（包括原来的头）就都有了“前一个节点”，不用单独处理头。最后返回 `dummy.next`。
 When the head might be removed or replaced, put a fake `dummy` node in front so every node, the old head included, has a predecessor. No special case for the head; return `dummy.next`.
 
-### 3.4 快慢指针 Fast and slow pointers
+**拼一条新链表**时也一样：哑节点当作初始尾巴，配一个 `tail` 指针不断往后接，不用特判“结果还是空的”（[[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]]）。
+The same goes for **building a new list**: the dummy is the first tail, and a `tail` pointer keeps appending, with no "result is still empty" special case.
+
+把哑节点看成**下标 -1**：从它出发走 `i` 步，正好停在第 `i - 1` 个，也就是删除或插入第 `i` 个时需要站的位置（[[Design Singly Linked List|设计单链表 Design Singly Linked List]]）。
+Treat the dummy as **index -1**: walking `i` steps from it lands on node `i - 1`, exactly where you must stand to remove or insert at position `i`.
+
+### 3.4 尾指针 Tail pointer
+
+多存一个指向最后一个节点的 `tail`，尾部追加就从 O(n) 变成 O(1)。代价是每个可能改变最后一个节点的操作都要维护它：往空链表插入时、删掉最后一个节点时（`tail` 退回前一个，删空了就退回哑节点）。忘了维护不会报错，新值会接到一个已经脱离链表的节点上，悄悄丢失。
+Keeping a `tail` reference to the last node makes appending O(1) instead of O(n). The price: every operation that can change the last node must update it: inserting into an empty list and removing the last node (`tail` moves back to the predecessor, or to the dummy when the list becomes empty). Forgetting doesn't throw; new values get appended to a detached node and silently vanish.
+
+### 3.5 快慢指针 Fast and slow pointers
 
 链表不能用下标，找中点、找倒数第 k 个、判断有没有环都靠[[双指针 Two Pointers|双指针 Two Pointers]]：`slow` 每次走一步，`fast` 每次走两步。`fast` 到尾时 `slow` 在中间；有环的话两者一定会相遇（141）。
 Without indices, finding the middle, the k-th from the end, or a cycle uses two pointers: `slow` moves one step, `fast` moves two. When `fast` reaches the end, `slow` is in the middle; if there's a cycle they must meet (141).
@@ -189,7 +200,10 @@ while (fast != null && fast.next != null) {
 - **`null.next` 空指针 NPE on `null.next`:** 访问 `p.next.next` 之前确认 `p.next != null`；快慢指针的循环条件是 `fast != null && fast.next != null` → check `p.next != null` before `p.next.next`.
 - **空链表和单节点 Empty and single-node lists:** 每次写完都用 `[]`、`[1]`、`[1, 2]` 过一遍 → test with `[]`, `[1]` and `[1, 2]` every time.
 - **忘了断开旧指针，形成环 Forgetting to cut the old pointer:** 反转、重排时新尾巴的 `next` 要设成 `null`，否则遍历死循环 → set the new tail's `next` to `null`, or traversal loops forever (206's `head.next = null`).
+- **删除时停错了位置 Stopping in the wrong place to remove:** 要站在目标的**前一个**节点上改 `prev.next`；从哑节点出发走 `i` 步正好到第 `i - 1` 个 → stand on the node **before** the target; `i` steps from the dummy gets you there, see [[Design Singly Linked List|设计单链表 Design Singly Linked List]].
+- **有尾指针却没维护 A tail pointer you forgot to update:** 删掉最后一个节点后 `tail` 要退回前一个 → after removing the last node, move `tail` back to the predecessor.
 - **头节点可能变化却返回了 `head`** Returning `head` when the head changed: 用 dummy，返回 `dummy.next` → use a dummy and return `dummy.next`.
+- **拼接时尾巴没前进 Not advancing the tail while building:** 每接一个节点都要 `tail = tail.next`，否则一直覆盖同一个 `next`（[[Merge Two Sorted Lists|21]]） → after each attach, `tail = tail.next`, or you keep overwriting the same `next`.
 - **`LinkedList.get(i)` 是 O(n) 的 `LinkedList.get(i)` is O(n)**: 在循环里 `list.get(i)` 整体变 O(n²)；要遍历用迭代器或 for-each → looping with `get(i)` is O(n²); use an iterator or for-each.
 - **递归太深 Recursion too deep:** 递归处理链表每个节点一层，很长的链表可能 `StackOverflowError` → one frame per node; very long lists can overflow, see [[递归 Recursion|递归 Recursion]].
 
@@ -224,13 +238,15 @@ while (fast != null && fast.next != null) {
 | 题目 Problem | 练的是什么 What it practices | 难度 Difficulty |
 | --- | --- | --- |
 | ✅ [[Reverse Linked List\|206. 反转链表 Reverse Linked List]] | 指针反转，迭代 + 递归 pointer reversal, iterative + recursive | Easy |
-| 21. Merge Two Sorted Lists | 哑节点拼新链表 dummy head to build a list | Easy |
+| ✅ [[Design Singly Linked List\|设计单链表 Design Singly Linked List]] | 哑节点 + 尾指针，停在前一个删除 dummy head + tail pointer, remove from the predecessor | Easy |
+| ✅ [[Merge Two Sorted Lists\|21. 合并两个有序链表 Merge Two Sorted Lists]] | 哑节点拼新链表；递归版 dummy head to build a list; also recursive | Easy |
 | 203. Remove Linked List Elements | 哑节点删除 dummy head deletion | Easy |
 | 876. Middle of the Linked List | 快慢指针 fast/slow pointers | Easy |
 | 141. Linked List Cycle | 快慢指针判环 cycle detection | Easy |
 | 234. Palindrome Linked List | 找中点 + 反转后半段 middle + reverse | Easy |
 | 19. Remove Nth Node From End of List | 前后指针相隔 n 步 two pointers n apart | Medium |
 | 92. Reverse Linked List II | 局部反转 partial reversal | Medium |
+| 707. Design Linked List | 本题的 LeetCode 版，多了按下标插入 the LeetCode version, with insert at index | Medium |
 | 146. LRU Cache | 哈希表 + 双向链表 hash map + doubly linked list | Medium |
 
 ## 9. 🔗 相关 Related

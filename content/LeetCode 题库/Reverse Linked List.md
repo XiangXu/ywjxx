@@ -253,7 +253,7 @@ So `return newHead` isn't "copying whatever came from below"; it's **this level'
 | 24. Swap Nodes in Pairs | 两两交换，递归写法结构相似：先处理后面，再交换这一对接上去 swap pairs; the recursive version has a similar shape (recurse on the rest, then swap this pair onto it) |
 | 234. Palindrome Linked List | 快慢指针找中点，再反转后半段比较 find the middle with fast/slow pointers, reverse the second half, compare |
 | 143. Reorder List | 找中点 + 反转后半段 + 交替合并 middle + reverse + merge |
-| 21. Merge Two Sorted Lists | 同样能用迭代（dummy 头）或递归写 also solvable iteratively (dummy head) or recursively |
+| [[Merge Two Sorted Lists\|21. 合并两个有序链表 Merge Two Sorted Lists]] | 同样能用迭代（dummy 头）或递归写，但递归把自己接在前面、返回自己 also iterative (dummy head) or recursive, but its recursion attaches in front and returns itself |
 
 ## 7. ❓ 复习题 Review Questions
 
@@ -292,6 +292,7 @@ So `return newHead` isn't "copying whatever came from below"; it's **this level'
 - [[📌 LeetCode 总览]]
 - 🧠 概念 Concepts: [[链表 Linked List|链表 Linked List]]（指针反转 pointer reversal） · [[递归 Recursion|递归 Recursion]]（相信合同、后序处理 trust the contract, post-order work） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（递归栈也算空间 the recursion stack counts）
 - 上一题 Previous: [[Min Stack|155. 最小栈 Min Stack]]（栈；递归本身跑在调用栈上 stacks; recursion runs on the call stack）
+- 下一题 Next: [[Design Singly Linked List|设计单链表 Design Singly Linked List]]（自己实现链表：哑节点、尾指针、停在前一个删除 build the list yourself: dummy head, tail pointer, remove from the predecessor）
 
 ## 9. 🔁 复习记录 Review Log
 

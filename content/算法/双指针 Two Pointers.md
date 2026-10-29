@@ -33,6 +33,10 @@ publish: true
 > 滑动窗口是同向双指针的一种：两个指针围出一个区间 `[left, right]`，右边扩、左边缩。它有自己的套路，以后单独写笔记。
 > A sliding window is a same-direction variant where the two pointers bound a range `[left, right]` that grows on the right and shrinks on the left. It gets its own note later.
 
+> [!note] 两个输入各一个指针 One pointer per input
+> 还有一种：两条**有序**的数组或链表各放一个指针，每次比较两边，取较小的那个并前进。这就是归并排序的 merge 步骤，O(n + m)（[[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]]；88 则从后往前取较大的）。
+> Another shape: one pointer in each of two **sorted** arrays or lists; compare, take the smaller, advance that side. It's the merge step of merge sort, O(n + m) (88 instead goes from the back and takes the larger).
+
 ## 2. 🧠 什么时候用 When to Use
 
 - 🔎 题目信号 Signals in the problem:
@@ -173,6 +177,8 @@ return new int[] {-1, -1};
 | 167. Two Sum II (Input Array Is Sorted) | 相向 opposite | Medium |
 | 11. Container With Most Water | 相向 opposite | Medium |
 | 15. 3Sum | 排序 + 相向 sort + opposite | Medium |
+| ✅ [[Merge Two Sorted Lists\|21. 合并两个有序链表 Merge Two Sorted Lists]] | 两个输入各一个 one per input | Easy |
+| 88. Merge Sorted Array | 两个输入，从后往前 one per input, from the back | Easy |
 
 ## 9. 🔗 相关 Related
 
