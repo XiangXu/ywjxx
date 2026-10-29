@@ -163,6 +163,7 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 | [[Design Singly Linked List\|设计单链表 Design Singly Linked List]] | 头插 / 尾插 O(1)，`get` / `remove` O(i) Head / tail insert O(1), `get` / `remove` O(i) | O(n) | 多存一个 `tail` 引用，尾插从 O(n) 变 O(1) One extra `tail` reference turns O(n) appends into O(1) |
 | [[Merge Two Sorted Lists\|21]] | O(n + m) | O(1) 迭代 / O(n + m) 递归 O(1) iterative / O(n + m) recursive | 两个输入大小不同，复杂度要写两个变量 Two inputs of different sizes need two variables |
 | [[Design Linked List\|707]] | 头插 / 尾插 O(1)，按下标 O(i) Head / tail insert O(1), by index O(i) | O(n) | 每个节点多一个 `prev`，换来站在节点上就能删除；从近的一端走只把常数减半 An extra `prev` per node lets you delete in place; walking from the closer end only halves the constant |
+| [[Design Browser History\|1472]] | `visit` O(1)，`back` / `forward` O(min(steps, k)) `visit` O(1), `back` / `forward` O(min(steps, k)) | O(n) | 链表只能一步一步走；数组加下标可以一步算出位置，变成 O(1) A list moves one node at a time; an array with indices computes the position directly, making it O(1) |
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
@@ -216,6 +217,7 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 - ✅ [[Design Singly Linked List|设计单链表 Design Singly Linked List]]: 一个 `tail` 引用换来 O(1) 尾插；和动态数组对比各操作的代价 one `tail` reference buys O(1) appends; compare each operation's cost with a dynamic array
 - ✅ [[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]]: 两个输入要用 n、m 两个变量；递归栈占 O(n + m) 空间 Two inputs need two variables; the recursion stack takes O(n + m) space
 - ✅ [[Design Linked List|707. 设计链表 Design Linked List]]: 多一个引用换原地删除；从近的一端走是 O(min(i, n − i))，最坏仍是 O(n) An extra reference buys in-place deletion; walking from the closer end is O(min(i, n − i)) but still O(n) in the worst case
+- ✅ [[Design Browser History|1472. 设计浏览器历史记录 Design Browser History]]: 同一个接口，链表 O(steps) 对比数组 O(1)；被剪掉的节点交给 GC，不算进操作的时间 The same interface: linked list O(steps) vs array O(1); cut-off nodes are left to the GC rather than deleted one by one
 - 704. Binary Search: O(log n) 的标准例子 the textbook O(log n) example
 
 ## 9. 🔗 相关 Related

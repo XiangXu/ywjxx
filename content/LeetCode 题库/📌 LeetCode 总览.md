@@ -26,6 +26,7 @@ created: 2026-10-15
   - 🟡 [[Design Singly Linked List|设计单链表 Design Singly Linked List]]: 自己实现链表，详见下方设计题 Build the list yourself; see Design below · Easy
   - 🟡 [[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]]: 递归选较小的头、`next` 交给子调用、返回自己；迭代用哑节点加尾指针拉拉链 Recursively, pick the smaller head, let the child build its `next`, and return yourself; iteratively, zip with a dummy head and a tail pointer · Easy
   - 🟡 [[Design Linked List|707. 设计链表 Design Linked List]]: 双向链表加双哨兵，详见下方设计题 A doubly linked list with two sentinels; see Design below · Medium
+  - 🟡 [[Design Browser History|1472. 设计浏览器历史记录 Design Browser History]]: 双向链表加游标，详见下方设计题 A doubly linked list with a cursor; see Design below · Medium
 - 🪟 滑动窗口 Sliding Window:
 - 🔍 二分查找 Binary Search:
 - 🌳 树 Trees / DFS / BFS:
@@ -37,6 +38,7 @@ created: 2026-10-15
   - 🟡 [[Design Dynamic Array|设计动态数组 Design Dynamic Array]]: `int[]` 加 size、capacity 两个计数器，满了翻倍复制，均摊 O(1) 的 `pushback` An `int[]` with size and capacity counters that doubles when full, for amortized O(1) `pushback` · Easy
   - 🟡 [[Design Singly Linked List|设计单链表 Design Singly Linked List]]: 哑节点加尾指针；`remove` 从哑节点走 index 步停在目标前一个，删尾巴时把 `tail` 退回来 A dummy head plus a tail pointer; `remove` walks index steps from the dummy to stop before the target and moves `tail` back when removing the last node · Easy
   - 🟡 [[Design Linked List|707. 设计链表 Design Linked List]]: 双向链表加头尾两个哨兵，插入删除不用判空；三个按下标的方法共用一个循环，落在尾哨兵上就是追加 A doubly linked list with head and tail sentinels, so inserts and deletes need no null checks; the three index methods share one loop, and landing on the tail sentinel means append · Medium
+  - 🟡 [[Design Browser History|1472. 设计浏览器历史记录 Design Browser History]]: `curr` 指着当前页，后退前进沿 `prev` / `next` 走到头就停；`visit` 覆盖 `curr.next`，一行剪掉前进历史 `curr` marks the current page; back and forward walk `prev` / `next` and stop at the ends; `visit` overwrites `curr.next`, cutting off the forward history in one line · Medium
 
 ## 🚦 状态说明 Status Legend
 - 🔴 todo: 还没做出来 Not solved yet
