@@ -224,7 +224,7 @@ while (fast != null && fast.next != null) {
 - **删除时停错了位置 Stopping in the wrong place to remove:** 要站在目标的**前一个**节点上改 `prev.next`；从哑节点出发走 `i` 步正好到第 `i - 1` 个 → stand on the node **before** the target; `i` steps from the dummy gets you there, see [[Design Singly Linked List|设计单链表 Design Singly Linked List]].
 - **有尾指针却没维护 A tail pointer you forgot to update:** 删掉最后一个节点后 `tail` 要退回前一个 → after removing the last node, move `tail` back to the predecessor.
 - **双向链表少改一个指针 One pointer short in a doubly linked list:** 插入要改四个指针、删除改两个，漏了 `prev` 正向遍历看不出来，但之后的插入会出错 → an insert updates four pointers and a delete two; a missed `prev` is invisible going forward but breaks later inserts, see [[Design Linked List|707]].
-- **以为要逐个删除 Deleting node by node:** 剪掉一整段只需覆盖一个引用，没人指向的节点会被 GC 回收 → cutting off a whole tail takes one overwritten reference; unreachable nodes are garbage-collected, see [[Design Browser History|1472]].
+- **以为要逐个删除 Deleting node by node:** 在 Java 这类有 GC 的语言里，剪掉一整段只需覆盖一个引用，没人指向的节点会被回收 → in a garbage-collected language like Java, cutting off a whole tail takes one overwritten reference and unreachable nodes are reclaimed (in C or C++ you must free them), see [[Design Browser History|1472]].
 - **头节点可能变化却返回了 `head`** Returning `head` when the head changed: 用 dummy，返回 `dummy.next` → use a dummy and return `dummy.next`.
 - **拼接时尾巴没前进 Not advancing the tail while building:** 每接一个节点都要 `tail = tail.next`，否则一直覆盖同一个 `next`（[[Merge Two Sorted Lists|21]]） → after each attach, `tail = tail.next`, or you keep overwriting the same `next`.
 - **`LinkedList.get(i)` 是 O(n) 的 `LinkedList.get(i)` is O(n)**: 在循环里 `list.get(i)` 整体变 O(n²)；要遍历用迭代器或 for-each → looping with `get(i)` is O(n²); use an iterator or for-each.

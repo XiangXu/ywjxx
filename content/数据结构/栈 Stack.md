@@ -192,6 +192,7 @@ Stack algorithms are commonly **O(n) time**: each element is pushed once and pop
 | ✅ [[Valid Parentheses\|20. 有效的括号 Valid Parentheses]] | 括号配对 bracket matching | Easy |
 | ✅ [[Min Stack\|155. 最小栈 Min Stack]] | 辅助栈 auxiliary stack | Medium |
 | 844. Backspace String Compare | `#` 删除前一个字符 `#` deletes the previous char | Easy |
+| [[Design Browser History\|1472. 设计浏览器历史记录 Design Browser History]] | 两个栈做后退和前进（其他写法） back and forward with two stacks (an alternative) | Medium |
 | 232. Implement Queue using Stacks | 两个栈实现队列 a queue from two stacks | Easy |
 | 150. Evaluate Reverse Polish Notation | 数字压栈，运算符弹两个 push numbers, pop two on an operator | Medium |
 | 739. Daily Temperatures | 单调栈 monotonic stack | Medium |

@@ -84,10 +84,10 @@ visit("linkedin.com"):
 
 - 思路 Idea: 用一个 `ArrayList<String>` 存所有页面，再用下标 `curr` 表示当前页。`visit` 时先把 `curr` 后面的元素逐个删掉，再 `add` 新网址。
   Keep every page in an `ArrayList<String>` with an index `curr`. On `visit`, remove the elements after `curr` one by one, then `add` the new URL.
-- 后退前进直接改下标，O(1)；但 `visit` 每次都要删掉前进历史，最坏 O(n)。
-  Back and forward just move the index, O(1); but each `visit` deletes the forward history, O(n) in the worst case.
-- 能通过，而且只要不真删、改成“覆盖 + 记录最后一个有效位置”，就是下面的 O(1) 数组写法。
-  It passes, and if you overwrite instead of deleting and track the last valid index, it becomes the O(1) array version below.
+- 后退前进直接改下标，O(1)；但 `visit` 要把前进历史逐个删掉，单次最坏 O(n)（每页最多被删一次，所以均摊下来也是 O(1)）。
+  Back and forward just move the index, O(1); but each `visit` deletes the forward history, O(n) in the worst case for one call (each page is deleted at most once, so it is amortized O(1) too).
+- 能通过，而且只要不真删、改成“覆盖 + 记录最后一个有效位置”，就是下面均摊 O(1) 的数组写法。
+  It passes, and if you overwrite instead of deleting and track the last valid index, it becomes the amortized O(1) array version below.
 
 ## 4. 🚀 最优解 Optimal Solution
 
@@ -142,7 +142,7 @@ class BrowserHistory {
 | `BrowserHistory` / `visit` | O(1) |
 | `back(steps)` / `forward(steps)` | O(min(steps, k))，`k` 是那个方向上还能走的页数 where `k` is the number of pages available in that direction |
 
-- 🗄️ Space: O(n)，`n` 是当前还能访问到的页面数；被 `visit` 剪掉的节点会被 GC 回收 `n` is the number of reachable pages; nodes cut off by `visit` get garbage-collected
+- 🗄️ Space: O(n)，`n` 是当前还能访问到的页面数；被 `visit` 剪掉的节点可以被 GC 回收（何时回收由 JVM 决定） `n` is the number of reachable pages; nodes cut off by `visit` become eligible for garbage collection (when is up to the JVM)
 
 ### 4.1 ✂️ 一行代码清空前进历史 One line clears the forward history
 
@@ -178,14 +178,14 @@ The first node of the cut-off part still has `prev` pointing at `curr`, but that
 > | `back(1)` | `leetcode ⇄ google ⇄ *facebook ⇄ youtube` | `"facebook.com"` |
 > | `back(1)` | `leetcode ⇄ *google ⇄ facebook ⇄ youtube` | `"google.com"` |
 > | `forward(1)` | `leetcode ⇄ google ⇄ *facebook ⇄ youtube` | `"facebook.com"` |
-> | `visit("linkedin.com")` | `leetcode ⇄ google ⇄ facebook ⇄ *linkedin`（youtube 被剪掉 youtube is cut off） | |
+> | `visit("linkedin.com")` | `leetcode ⇄ google ⇄ facebook ⇄ *linkedin`（剪掉了 youtube 页 the youtube page is cut off） | |
 > | `forward(2)` | `leetcode ⇄ google ⇄ facebook ⇄ *linkedin`（`next` 是 `null`，一步也走不了 `next` is `null`, no steps taken） | `"linkedin.com"` |
 > | `back(2)` | `leetcode ⇄ *google ⇄ facebook ⇄ linkedin` | `"google.com"` |
 > | `back(7)` | `*leetcode ⇄ google ⇄ facebook ⇄ linkedin`（只走了一步就到头 stopped after one step） | `"leetcode.com"` |
 
 > [!note] 其他写法 Alternatives
-> **数组 + 两个下标 Array plus two indices（全部 O(1) all O(1)）:** `curr` 是当前页，`last` 是最后一个有效页。`visit` 不删任何东西，直接覆盖 `curr + 1` 的位置，再把 `last` 设成 `curr`，后面的旧数据就“作废”了。后退前进用 `Math.max` / `Math.min` 一步算出结果，不用循环。
-> `curr` is the current page and `last` the last valid one. `visit` deletes nothing: it overwrites slot `curr + 1` and sets `last = curr`, which "invalidates" anything after it. Back and forward clamp with `Math.max` / `Math.min` in one step, no loop.
+> **数组 + 两个下标 Array plus two indices:** `curr` 是当前页，`last` 是最后一个有效页。`visit` 不删任何东西，先把 `curr` 移到 `curr + 1` 并覆盖那个位置，再把 `last` 设成新的 `curr`，后面的旧数据就“作废”了。后退前进用 `Math.max` / `Math.min` 一步算出结果，不用循环。
+> `curr` is the current page and `last` the last valid one. `visit` deletes nothing: it moves `curr` to slot `curr + 1`, overwrites that slot, then sets `last` to the new `curr`, which "invalidates" anything after it. Back and forward clamp with `Math.max` / `Math.min` in one step, no loop.
 > ```java
 > class BrowserHistory {
 >     private final List<String> history = new ArrayList<>();
@@ -220,13 +220,13 @@ The first node of the cut-off part still has `prev` pointing at `curr`, but that
 > 代价是作废的旧网址还留在数组里，直到被覆盖；数组只会变长，不会变短。
 > The price: invalidated URLs stay in the array until overwritten, and the array only grows.
 >
-> **两个栈 Two stacks:** 后退栈的栈顶是当前页，前进栈存“后退时离开的页”。`visit` 压入后退栈并清空前进栈；后退时从后退栈弹出压到前进栈（保留至少一页），前进反过来。`back` / `forward` 是 O(steps)，`visit` 清空前进栈的代价可以均摊到之前把页面压进去的操作上。见 [[栈 Stack|栈 Stack]]。
-> The back stack's top is the current page; the forward stack holds pages you left by going back. `visit` pushes onto the back stack and clears the forward stack; `back` pops from the back stack onto the forward stack (keeping at least one page), and `forward` does the reverse. `back` / `forward` are O(steps), and the cost of clearing the forward stack in `visit` amortizes against the pushes that put those pages there.
+> **两个栈 Two stacks:** 后退栈的栈顶是当前页，前进栈存“后退时离开的页”。`visit` 压入后退栈并清空前进栈；后退时从后退栈弹出压到前进栈（保留至少一页），前进反过来。`back` / `forward` 是 O(min(steps, k))，`visit` 清空前进栈的代价可以均摊到之前 `back` 把这些页面压进前进栈的操作上（假设清空花的时间和栈大小成正比）。见 [[栈 Stack|栈 Stack]]。
+> The back stack's top is the current page; the forward stack holds pages you left by going back. `visit` pushes onto the back stack and clears the forward stack; `back` pops from the back stack onto the forward stack (keeping at least one page), and `forward` does the reverse. `back` / `forward` are O(min(steps, k)), and the cost of clearing the forward stack in `visit` amortizes against the `back` calls that pushed those pages onto it (assuming clearing costs time proportional to the stack size).
 
 | 写法 Approach | `visit` | `back` / `forward` | 说明 Notes |
 | --- | --- | --- | --- |
 | 双向链表（我的解法） Doubly linked list (mine) | O(1) | O(min(steps, k)) | 剪断一个引用就清空前进历史 one reference cut clears forward history |
-| 数组 + 两个下标 Array + two indices | 均摊 O(1) Amortized O(1) | O(1) | 最快，作废的数据留在数组里 fastest; stale entries stay in the array |
+| 数组 + 两个下标 Array + two indices | 均摊 O(1) Amortized O(1) | O(1) | 通常最快，作废的数据留在数组里 usually the fastest; stale entries stay in the array |
 | 两个栈 Two stacks | 均摊 O(1) Amortized O(1) | O(min(steps, k)) | 思路直观，`visit` 要清空前进栈 intuitive; `visit` clears the forward stack |
 
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
@@ -235,7 +235,7 @@ The first node of the cut-off part still has `prev` pointing at `curr`, but that
 - [x] 前进超过结尾 Forward past the end: 停在最后一页 → stop on the last page (`forward(2)` after a `visit`)
 - [x] ⚠️ 忘了清空前进历史 Forgetting to clear forward history: 如果 `visit` 把新节点插在 `curr` 和 `curr.next` 中间，旧的前进页还在，`forward` 会走到不该存在的页面 → if `visit` inserts between `curr` and `curr.next`, the old forward pages survive and `forward` reaches pages that should be gone
 - [x] ⚠️ 新节点漏设 `prev` Missing `prev` on the new node: 写成 `new ListNode(url, null, null)` 的话，`visit` 之后就退不回去了 → with `new ListNode(url, null, null)`, you can't go back after a `visit`
-- [x] 先移动再接 Moving before linking: 只写 `curr = new ListNode(url, curr, null)` 的话，旧页的 `next` 没有更新，退回去之后就前进不了；要先接 `curr.next` 再移动 `curr` → with only `curr = new ListNode(url, curr, null)`, the old page's `next` is never updated, so after going back you can't go forward; link `curr.next` first, then move `curr`
+- [x] 先移动再接 Moving before linking: 只写 `curr = new ListNode(url, curr, null)` 的话，旧页的 `next` 没有更新，退回去之后前进到不了新页面；要先接 `curr.next` 再移动 `curr` → with only `curr = new ListNode(url, curr, null)`, the old page's `next` is never updated, so after going back, `forward` never reaches the new page; link `curr.next` first, then move `curr`
 - [x] 多余的 `curr != null` Redundant `curr != null`: `curr` 永远不是 `null`，可以删掉，不影响结果 → `curr` is never `null`, so this check can go without changing the result
 - [x] 数组写法的 `last` The array version's `last`: `forward` 必须用 `last` 而不是 `history.size() - 1` 当上界，否则会走进作废的旧页面 → `forward` must clamp to `last`, not `history.size() - 1`, or it walks into stale pages
 
@@ -243,7 +243,7 @@ The first node of the cut-off part still has `prev` pointing at `curr`, but that
 
 | 题目 Problem | 和本题的关系 Connection |
 | --- | --- |
-| 707. 设计链表 Design Linked List | 同样是双向链表，加了双哨兵和按下标增删 the same doubly linked list, plus two sentinels and indexed inserts and deletes · Medium |
+| [[Design Linked List\|707. 设计链表 Design Linked List]] | 同样是双向链表，加了双哨兵和按下标增删 the same doubly linked list, plus two sentinels and indexed inserts and deletes · Medium |
 | 146. LRU 缓存 LRU Cache | 哈希表 + 双向链表，节点要在链表里移动 a hash map plus a doubly linked list where nodes move around · Medium |
 | 155. 最小栈 Min Stack | 另一道“设计一个类”的题，可以对比两个栈的写法 another design-a-class problem; compare with the two-stack approach · Medium |
 | 641. 设计循环双端队列 Design Circular Deque | 两端都能进出，双向链表或环形数组 both ends open; a doubly linked list or a circular array · Medium |

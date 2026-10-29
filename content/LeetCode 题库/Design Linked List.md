@@ -340,7 +340,7 @@ One extra `prev` reference per node buys "stand on a node and remove it". That's
 | --- | --- |
 | 146. LRU 缓存 LRU Cache | 通常就是本题的结构：哈希表存 key 到节点，双向链表按使用顺序排，双哨兵让“移到最前”和“删最旧的”都只要改几个指针 typically this structure: a hash map from key to node plus a doubly linked list in usage order; the sentinels make move-to-front and evict-oldest a few pointer updates each · Medium |
 | 641. 设计循环双端队列 Design Circular Deque | 两端插入删除，双向链表加双哨兵直接能用 insert and delete at both ends; a doubly linked list with two sentinels fits directly · Medium |
-| [[Design Browser History\|1472. 设计浏览器历史记录 Design Browser History]] | 用双向链表前进后退（数组加一个指针也行） back and forward on a doubly linked list (an array plus a pointer also works) · Medium |
+| [[Design Browser History\|1472. 设计浏览器历史记录 Design Browser History]] | 用双向链表前进后退（数组加两个下标也行） back and forward on a doubly linked list (an array plus two indices also works) · Medium |
 | 430. 扁平化多级双向链表 Flatten a Multilevel Doubly Linked List | 同时维护 `prev` 和 `next`，最容易漏改的是 `prev` 那一边 keep `prev` and `next` in sync; the `prev` side is the one people forget · Medium |
 
 ## 7. ❓ 复习题 Review Questions
