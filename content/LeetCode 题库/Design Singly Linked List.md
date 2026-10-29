@@ -330,7 +330,7 @@ This is the step most often missed. If you remove the tail and don't update `tai
 
 | 题目 Problem | 和本题的关系 Connection |
 | --- | --- |
-| 707. 设计链表 Design Linked List | LeetCode 版：多了 `addAtIndex`，插入同样要停在第 `index - 1` 个 the LeetCode version adds `addAtIndex`, which also stops at node `index - 1` |
+| [[Design Linked List\|707. 设计链表 Design Linked List]] | LeetCode 版：多了 `addAtIndex`；单链表写法插入同样停在第 `index - 1` 个，双向链表加双哨兵则可以停在第 `index` 个 the LeetCode version adds `addAtIndex`; a singly linked version also stops at node `index - 1`, while a doubly linked one with two sentinels stops at node `index` |
 | 203. 移除链表元素 Remove Linked List Elements | 哑节点删除所有等于 `val` 的节点 dummy head to remove every node equal to `val` |
 | 19. 删除链表的倒数第 N 个结点 Remove Nth Node From End of List | 同样要停在目标的前一个，用前后指针相隔 n 步找到它 also stops before the target, found with two pointers n apart |
 | 237. 删除链表中的节点 Delete Node in a Linked List | 只给要删的节点、拿不到前一个：把下一个的值抄过来再删下一个 you only get the target, not its predecessor: copy the next value over and delete the next node |
@@ -379,6 +379,7 @@ This is the step most often missed. If you remove the tail and don't update `tai
 
 - [[📌 LeetCode 总览]]
 - 🧠 概念 Concepts: [[链表 Linked List|链表 Linked List]]（哑节点、停在前一个、先连后断 dummy head, stop at the predecessor, connect before you cut） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（尾指针用一个引用换 O(1) 尾插 one extra reference buys O(1) tail inserts）
+- 双向版 Doubly linked version: [[Design Linked List|707. 设计链表 Design Linked List]]（双哨兵，停在目标本身 two sentinels, stop on the target itself）
 - 对照 Counterpart: [[Design Dynamic Array|设计动态数组 Design Dynamic Array]]（随机访问 O(1)，头插 O(n) Random access O(1), head insert O(n)）
 - 上一题 Previous: [[Reverse Linked List|206. 反转链表 Reverse Linked List]]（链表指针操作 linked-list pointer work）
 - 下一题 Next: [[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]]（哑节点拼新链表，再加一个递归写法 a dummy head builds the result, plus a recursive version）

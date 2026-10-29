@@ -376,6 +376,7 @@ class Solution {
 - 🧠 概念 Concepts: [[链表 Linked List|链表 Linked List]]（哑节点拼新链表 dummy head to build a list） · [[递归 Recursion|递归 Recursion]]（选在前、连在后，返回自己 choose before, connect after, return yourself） · [[双指针 Two Pointers|双指针 Two Pointers]]（两条链表各一个指针 one pointer per list） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（迭代 O(1) / 递归 O(n + m) 空间 Iterative O(1) / recursive O(n + m) space）
 - 对照 Compare with: [[Reverse Linked List|206. 反转链表 Reverse Linked List]]（同样两种写法，但递归接在尾巴上 the same two versions, but its recursion attaches at the tail）
 - 上一题 Previous: [[Design Singly Linked List|设计单链表 Design Singly Linked List]]（哑节点和尾指针 dummy head and tail pointer）
+- 下一题 Next: [[Design Linked List|707. 设计链表 Design Linked List]]（双向链表加双哨兵 a doubly linked list with two sentinels）
 
 ## 9. 🔁 复习记录 Review Log
 

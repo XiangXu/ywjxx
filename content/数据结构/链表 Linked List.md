@@ -142,6 +142,26 @@ Keeping a `tail` reference to the last node makes appending O(1) instead of O(n)
 链表不能用下标，找中点、找倒数第 k 个、判断有没有环都靠[[双指针 Two Pointers|双指针 Two Pointers]]：`slow` 每次走一步，`fast` 每次走两步。`fast` 到尾时 `slow` 在中间；有环的话两者一定会相遇（141）。
 Without indices, finding the middle, the k-th from the end, or a cycle uses two pointers: `slow` moves one step, `fast` moves two. When `fast` reaches the end, `slow` is in the middle; if there's a cycle they must meet (141).
 
+### 3.6 双向链表和双哨兵 Doubly linked list with two sentinels
+
+每个节点多存一个 `prev`，头尾各放一个哨兵节点。真实节点的两个邻居永远存在，所以插入删除不用判断 `null`，也不用维护尾指针（最后一个节点就是 `dummyTail.prev`）。拿到一个节点就能 O(1) 删掉它自己，不用先找前一个（[[Design Linked List|707. 设计链表 Design Linked List]]，LRU 缓存 146）。
+Each node also stores `prev`, and a sentinel sits at each end. A real node's two neighbors always exist, so inserts and deletes need no `null` checks and no tail pointer (the last node is just `dummyTail.prev`). Given a node, you can delete it in O(1) without finding its predecessor first (707, and the LRU cache in 146).
+
+```
+dummyHead ⇄ [1] ⇄ [2] ⇄ [3] ⇄ dummyTail
+下标 -1                        下标 n
+index -1                       index n
+
+在 curr 前插入 node Insert node before curr:   删除 curr Delete curr:
+  node.prev = curr.prev;                       curr.prev.next = curr.next;
+  node.next = curr;                            curr.next.prev = curr.prev;
+  curr.prev.next = node;
+  curr.prev = node;     // 最后改 curr.prev last
+```
+
+把 `dummyTail` 看成下标 `n`：从第 0 个走 `i` 步，落在真实节点上才能读或删，落在 `dummyTail` 上可以插入（就是追加），走到 `null` 就是越界。
+Treat `dummyTail` as index `n`: after `i` steps from node 0, reads and deletes need a real node, an insert may land on `dummyTail` (an append), and reaching `null` means out of bounds.
+
 ## 4. 💻 模板代码 Code Template
 
 ```java
@@ -202,6 +222,7 @@ while (fast != null && fast.next != null) {
 - **忘了断开旧指针，形成环 Forgetting to cut the old pointer:** 反转、重排时新尾巴的 `next` 要设成 `null`，否则遍历死循环 → set the new tail's `next` to `null`, or traversal loops forever (206's `head.next = null`).
 - **删除时停错了位置 Stopping in the wrong place to remove:** 要站在目标的**前一个**节点上改 `prev.next`；从哑节点出发走 `i` 步正好到第 `i - 1` 个 → stand on the node **before** the target; `i` steps from the dummy gets you there, see [[Design Singly Linked List|设计单链表 Design Singly Linked List]].
 - **有尾指针却没维护 A tail pointer you forgot to update:** 删掉最后一个节点后 `tail` 要退回前一个 → after removing the last node, move `tail` back to the predecessor.
+- **双向链表少改一个指针 One pointer short in a doubly linked list:** 插入要改四个指针、删除改两个，漏了 `prev` 正向遍历看不出来，但之后的插入会出错 → an insert updates four pointers and a delete two; a missed `prev` is invisible going forward but breaks later inserts, see [[Design Linked List|707]].
 - **头节点可能变化却返回了 `head`** Returning `head` when the head changed: 用 dummy，返回 `dummy.next` → use a dummy and return `dummy.next`.
 - **拼接时尾巴没前进 Not advancing the tail while building:** 每接一个节点都要 `tail = tail.next`，否则一直覆盖同一个 `next`（[[Merge Two Sorted Lists|21]]） → after each attach, `tail = tail.next`, or you keep overwriting the same `next`.
 - **`LinkedList.get(i)` 是 O(n) 的 `LinkedList.get(i)` is O(n)**: 在循环里 `list.get(i)` 整体变 O(n²)；要遍历用迭代器或 for-each → looping with `get(i)` is O(n²); use an iterator or for-each.
@@ -240,13 +261,13 @@ while (fast != null && fast.next != null) {
 | ✅ [[Reverse Linked List\|206. 反转链表 Reverse Linked List]] | 指针反转，迭代 + 递归 pointer reversal, iterative + recursive | Easy |
 | ✅ [[Design Singly Linked List\|设计单链表 Design Singly Linked List]] | 哑节点 + 尾指针，停在前一个删除 dummy head + tail pointer, remove from the predecessor | Easy |
 | ✅ [[Merge Two Sorted Lists\|21. 合并两个有序链表 Merge Two Sorted Lists]] | 哑节点拼新链表；递归版 dummy head to build a list; also recursive | Easy |
+| ✅ [[Design Linked List\|707. 设计链表 Design Linked List]] | 双向链表加双哨兵，站在目标上删除 doubly linked list with two sentinels, delete by standing on the target | Medium |
 | 203. Remove Linked List Elements | 哑节点删除 dummy head deletion | Easy |
 | 876. Middle of the Linked List | 快慢指针 fast/slow pointers | Easy |
 | 141. Linked List Cycle | 快慢指针判环 cycle detection | Easy |
 | 234. Palindrome Linked List | 找中点 + 反转后半段 middle + reverse | Easy |
 | 19. Remove Nth Node From End of List | 前后指针相隔 n 步 two pointers n apart | Medium |
 | 92. Reverse Linked List II | 局部反转 partial reversal | Medium |
-| 707. Design Linked List | 本题的 LeetCode 版，多了按下标插入 the LeetCode version, with insert at index | Medium |
 | 146. LRU Cache | 哈希表 + 双向链表 hash map + doubly linked list | Medium |
 
 ## 9. 🔗 相关 Related
