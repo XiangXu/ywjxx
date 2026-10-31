@@ -191,6 +191,7 @@ Stack algorithms are commonly **O(n) time**: each element is pushed once and pop
 | ✅ [[Baseball Game\|682. 棒球比赛 Baseball Game]] | 栈模拟，撤销上一个 stack simulation, undo the last one | Easy |
 | ✅ [[Valid Parentheses\|20. 有效的括号 Valid Parentheses]] | 括号配对 bracket matching | Easy |
 | ✅ [[Min Stack\|155. 最小栈 Min Stack]] | 辅助栈 auxiliary stack | Medium |
+| ✅ [[Number of Students Unable to Eat Lunch\|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]] | 三明治只从栈顶拿，下标 `i` 就是栈顶 sandwiches come off the top only; index `i` is the top | Easy |
 | 844. Backspace String Compare | `#` 删除前一个字符 `#` deletes the previous char | Easy |
 | [[Design Browser History\|1472. 设计浏览器历史记录 Design Browser History]] | 两个栈做后退和前进（其他写法） back and forward with two stacks (an alternative) | Medium |
 | 232. Implement Queue using Stacks | 两个栈实现队列 a queue from two stacks | Easy |

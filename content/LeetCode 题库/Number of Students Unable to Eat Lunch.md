@@ -107,7 +107,7 @@ class Solution {
   O(n²): each time someone eats, there were at most `queue.size()` rotations before it, which adds up to quadratic (see the worst case below)
 - 🗄️ Space: O(n)，队列 for the queue
 
-**`result` 为什么能直接当答案 Why `result` doubles as the answer:** 循环只有两种结束方式。队列空了：最后一次是有人吃上，`result` 刚被清成 `0`，答案正好是 `0`。`result == queue.size()`：剩下的每个人都连续被跳过了一次，`result` 就等于剩下的人数。两种情况下 `result` 都等于 `queue.size()`，所以写 `return queue.size();` 也一样，而且更好懂。
+**答案怎么来 Why `result` is the answer:** 循环只有两种结束方式。队列空了：最后一次是有人吃上，`result` 刚被清成 `0`，答案正好是 `0`。`result == queue.size()`：剩下的每个人都连续被跳过了一次，`result` 就等于剩下的人数。两种情况下 `result` 都等于 `queue.size()`，所以写 `return queue.size();` 也一样，而且更好懂。
 The loop ends in only two ways. The queue is empty: the last step was someone eating, so `result` was just reset to `0`, which is the answer. Or `result == queue.size()`: everyone left was skipped once in a row, so `result` equals the number left. Either way `result` equals `queue.size()`, so `return queue.size();` works too and reads more clearly.
 
 **为什么转一圈就够 Why one lap is enough:** 转圈不会改变任何人的口味，也不会改变栈顶。如果连续 `queue.size()` 个人都不要，那就是剩下的每个人都看过了这个三明治，再转多少圈都一样。
@@ -154,7 +154,7 @@ class Solution {
 **为什么可以不管顺序 Why order can be ignored:** 模拟里，栈顶三明治被拿走的条件就是“队列里还有人想要它”，被谁拿走无所谓，因为同口味的学生没有区别。所以队列只需要记住两个数：要 `0` 的几个、要 `1` 的几个。
 In the simulation, the top sandwich is taken exactly when someone in the queue wants it, and who takes it doesn't matter because students with the same preference are identical. So the queue reduces to two numbers: how many want `0` and how many want `1`.
 
-**`sandwiches.length - i` 是什么 What `sandwiches.length - i` means:** 前 `i` 个三明治都被吃掉了，每个对应一个吃上的学生，所以剩下 `n - i` 个学生。此时 `count[sandwiches[i]]` 是 `0`，所以这个数也等于 `count[1 - sandwiches[i]]`，剩下的人全都要另一种。
+**剩余人数 What `sandwiches.length - i` means:** 前 `i` 个三明治都被吃掉了，每个对应一个吃上的学生，所以剩下 `n - i` 个学生。此时 `count[sandwiches[i]]` 是 `0`，所以这个数也等于 `count[1 - sandwiches[i]]`，剩下的人全都要另一种。
 The first `i` sandwiches were eaten, one per student, so `n - i` students are left. Since `count[sandwiches[i]]` is `0`, this also equals `count[1 - sandwiches[i]]`: everyone left wants the other kind.
 
 > [!example] 走一遍 Trace: 同一个例子 The same example
@@ -169,8 +169,8 @@ The first `i` sandwiches were eaten, one per student, so `n - i` students are le
 > | 3 | `0` | ❌ `count[0] == 0` | 返回 `6 - 3 = 3` Returns `6 - 3 = 3` |
 
 > [!note] 其他写法 Alternatives
-> **直接返回队列长度 Return the queue size:** 把最后一行换成 `return queue.size();`，意思更直白，不用推理“`result` 退出时等于剩下的人数”。
-> Replace the last line with `return queue.size();`. It says what it means, with no need to argue that `result` happens to equal the number left.
+> **直接返回队列长度 Return the queue size:** 把 `return result;` 换成 `return queue.size();`，意思更直白，不用推理“`result` 退出时等于剩下的人数”。
+> Replace `return result;` with `return queue.size();`. It says what it means, with no need to argue that `result` happens to equal the number left.
 >
 > **计数版只看另一种 Counting, reading the other kind:** 卡死时 `return count[1 - sandwiches[i]];` 也对，和 `sandwiches.length - i` 等价。也可以把两个计数器写成 `zeros`、`ones` 两个变量。
 > When stuck, `return count[1 - sandwiches[i]];` is equivalent to `sandwiches.length - i`. You can also use two variables, `zeros` and `ones`, instead of an array.
@@ -239,7 +239,7 @@ The first `i` sandwiches were eaten, one per student, so `n - i` students are le
 ## 8. 🔗 相关题目 Related
 
 - [[📌 LeetCode 总览]]
-- 🧠 概念 Concepts: [[队列 Queue|队列 Queue]]（模拟排队 simulating a line） · [[一次遍历 One Pass|一次遍历 One Pass]]（计数数组 a count array） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（模拟和计数的复杂度对比 simulation O(n²) vs counting O(n)）
+- 🧠 概念 Concepts: [[队列 Queue|队列 Queue]]（模拟排队 simulating a line） · [[数组 Array|数组 Array]]（`int[2]` 当计数器 an `int[2]` as counters） · [[栈 Stack|栈 Stack]]（三明治叠成栈 the sandwiches form a stack） · [[一次遍历 One Pass|一次遍历 One Pass]]（计数数组 a count array） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（模拟和计数的复杂度对比 simulation O(n²) vs counting O(n)）
 - 对照 Compare with: [[Baseball Game|682. 棒球比赛 Baseball Game]]（也是“照题意模拟”，但用的是栈 also a "simulate the rules" problem, with a stack instead）
 - 上一题 Previous: [[Design Browser History|1472. 设计浏览器历史记录 Design Browser History]]（双向链表 doubly linked list）
 

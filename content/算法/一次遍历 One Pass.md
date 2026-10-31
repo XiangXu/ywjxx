@@ -31,7 +31,7 @@ The brute force is often "for each element, scan the others again": O(n²). The 
 | 变体 Variant | 状态 State | 例题 Example |
 | --- | --- | --- |
 | 🧮 运行计数 / 最值 Running counter / best-so-far | `count`, `max` | [[Max Consecutive Ones\|485]] |
-| 🗃️ 计数数组 A count array | `count[]` | [[Number of Students Unable to Eat Lunch\|1700]] |
+| 🗃️ 计数 / 频率数组 A count / frequency array | `count[]` | [[Number of Students Unable to Eat Lunch\|1700]] |
 | ⬅️ 反向遍历 + 后缀信息 Reverse scan + suffix info | `rightMax` | [[Replace Elements with Greatest Element on Right Side\|1299]] |
 | 🔢 下标映射 / 取模 Index mapping / modulo | 无，靠公式 none, just a formula | [[Concatenation of Array\|1929]] |
 | ✍️ 写入位置 Write position | `slow` | [[Remove Element\|27]] → 见 see [[双指针 Two Pointers\|双指针 Two Pointers]] |
@@ -42,8 +42,8 @@ The brute force is often "for each element, scan the others again": O(n²). The 
 - 🔎 题目信号 Signals in the problem:
   - “最长连续……”、“出现次数” → 运行计数器
     "Longest consecutive…", "count of…" → a running counter
-  - 只关心每种值有几个、不关心顺序 → 计数数组，模拟可以换成计数（1700）
-    Only how many of each value matters, not the order → a count array; a simulation can become counting (1700)
+  - 只关心每种值有几个、不关心顺序 → 计数数组：先数一遍，再扫一遍，模拟可以换成计数（1700）
+    Only how many of each value matters, not the order → a count array: count once, then scan once; a simulation can become counting (1700)
   - “右边所有元素中最大/最小” → **从右往左**扫，维护后缀最值
     "The max/min of everything to the right" → scan **right to left**, keep a suffix max
   - “左边所有元素……” → 从左往右扫，维护前缀信息

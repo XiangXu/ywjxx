@@ -49,8 +49,8 @@ front → [1, 2, 3] ← back             front → [2, 3] ← back   front → [
 队列两端都要动：队尾进、队头出。普通数组在队头删除要把后面的元素全部前移，O(n)，所以要换个办法：
 A queue touches both ends: add at the back, remove at the front. A plain array has to shift everything after the front on removal, O(n), so we need something else:
 
-- **环形数组 Circular array:** 用 `head` 和 `tail` 两个下标，出队只是 `head` 往后挪一格，走到末尾就用 `% capacity` 绕回开头（和 [[Concatenation of Array|1929]] 的 `i % n` 是同一个技巧）。`ArrayDeque` 就是这样实现的，满了会扩容。
-  Keep two indices, `head` and `tail`. Dequeuing just moves `head` forward one slot, wrapping to the start with `% capacity` (the same trick as `i % n` in 1929). `ArrayDeque` works this way and grows when full.
+- **环形数组 Circular array:** 用 `head` 和 `tail` 两个下标，出队只是 `head` 往后挪一格，走到末尾就用 `% capacity` 绕回开头（和 [[Concatenation of Array|1929]] 的 `i % n` 是同一个技巧）。`ArrayDeque` 的思路就是这样（实际用下标回绕判断，而不是 `%` 运算），满了会扩容。
+  Keep two indices, `head` and `tail`. Dequeuing just moves `head` forward one slot, wrapping to the start with `% capacity` (the same trick as `i % n` in 1929). `ArrayDeque` follows the same idea (it wraps the index with a bounds check instead of `%`) and grows when full.
 - **链表 Linked list:** 队头删除、队尾追加，再加一个尾指针，两端都是 O(1)（见 [[Design Singly Linked List|设计单链表 Design Singly Linked List]] 的 `tail`）。
   Remove at the head and append at the tail with a tail pointer, both O(1) (see the `tail` in Design Singly Linked List).
 
@@ -101,8 +101,8 @@ A queue touches both ends: add at the back, remove at the front. A plain array h
 
 ### 3.1 BFS 为什么用队列 Why BFS uses a queue
 
-先进先出保证了**先发现的先处理**。起点的邻居（第 1 层）全部出队之前，第 2 层的节点只会排在它们后面，所以节点是按距离从近到远处理的，第一次到达某个点时走的就是最短步数（无权图）。
-FIFO means **discovered first, processed first**. Level-2 nodes wait behind every level-1 node, so nodes are processed in order of distance, and the first time you reach a node is by the fewest steps (in an unweighted graph).
+先进先出保证了**先发现的先处理**。起点的邻居（第 1 层）全部出队之前，第 2 层的节点只会排在它们后面，所以节点是按距离从近到远处理的，第一次发现（入队）某个点时走的就是最短步数（无权图，入队时就标记已访问）。
+FIFO means **discovered first, processed first**. Level-2 nodes wait behind every level-1 node, so nodes are processed in order of distance, and the first time you discover (enqueue) a node is by the fewest steps (in an unweighted graph, marking nodes visited when enqueued).
 
 ### 3.2 按层处理 Processing level by level
 
@@ -157,11 +157,11 @@ In BFS each node is enqueued and dequeued at most once, so the total is O(V + E)
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
 - **空队列 poll Polling an empty queue:** `poll()` 返回 `null`，赋给 `int` 时自动拆箱就是 NPE；先判 `isEmpty()` → `poll()` returns `null`, and unboxing it into an `int` throws an NPE; check `isEmpty()` first.
-- **循环里直接用 `size()` Using `size()` in the loop condition:** 按层 BFS 时写 `for (i < q.size())`，`size` 一边循环一边变，层就乱了；先存到变量里 → in level-order BFS, `size()` changes as you add children, so save it to a variable first.
-- **`Integer` 用 `==` 比较 Comparing `Integer`s with `==`:** 两个 `queue.peek()` 比较的是引用，超出 -128 到 127 通常就错；和 `int` 比较时会拆箱，没问题 → two `peek()` results compare references; comparing with an `int` unboxes and is fine, see [[Number of Students Unable to Eat Lunch|1700]].
+- **循环条件用 `size()` Using `size()` in the loop condition:** 按层 BFS 时写 `for (i < q.size())`，`size` 一边循环一边变，层就乱了；先存到变量里 → in level-order BFS, `size()` changes as you add children, so save it to a variable first.
+- **`Integer` 用 `==` 比较 Comparing `Integer`s with `==`:** 两个 `queue.peek()` 比较的是引用，超出 -128 到 127 通常就错；和 `int` 比较时会拆箱，没问题 → two `peek()` results compare references, which usually fails outside the cached range -128 to 127; comparing with an `int` unboxes and is fine, see [[Number of Students Unable to Eat Lunch|1700]].
 - **用 `ArrayList` 当队列 Using an `ArrayList` as a queue:** `remove(0)` 是 O(n)，要平移所有元素 → `remove(0)` shifts every element, O(n).
 - **把 `PriorityQueue` 当普通队列 Treating `PriorityQueue` as FIFO:** 它按大小出队，不按到达顺序 → it dequeues by priority, not by arrival order.
-- **`ArrayDeque` 不能存 `null`** `ArrayDeque` rejects `null`: `offer(null)` 直接抛 NPE；`poll()` 返回 `null` 就表示队列空了 → `offer(null)` throws, which is why `poll()` returning `null` can mean "empty".
+- **`ArrayDeque` 不能存 `null` `ArrayDeque` rejects `null`:** `offer(null)` 直接抛 NPE，所以对 `ArrayDeque` 来说 `poll()` 返回 `null` 就表示队列空了 → `offer(null)` throws, which is why, for an `ArrayDeque`, `poll()` returning `null` means "empty" (a `LinkedList` can hold `null`).
 
 ## 7. ❓ 复习题 Review Questions
 
@@ -200,14 +200,14 @@ In BFS each node is enqueued and dequeued at most once, so the total is O(V + E)
 | 题目 Problem | 练的是什么 What it practices | 难度 Difficulty |
 | --- | --- | --- |
 | ✅ [[Number of Students Unable to Eat Lunch\|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]] | 排队模拟，或者看出顺序无关改成计数 queue simulation, or counting once you see order doesn't matter | Easy |
-| 2073. Time Needed to Buy Tickets | 排队转圈 a rotating line | Easy |
-| 933. Number of Recent Calls | 过期的从队头出 expired items leave from the front | Easy |
-| 232. Implement Queue using Stacks | 两个栈实现队列 a queue from two stacks | Easy |
-| 225. Implement Stack using Queues | 队列实现栈 a stack from queues | Easy |
-| 622. Design Circular Queue | 环形数组 a circular array | Medium |
-| 102. Binary Tree Level Order Traversal | 按层 BFS level-by-level BFS | Medium |
-| 994. Rotting Oranges | 多源 BFS multi-source BFS | Medium |
-| 239. Sliding Window Maximum | 单调双端队列 a monotonic deque | Hard |
+| 2073. 买票需要的时间 Time Needed to Buy Tickets | 排队转圈 a rotating line | Easy |
+| 933. 最近的请求次数 Number of Recent Calls | 过期的从队头出 expired items leave from the front | Easy |
+| 232. 用栈实现队列 Implement Queue using Stacks | 两个栈实现队列 a queue from two stacks | Easy |
+| 225. 用队列实现栈 Implement Stack using Queues | 队列实现栈 a stack from queues | Easy |
+| 622. 设计循环队列 Design Circular Queue | 环形数组 a circular array | Medium |
+| 102. 二叉树的层序遍历 Binary Tree Level Order Traversal | 按层 BFS level-by-level BFS | Medium |
+| 994. 腐烂的橘子 Rotting Oranges | 多源 BFS multi-source BFS | Medium |
+| 239. 滑动窗口最大值 Sliding Window Maximum | 单调双端队列 a monotonic deque | Hard |
 
 ## 9. 🔗 相关 Related
 
