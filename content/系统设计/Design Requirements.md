@@ -363,5 +363,6 @@ We want systems that **handle failures**, have **high availability**, **high thr
 ## 11. 🔗 相关 Related
 
 - ⬅️ 上一篇 Previous: [[Application Architecture|应用架构 Application Architecture]]
+- ➡️ 下一篇 Next: [[Networking Basics|网络基础 Networking Basics]]
 - [[Computer Architecture|计算机架构 Computer Architecture]]
 - [[📌 系统设计总览|系统设计总览 System Design Overview]]
