@@ -47,8 +47,8 @@ push 1, push 2, push 3          pop() → 3          peek() → 2
 
 ### 1.2 底层实现 How it's built
 
-栈只在一端操作，所以用**数组**实现最自然：栈顶就是数组末尾（概念上；`ArrayDeque` 实际是循环数组），push / pop 就是在末尾追加 / 删除，正好是数组最擅长的 O(1) 操作（见 [[数组 Array|数组 Array]]）。也可以用[[链表 Linked List|链表 Linked List]]，在头部插入删除。
-A stack only touches one end, so an **array** is the natural fit: the top is the end of the array (conceptually; `ArrayDeque` is a circular array internally), and push/pop are append/remove-last, exactly the O(1) operations arrays are good at (see [[数组 Array|Array]]). A linked list with insert/remove at the head also works.
+栈只在一端操作，所以用**数组**实现最自然：自己用数组实现时，栈顶放在数组末尾，push / pop 就是在末尾追加 / 删除，正好是数组最擅长的 O(1) 操作（见 [[数组 Array|数组 Array]]）。`ArrayDeque` 是循环数组，它把 `push` 放在头部，所以遍历顺序是从栈顶到栈底。也可以用[[链表 Linked List|链表 Linked List]]，在头部插入删除。
+A stack only touches one end, so an **array** is the natural fit: in your own array-backed stack the top is the end of the array, and push/pop are append/remove-last, exactly the O(1) operations arrays are good at (see [[数组 Array|Array]]). `ArrayDeque` is a circular array that pushes at its head, so it iterates from top to bottom. A linked list with insert/remove at the head also works.
 
 | | 数组实现 Array-backed | 链表实现 Linked-list-backed |
 | --- | --- | --- |

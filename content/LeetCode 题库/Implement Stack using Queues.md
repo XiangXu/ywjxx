@@ -136,8 +136,8 @@ After every `push`, the queue front to back equals the stack top to bottom. `pop
 > **两个队列 Two queues, cost on push:** 新元素放进空的 `q2`，再把 `q1` 全部倒进 `q2`，然后交换两个队列。效果和单队列转圈一样，但多一个队列。
 > Offer the new element to an empty `q2`, pour all of `q1` into `q2`, then swap the two. Same effect as the one-queue rotation, with an extra queue.
 >
-> **一个队列 One queue, cost on pop:** `push` 直接 `offer`，O(1)；`pop` 先把前 `n - 1` 个转到队尾，再 `poll`。`top` 用一个字段记住最后压入的值，`pop` 之后要更新它。适合压入多、弹出少的场景。
-> `push` just offers, O(1); `pop` rotates the first `n - 1` to the back, then polls. `top` reads a field holding the last pushed value, which `pop` must update. Better when pushes far outnumber pops.
+> **一个队列 One queue, cost on pop:** `push` 直接 `offer`，O(1)；`pop` 先把队头的前 `size - 1` 个转到队尾，再 `poll`。`top` 用一个字段记住最后压入的值，`pop` 之后要更新它。适合压入多、弹出少的场景。
+> `push` just offers, O(1); `pop` rotates the first `size - 1` to the back, then polls. `top` reads a field holding the last pushed value, which `pop` must update. Better when pushes far outnumber pops.
 >
 > ```java
 > // 其余字段和方法同上 other fields and methods as above
@@ -210,7 +210,7 @@ offer:  front → [1, 2, 3]    poll() → 1   （先进先出 FIFO）
 
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
 
-- [x] 第一次压入 First push: `n = 0`，不转圈，队列就是 `[x]` → `n = 0`, no rotation, the queue is just `[x]`
+- [x] 第一次压入 First push: `n = 0`，不转圈，队列里只有这一个元素 → `n = 0`, no rotation, the queue is just `[x]`
 - [x] 连续弹出到空 Popping down to empty: 每次 `pop` 后不变量仍然成立，`empty()` 返回 `true` → the invariant still holds after each `pop`, and `empty()` returns `true`
 - [x] 转圈次数 Rotation count: 是 `size() - 1` 不是 `size()`；转 `size()` 次会把 `x` 又转回队尾 → it's `size() - 1`, not `size()`; rotating `size()` times brings `x` back to the end
 - [x] 计算 n 的时机 When to compute n: `n` 在 `offer(x)` 之后算，减一才是旧元素个数；如果在 `offer` 之前取 `size()`，就不用减一 → `n` is computed after `offer(x)`, so `size() - 1` is the old count; take `size()` before the `offer` and no `- 1` is needed
@@ -244,8 +244,8 @@ offer:  front → [1, 2, 3]    poll() → 1   （先进先出 FIFO）
 **Q3.** 能不能让 `push` 是 O(1)？代价是什么？ Can `push` be O(1)? What does it cost?
 
 > [!success]- 答案 Answer
-> 可以：`push` 直接 `offer`，`pop` 时把前 `n - 1` 个转到队尾再 `poll`，`pop` 变成 O(n)；`top` 要用一个字段记住最后压入的值。用这类做法时，通常有一个操作是 O(n)，看哪个操作更频繁来选。
-> Yes: `push` just offers, and `pop` rotates the first `n - 1` to the back before polling, so `pop` becomes O(n), and `top` needs a field for the last pushed value. With these approaches one operation is usually O(n); pick based on which one is called more.
+> 可以：`push` 直接 `offer`，`pop` 时把队头的前 `size - 1` 个转到队尾再 `poll`，`pop` 变成 O(n)；`top` 要用一个字段记住最后压入的值。用这类做法时，通常有一个操作是 O(n)，看哪个操作更频繁来选。
+> Yes: `push` just offers, and `pop` rotates the first `size - 1` to the back before polling, so `pop` becomes O(n), and `top` needs a field for the last pushed value. With these approaches one operation is usually O(n); pick based on which one is called more.
 
 **Q4.** 用两个栈实现队列是均摊 O(1)，为什么这个解法做不到？ A queue from two stacks is amortized O(1). Why can't this approach?
 

@@ -21,8 +21,8 @@ publish: true
 # 🚶 队列 Queue
 
 > [!abstract] TL;DR
-> 队列是**先进先出 FIFO** 的容器：从**队尾**进（offer），从**队头**出（poll），看队头（peek），三个操作都是 O(1)。题目里出现“排队 / 按到达顺序处理 / 一层一层往外扩（BFS）”时，先想队列。Java 里用 `Queue<Integer> queue = new ArrayDeque<>()`。
-> A queue is a **first in, first out** container: you add at the **back** (offer), remove from the **front** (poll), and look at the front (peek), each in O(1). When a problem says "line up", "process in arrival order" or "expand level by level (BFS)", think queue first. In Java use `Queue<Integer> queue = new ArrayDeque<>()`.
+> 队列是**先进先出 FIFO** 的容器：从**队尾**进（offer），从**队头**出（poll），看队头（peek），三个操作都是（均摊）O(1)。题目里出现“排队 / 按到达顺序处理 / 一层一层往外扩（BFS）”时，先想队列。Java 里用 `Queue<Integer> queue = new ArrayDeque<>()`。
+> A queue is a **first in, first out** container: you add at the **back** (offer), remove from the **front** (poll), and look at the front (peek), each in (amortized) O(1). When a problem says "line up", "process in arrival order" or "expand level by level (BFS)", think queue first. In Java use `Queue<Integer> queue = new ArrayDeque<>()`.
 
 ## 1. 🎯 核心概念 Overview
 
@@ -95,7 +95,7 @@ A `Deque` (double-ended queue) works as both a stack and a queue. The common `po
 
 | 方法 Method | 位置 Position | 等价于 Same as | 失败或为空时 On failure / empty | 首次声明 First declared in |
 | --- | --- | --- | --- | --- |
-| `push(x)` | 头部放入 Add at the front | `addFirst(x)` | 抛异常 Throws | `Deque` |
+| `push(x)` | 头部放入 Add at the front | `addFirst(x)` | 容量满时抛异常 Throws `IllegalStateException` if full | `Deque` |
 | `pop()` | 头部取出 Remove from the front | `removeFirst()` | 抛异常 Throws `NoSuchElementException` | `Deque` |
 | `offer(x)` | 尾部放入 Add at the back | `offerLast(x)` | 返回 `false` Returns `false` | `Queue`（双端队列也有 also in `Deque`） |
 | `poll()` | 头部取出 Remove from the front | `pollFirst()` | 返回 `null` Returns `null` | `Queue`（双端队列也有 also in `Deque`） |
@@ -198,7 +198,7 @@ In BFS each node is enqueued and dequeued at most once, so the total is O(V + E)
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
-- **空队列 poll Polling an empty queue:** `poll()` 返回 `null`，赋给 `int` 时自动拆箱就是 NPE；先判 `isEmpty()` → `poll()` returns `null`, and unboxing it into an `int` throws an NPE; check `isEmpty()` first.
+- **空队列取元素 Polling an empty queue:** `poll()` 返回 `null`，赋给 `int` 时自动拆箱就是 NPE；先判 `isEmpty()` → `poll()` returns `null`, and unboxing it into an `int` throws an NPE; check `isEmpty()` first.
 - **循环条件用 `size()` Using `size()` in the loop condition:** 按层 BFS 时写 `for (i < q.size())`，`size` 一边循环一边变，层就乱了；先存到变量里 → in level-order BFS, `size()` changes as you add children, so save it to a variable first.
 - **`Integer` 用 `==` 比较 Comparing `Integer`s with `==`:** 两个 `queue.peek()` 比较的是引用，超出 -128 到 127 通常就错；和 `int` 比较时会拆箱，没问题 → two `peek()` results compare references, which usually fails outside the cached range -128 to 127; comparing with an `int` unboxes and is fine, see [[Number of Students Unable to Eat Lunch|1700]].
 - **用 `ArrayList` 当队列 Using an `ArrayList` as a queue:** `remove(0)` 是 O(n)，要平移所有元素 → `remove(0)` shifts every element, O(n).
