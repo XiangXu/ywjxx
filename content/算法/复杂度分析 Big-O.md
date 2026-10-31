@@ -220,6 +220,7 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 - ✅ [[Design Linked List|707. 设计链表 Design Linked List]]: 多一个引用换原地删除；从近的一端走是 O(min(i, n − i))，最坏仍是 O(n) An extra reference buys in-place deletion; walking from the closer end is O(min(i, n − i)) but still O(n) in the worst case
 - ✅ [[Design Browser History|1472. 设计浏览器历史记录 Design Browser History]]: 同一个接口，链表 O(steps) 对比数组 O(1)；被剪掉的节点交给 GC，通常不算进操作的时间 The same interface: linked list O(steps) vs array O(1); cut-off nodes are left to the GC rather than deleted one by one, and GC time is usually not charged to the operation
 - ✅ [[Number of Students Unable to Eat Lunch|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]]: 队列模拟最坏 O(n²)，看出顺序无关后计数 O(n)、O(1) 空间 Queue simulation is O(n²) in the worst case; counting is O(n) time and O(1) space once you see order doesn't matter
+- ✅ [[Implement Stack using Queues|225. 用队列实现栈 Implement Stack using Queues]]: 通常有一个操作要付 O(n)，按调用频率决定由压入还是弹出来付；每次都重新转全部元素，所以不能均摊，和 232 的均摊 O(1) 对比 One operation usually pays O(n), so pick `push` or `pop` by which is called more; every push rotates all elements again, so it doesn't amortize, unlike 232's amortized O(1)
 - 704. Binary Search: O(log n) 的标准例子 the textbook O(log n) example
 
 ## 9. 🔗 相关 Related

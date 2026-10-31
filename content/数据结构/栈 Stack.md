@@ -75,6 +75,9 @@ A stack only touches one end, so an **array** is the natural fit: the top is the
 >
 > 在 LeetCode 上把 `Stack` 换成 `ArrayDeque` 基本只要改声明那一行，但要注意上表的空栈行为和遍历顺序；`Stack` 的 `empty()`、`search()`、`get(i)` 在 `Deque` 上不存在。
 > Swapping `Stack` for `ArrayDeque` is usually a one-line change, but mind the empty-stack behavior and iteration order above; `Stack`'s `empty()`, `search()` and `get(i)` don't exist on `Deque`.
+>
+> `Deque` 里 `push` 放头部、`offer` 放尾部，而 `pop` / `poll` / `peek` 都从头部取；最简的 `Deque` 栈就是 225 的解法二，完整对照表在 1.4 节，见 [[队列 Queue|队列 Queue]]。
+> In a `Deque`, `push` adds at the front and `offer` at the back, and `pop` / `poll` / `peek` all take from the front; see section 1.4 of the Queue note. Solution 2 of 225 is a minimal `Deque` stack.
 
 ## 2. 🧠 什么时候用 When to Use
 
@@ -86,6 +89,7 @@ A stack only touches one end, so an **array** is the natural fit: the top is the
   - **后缀表达式求值 Evaluate postfix (RPN):** 数字压栈，遇到运算符弹出两个（150） Push numbers and pop two on an operator (150)
   - **把递归改成迭代 Turn recursion into a loop:** DFS、树的遍历都可以改用显式栈，因为[[递归 Recursion|递归 Recursion]]本身就跑在**调用栈**上（[[Reverse Linked List|206]] 的递归版深度是 n，空间 O(n)） → DFS and tree traversals can use an explicit stack, because [[递归 Recursion|recursion]] itself runs on the **call stack** ([[Reverse Linked List|206]]'s recursion is n deep, O(n) space)
 - ❌ 需要先进先出（按到达顺序处理，如广度优先搜索），用[[队列 Queue|队列 Queue]] → Need first in, first out (e.g. BFS): use a [[队列 Queue|queue]]
+- 🔄 栈和队列可以互相实现，但通常有一个操作要付出代价，见 [[Implement Stack using Queues|225]] 用队列搭栈 → Stacks and queues can be built from each other, but some operation usually pays for it: 225 builds a stack on a queue with O(n) pushes
 
 ## 3. ⚙️ 原理 How It Works
 
@@ -195,6 +199,7 @@ Stack algorithms are commonly **O(n) time**: each element is pushed once and pop
 | 844. Backspace String Compare | `#` 删除前一个字符 `#` deletes the previous char | Easy |
 | [[Design Browser History\|1472. 设计浏览器历史记录 Design Browser History]] | 两个栈做后退和前进（其他写法） back and forward with two stacks (an alternative) | Medium |
 | 232. Implement Queue using Stacks | 两个栈实现队列 a queue from two stacks | Easy |
+| ✅ [[Implement Stack using Queues\|225. 用队列实现栈 Implement Stack using Queues]] | 反过来，用一个队列搭出栈 the reverse: a stack built on one queue | Easy |
 | 150. Evaluate Reverse Polish Notation | 数字压栈，运算符弹两个 push numbers, pop two on an operator | Medium |
 | 739. Daily Temperatures | 单调栈 monotonic stack | Medium |
 | 84. Largest Rectangle in Histogram | 单调栈进阶 advanced monotonic stack | Hard |

@@ -23,6 +23,7 @@ created: 2026-10-15
   - 🟡 [[Min Stack|155. 最小栈 Min Stack]]: 辅助栈和主栈同步压入弹出，每层存到这层为止的最小值 An auxiliary stack pushed and popped in lockstep, each level storing the minimum so far · Medium
 - 🚶 队列 Queue:
   - 🟡 [[Number of Students Unable to Eat Lunch|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]]: 队列模拟，连续一圈没人吃就卡死；看出顺序无关后换成两个计数器 Simulate with a queue and stop after a full lap with no one eating; once you see order doesn't matter, two counters are enough · Easy
+  - 🟡 [[Implement Stack using Queues|225. 用队列实现栈 Implement Stack using Queues]]: 新元素入队后把前面 `n - 1` 个转到队尾，它就到了队头，`pop` / `top` 直接用队头 Offer the new element, then rotate the `n - 1` in front of it to the back so it lands at the front, and `pop` / `top` just use the front · Easy
 - 🔗 链表 Linked List:
   - 🟡 [[Reverse Linked List|206. 反转链表 Reverse Linked List]]: 迭代先存 `next` 再调头；递归先反转后面，再把自己接到尾巴，原样返回 `newHead` Iteratively, save `next` before flipping; recursively, reverse the rest, attach yourself at its tail, and return `newHead` unchanged · Easy
   - 🟡 [[Design Singly Linked List|设计单链表 Design Singly Linked List]]: 自己实现链表，详见下方设计题 Build the list yourself; see Design below · Easy

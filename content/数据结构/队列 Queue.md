@@ -83,10 +83,52 @@ A queue touches both ends: add at the back, remove at the front. A plain array h
 > `ArrayDeque` 会自动扩容，`add` 和 `offer` 效果一样；区别主要在空队列时 `remove()` 抛异常，`poll()` 返回 `null`。刷题时习惯用 `offer` / `poll` / `peek` 这一套。
 > `ArrayDeque` grows automatically, so `add` and `offer` behave the same; the real difference is on an empty queue, where `remove()` throws and `poll()` returns `null`. Most solutions stick to `offer` / `poll` / `peek`.
 
+### 1.4 双端队列的放入方向 Deque: push vs offer
+
+`Deque`（双端队列）既能当栈也能当队列。常用的 `pop` / `poll` / `peek` 都从**头部**取，区别只在放元素的位置：
+A `Deque` (double-ended queue) works as both a stack and a queue. The common `pop` / `poll` / `peek` all take from the **front**; the only difference is where you add:
+
+- **栈 Stack:** `push` 放在头部，配合 `pop` 就是后进先出。
+  `push` adds at the front; with `pop`, that's last in, first out.
+- **队列 Queue:** `offer` 放在尾部，配合 `poll` 就是先进先出。
+  `offer` adds at the back; with `poll`, that's first in, first out.
+
+| 方法 Method | 位置 Position | 等价于 Same as | 失败或为空时 On failure / empty | 首次声明 First declared in |
+| --- | --- | --- | --- | --- |
+| `push(x)` | 头部放入 Add at the front | `addFirst(x)` | 抛异常 Throws | `Deque` |
+| `pop()` | 头部取出 Remove from the front | `removeFirst()` | 抛异常 Throws `NoSuchElementException` | `Deque` |
+| `offer(x)` | 尾部放入 Add at the back | `offerLast(x)` | 返回 `false` Returns `false` | `Queue`（双端队列也有 also in `Deque`） |
+| `poll()` | 头部取出 Remove from the front | `pollFirst()` | 返回 `null` Returns `null` | `Queue`（双端队列也有 also in `Deque`） |
+| `peek()` | 只看头部 Look at the front | `peekFirst()` | 返回 `null` Returns `null` | `Queue`（双端队列也有 also in `Deque`） |
+
+```
+依次放入 1、2、3 Add 1, 2, 3 in order
+
+push:   front → [3, 2, 1]    pop()  → 3   （栈 stack）
+offer:  front → [1, 2, 3]    poll() → 1   （队列 queue）
+```
+
+> [!tip] 记忆要点 Key points
+> - **栈 Stack:** 用 `push` / `pop` / `peek`，变量声明为 `Deque`；推荐 `ArrayDeque`，不用老的 `Stack` 类（见 [[栈 Stack|栈 Stack]]）。
+>   Use `push` / `pop` / `peek` with a variable declared as `Deque`; prefer `ArrayDeque` over the legacy `Stack` class.
+> - **队列 Queue:** 用 `offer` / `poll` / `peek`，变量声明为 `Queue`。声明成 `Queue` 就调用不到 `push` / `pop`，可以防止误用（[[Implement Stack using Queues|225]]）。
+>   Use `offer` / `poll` / `peek` with a variable declared as `Queue`. A `Queue` variable can't call `push` / `pop`, which prevents mix-ups (225).
+> - **两种风格 Two styles:** `offer` / `poll` / `peek` 失败时返回 `false` 或 `null`；`add` / `remove` / `push` / `pop` 失败时抛异常。
+>   `offer` / `poll` / `peek` return `false` or `null` on failure; `add` / `remove` / `push` / `pop` throw.
+
+> [!note] 补充 Clarifications
+> - **不是只能从头部取 Not front-only:** “取元素都从头部取”只对 `pop` / `poll` / `peek` 这几个简写成立；`Deque` 也有 `pollLast()`、`removeLast()`、`peekLast()`，从尾部取。
+>   "Everything is taken from the front" holds only for these shorthand methods; `Deque` also has `pollLast()`, `removeLast()` and `peekLast()`, which take from the back.
+> - **`ArrayDeque` 不会满 `ArrayDeque` is never full:** 它会自动扩容，所以 `push` 和 `offer` 不会因为容量失败，`offer` 总是返回 `true`；“返回 `false` / 抛异常”针对的是有容量上限的实现，比如 `LinkedBlockingDeque`。两者放 `null` 都会抛空指针异常。
+>   It grows automatically, so `push` and `offer` never fail for lack of space and `offer` always returns `true`; "returns `false` / throws" applies to capacity-bounded implementations such as `LinkedBlockingDeque`. Both throw `NullPointerException` on `null`.
+> - **小心空值 Beware `null`:** `peek()` 在空队列上返回 `null`，赋给 `int`（比如 `int top()`）时拆箱会抛空指针异常。
+>   `peek()` returns `null` on an empty queue, and assigning that to an `int` (as in `int top()`) unboxes it and throws `NullPointerException`.
+
 ## 2. 🧠 什么时候用 When to Use
 
 - 🔎 题目信号 Signals in the problem:
   - **排队模拟 Simulating a line:** 排到队头才处理，没处理完回到队尾 handle whoever is at the front; unfinished ones go to the back → [[Number of Students Unable to Eat Lunch|1700]], 2073
+  - **用队列搭别的结构 Building another structure on a queue:** 转一格 `offer(poll())` 能把任意元素转到队头 rotating with `offer(poll())` brings any element to the front → [[Implement Stack using Queues|225]]
   - **广度优先搜索 BFS:** 一层一层往外扩，如树的层序遍历、网格最短路 expand level by level, as in tree level-order traversal or grid shortest paths → 102, 994
   - **最近一段时间 A recent time window:** 新的从队尾进，过期的从队头出 new items join at the back, expired ones leave from the front → 933
   - **滑动窗口最大值 Sliding window max:** 单调双端队列 a monotonic deque → 239
@@ -120,7 +162,7 @@ int front = queue.peek();        // 1，不删除 not removed
 int x = queue.poll();            // 1
 boolean empty = queue.isEmpty(); // false，还有 2 still has 2
 
-// ② 排队转圈 Rotate the line（1700）
+// ② 排队转圈 Rotate the line（1700, 225）
 queue.offer(queue.poll());       // 队头排到队尾 front goes to the back
 
 // ③ 按层 BFS Level-by-level BFS
@@ -203,7 +245,7 @@ In BFS each node is enqueued and dequeued at most once, so the total is O(V + E)
 | 2073. 买票需要的时间 Time Needed to Buy Tickets | 排队转圈 a rotating line | Easy |
 | 933. 最近的请求次数 Number of Recent Calls | 过期的从队头出 expired items leave from the front | Easy |
 | 232. 用栈实现队列 Implement Queue using Stacks | 两个栈实现队列 a queue from two stacks | Easy |
-| 225. 用队列实现栈 Implement Stack using Queues | 队列实现栈 a stack from queues | Easy |
+| ✅ [[Implement Stack using Queues\|225. 用队列实现栈 Implement Stack using Queues]] | 一个队列，压入后转 `n - 1` 格 one queue, rotating `n - 1` steps after each push | Easy |
 | 622. 设计循环队列 Design Circular Queue | 环形数组 a circular array | Medium |
 | 102. 二叉树的层序遍历 Binary Tree Level Order Traversal | 按层 BFS level-by-level BFS | Medium |
 | 994. 腐烂的橘子 Rotting Oranges | 多源 BFS multi-source BFS | Medium |

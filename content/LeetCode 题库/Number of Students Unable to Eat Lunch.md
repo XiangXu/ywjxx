@@ -242,6 +242,7 @@ The first `i` sandwiches were eaten, one per student, so `n - i` students are le
 - 🧠 概念 Concepts: [[队列 Queue|队列 Queue]]（模拟排队 simulating a line） · [[数组 Array|数组 Array]]（`int[2]` 当计数器 an `int[2]` as counters） · [[栈 Stack|栈 Stack]]（三明治叠成栈 the sandwiches form a stack） · [[一次遍历 One Pass|一次遍历 One Pass]]（计数数组 a count array） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（模拟和计数的复杂度对比 simulation O(n²) vs counting O(n)）
 - 对照 Compare with: [[Baseball Game|682. 棒球比赛 Baseball Game]]（也是“照题意模拟”，但用的是栈 also a "simulate the rules" problem, with a stack instead）
 - 上一题 Previous: [[Design Browser History|1472. 设计浏览器历史记录 Design Browser History]]（双向链表 doubly linked list）
+- 下一题 Next: [[Implement Stack using Queues|225. 用队列实现栈 Implement Stack using Queues]]（同样用 `offer(poll())` 转圈 the same `offer(poll())` rotation）
 
 ## 9. 🔁 复习记录 Review Log
 
