@@ -30,8 +30,8 @@ created: 2026-10-31
   Handles addressing and routing. It makes a best effort to deliver packets to the right host, but **doesn't guarantee** delivery or order.
 - 🔢 **TCP 协议 TCP:** 用序列号、确认和重传，保证数据**可靠**并**按顺序**交给应用。
   Uses sequence numbers, acknowledgments, and retransmission so data reaches the app **reliably** and **in order**.
-- 🧅 **分层 Layers:** HTTP（应用层）放在 TCP（传输层）里，TCP 再放在 IP（网络层）里，像信封套信封。
-  HTTP (application layer) sits inside TCP (transport layer), which sits inside IP (network layer), like envelopes inside envelopes.
+- 🧅 **分层 Layers:** HTTP（应用层）通常放在 TCP（传输层）里，TCP 再放在 IP（网络层）里，像信封套信封。
+  HTTP (application layer) usually sits inside TCP (transport layer), which sits inside IP (network layer), like envelopes inside envelopes.
 - 🏠 **公网与私网 Public vs private:** 公网 IP 在整个互联网上可达；私网 IP 只在局域网内可达。
   A public IP is reachable from the whole internet; a private IP only within the local network.
 - 🔄 **静态与动态 Static vs dynamic:** 动态 IP 自动分配、可能变化，常用于客户端；静态 IP 固定不变，常用于服务器。
@@ -68,7 +68,7 @@ An **IP address** is a numeric identifier for each device on a network, used to 
 | 格式 Format | 四个十进制数，用点分隔 Four decimal numbers separated by dots | 八组十六进制数，用冒号分隔 Eight groups of hex digits separated by colons |
 | 示例 Example | `192.168.1.10` | `2001:0db8:0000:0000:0000:ff00:0042:8329` |
 | 地址总数 Total addresses | $2^{32} \approx 4.3 \times 10^9$ | $2^{128} \approx 3.4 \times 10^{38}$ |
-| 现状 Status | 已经分配完，靠 NAT 延续 Exhausted, kept going with NAT | 逐步普及中 Gradually being adopted |
+| 现状 Status | 空闲地址池已耗尽，靠 NAT 延续 Free pool exhausted, kept going with NAT | 逐步普及中 Gradually being adopted |
 
 ### 3.1 🔢 IPv4 的结构 Anatomy of an IPv4 address
 
@@ -76,15 +76,15 @@ IPv4 地址由 **4 个八位组**（octet）组成，每个八位组是 8 位，
 An IPv4 address has **4 octets**. Each octet is 8 bits, or 1 byte, so it ranges from 0 to 255. The full range is `0.0.0.0` to `255.255.255.255`.
 
 ```text
-   192   .   168   .    1    .   10
+  192        168         1          10
 11000000 . 10101000 . 00000001 . 00001010
-└─ 8 bits ┘
-└──────────────── 32 bits ────────────────┘
+└8 bits┘
+└─────────────── 32 bits ───────────────┘
 ```
 
 > [!example] 为什么最大是 255 Why the max is 255
-> 八个位全是 1 时：$2^7 + 2^6 + \dots + 2^0 = 2^8 - 1 = 255$。这和位运算章节里讲的无符号字节一样。
-> With all eight bits set to 1: $2^7 + 2^6 + \dots + 2^0 = 2^8 - 1 = 255$. It's the same as an unsigned byte from the bit manipulation chapter.
+> 八个位全是 1 时：$2^7 + 2^6 + \dots + 2^0 = 2^8 - 1 = 255$。注意 Java 的 `byte` 是有符号的，192 会变成 -64，所以要用 `b & 0xFF` 取回无符号值。
+> With all eight bits set to 1: $2^7 + 2^6 + \dots + 2^0 = 2^8 - 1 = 255$. Note that Java's `byte` is signed, so 192 shows up as -64; use `b & 0xFF` to get the unsigned value.
 
 ### 3.2 🔣 IPv6 的写法 Writing IPv6 addresses
 
@@ -92,7 +92,7 @@ IPv6 有 8 组，每组 16 位，写成 4 个十六进制数字。为了好读�
 IPv6 has 8 groups of 16 bits, each written as 4 hex digits. Two shortening rules make it readable:
 
 1. 省略每组开头的 0 Drop leading zeros in each group: `0db8` → `db8`, `0042` → `42`
-2. 连续全 0 的组用 `::` 代替一次 Replace one run of all-zero groups with `::`
+2. 连续全 0 的组可用 `::` 代替，但只能用一次 Replace one run of all-zero groups with `::` (at most once per address)
 
 ```text
 2001:0db8:0000:0000:0000:ff00:0042:8329
@@ -104,8 +104,8 @@ IPv6 has 8 groups of 16 bits, each written as 4 hex digits. Two shortening rules
 > 4.3 billion sounds like a lot, but big blocks are reserved (private, multicast, loopback `127.0.0.0/8`, and more), early allocations handed out huge blocks to organizations, and the number of connected devices grew fast. **NAT** (many private devices sharing one public IP) delayed the exhaustion, and **IPv6** fixes the address count for good.
 
 > [!tip] Java 类比 Java analogy
-> `InetAddress.getByName("example.com")` 用 DNS 把域名解析成 IP 地址，返回的是 `Inet4Address` 或 `Inet6Address`。在 Java 里，IPv4 地址就是一个 4 字节的 `byte[]`，IPv6 是 16 字节。
-> `InetAddress.getByName("example.com")` resolves a hostname to an IP address through DNS and returns an `Inet4Address` or `Inet6Address`. In Java, an IPv4 address is a 4-byte `byte[]` and IPv6 is 16 bytes.
+> `InetAddress.getByName("example.com")` 用 DNS 把域名解析成 IP 地址，返回的是 `Inet4Address` 或 `Inet6Address`。`getAddress()` 对 IPv4 返回 4 字节的 `byte[]`，对 IPv6 返回 16 字节。
+> `InetAddress.getByName("example.com")` resolves a hostname to an IP address through DNS and returns an `Inet4Address` or `Inet6Address`. `getAddress()` returns a 4-byte `byte[]` for IPv4 and 16 bytes for IPv6.
 
 ## 4. ✉️ 数据包和协议 Packets and Protocols
 
@@ -117,10 +117,10 @@ A **protocol** is a set of rules both sides agree on. Data isn't sent over a net
 每个 IP 数据包有两部分：
 Each IP packet has two parts:
 
-- **IP 头 IP header:** 源 IP、目的 IP，以及 TTL、协议类型等控制信息。对开发者来说最重要的是源地址和目的地址。
-  The source IP, the destination IP, and control fields such as TTL and protocol type. For developers, the source and destination matter most.
-- **载荷 Payload:** 要运送的数据，通常是一个 TCP 段。
-  The data being carried, usually a TCP segment.
+- **IP 头 IP header:** 源 IP、目的 IP，以及 TTL（IPv6 里叫 Hop Limit）、协议类型等控制信息。对开发者来说最重要的是源地址和目的地址。
+  The source IP, the destination IP, and control fields such as TTL (Hop Limit in IPv6) and protocol type. For developers, the source and destination matter most.
+- **载荷 Payload:** 要运送的数据，通常是一个 TCP 段或 UDP 数据报。
+  The data being carried, usually a TCP segment or UDP datagram.
 
 IP 负责**寻址和路由**：路由器根据目的 IP，一跳一跳地把包转发过去。但 IP 是**尽力而为**的：包可能丢失、重复，或者走不同的路径而**乱序到达**。
 IP handles **addressing and routing**: routers forward each packet hop by hop based on its destination IP. But IP is **best effort**: packets can be lost, duplicated, or take different paths and **arrive out of order**.
@@ -139,12 +139,12 @@ IP handles **addressing and routing**: routers forward each packet hop by hop ba
 | 流量与拥塞控制 Flow & congestion control | 不让发送方压垮接收方或网络 Keeps the sender from overwhelming the receiver or the network |
 
 > [!example] 多页信 The multi-page letter
-> Alice 寄一封很长的信，给每页编上页码。不管页序在信封里怎么乱，Bob 都能按页码排好。如果 Bob 发现缺了第 3 页，就请 Alice 补寄。TCP 的序列号和重传做的正是这件事。
-> Alice sends a long letter and numbers each page. However the pages get shuffled in the envelope, Bob can put them back in order. If Bob finds page 3 missing, he asks Alice to send it again. TCP's sequence numbers and retransmission do exactly this.
+> Alice 寄一封很长的信，给每页编上页码。不管页序在信封里怎么乱，Bob 都能按页码排好。如果第 3 页丢了，Bob 就不会确认收到它，Alice 等不到确认便补寄。TCP 的序列号、确认和重传做的正是这件事（是发送方因收不到确认而重传）。
+> Alice sends a long letter and numbers each page. However the pages get shuffled in the envelope, Bob can put them back in order. If page 3 gets lost, Bob never acknowledges it, so Alice sends it again when no acknowledgment arrives. TCP's sequence numbers, acknowledgments, and retransmission do exactly this (the sender retransmits because the ACK never comes).
 
 > [!note] TCP 和 UDP TCP vs UDP
-> 并不是所有应用都用 TCP。**UDP** 没有连接、没有重传、不保证顺序，但开销小、延迟低，适合视频通话、在线游戏、DNS 查询这类“晚到不如不到”的场景。
-> Not everything uses TCP. **UDP** has no connection, no retransmission, and no ordering, but it's lightweight and low-latency. It suits cases where late data is useless, such as video calls, online games, and DNS lookups.
+> 并不是所有应用都用 TCP。**UDP** 没有连接、没有重传、不保证顺序，但开销小、延迟低，适合视频通话、在线游戏这类“晚到不如不到”的场景，以及 DNS 查询这类小而快、丢了由应用重试的一问一答。
+> Not everything uses TCP. **UDP** has no connection, no retransmission, and no ordering, but it's lightweight and low-latency. It suits cases where late data is useless, such as video calls and online games, and small one-shot exchanges like DNS queries that the app can simply retry.
 
 ### 4.3 🧑‍💻 应用数据 Application data
 
@@ -160,20 +160,20 @@ As developers, we care most about the **application data**, such as an HTTP requ
 A TCP segment's payload holds both the **HTTP headers** and the **HTTP body**:
 
 ```text
-┌──────────── IP packet ─────────────────────────────────────┐
-│ IP header │ ┌────────── TCP segment ───────────────────────┐│
-│ src/dst IP│ │ TCP header │ ┌──── HTTP message ───────────┐ ││
-│           │ │ ports, seq │ │ HTTP headers │ HTTP body     │ ││
-│           │ │            │ │ POST /rsvp   │ {"name":"Bob"}│ ││
-│           │ │            │ └─────────────────────────────┘ ││
-│           │ └──────────────────────────────────────────────┘│
-└────────────────────────────────────────────────────────────┘
+┌─ IP packet ─────────────────────────────────────────────────────┐
+│ IP header  │ ┌─ TCP segment ──────────────────────────────────┐ │
+│ src/dst IP │ │ TCP header │ ┌─ HTTP message ────────────────┐ │ │
+│            │ │ ports, seq │ │ HTTP headers │ HTTP body      │ │ │
+│            │ │            │ │ POST /rsvp   │ {"name":"Bob"} │ │ │
+│            │ │            │ └───────────────────────────────┘ │ │
+│            │ └────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ## 5. 🧅 网络分层 Network Layers
 
-网络协议按**层**组织。每一层只负责一件事，只和上下相邻的层打交道。发送时每层在外面**加一层头**（封装），接收时逐层**拆开**（解封装）。
-Network protocols are organized into **layers**. Each layer has one job and only talks to the layers right above and below it. On the way out, each layer **wraps** the data with its own header (encapsulation); on the way in, each layer **unwraps** it (decapsulation).
+网络协议按**层**组织。每一层只负责一件事，在同一台主机内只和上下相邻的层打交道。发送时每层在外面**加一层头**（封装），接收时逐层**拆开**（解封装）。
+Network protocols are organized into **layers**. Each layer has one job and, within a host, only talks to the layers right above and below it. On the way out, each layer **wraps** the data with its own header (encapsulation); on the way in, each layer **unwraps** it (decapsulation).
 
 | TCP/IP 层 TCP/IP layer | OSI 层 OSI layer | 职责 Responsibility | 例子 Examples |
 | --- | --- | --- | --- |
@@ -195,8 +195,8 @@ Network protocols are organized into **layers**. Each layer has one job and only
 | 谁分配 Assigned by | ISP 或云服务商 The ISP or a cloud provider | 路由器（DHCP）或管理员 The router (DHCP) or an admin |
 | 地址范围 Ranges | 私网和保留范围以外的地址 Everything outside private and reserved ranges | `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16` |
 
-家里的手机、电脑都有私网 IP（比如 `192.168.1.23`），它们访问互联网时，路由器用 **NAT** 把它们换成同一个公网 IP。所以外面的服务器看到的是路由器的公网地址。
-The phones and laptops at home have private IPs (e.g. `192.168.1.23`). When they reach the internet, the router uses **NAT** to swap them for one shared public IP, so outside servers see the router's public address.
+家里的手机、电脑都有私网 IP（比如 `192.168.1.23`），它们访问互联网时，路由器用 **NAT** 把它们换成同一个公网 IP。所以外面的服务器看到的是路由器的公网地址。路由器通常还会改写源端口（叫 NAPT），靠端口区分是哪台设备的连接（见第 8 节的四元组）。
+The phones and laptops at home have private IPs (e.g. `192.168.1.23`). When they reach the internet, the router uses **NAT** to swap them for one shared public IP, so outside servers see the router's public address. The router usually rewrites source ports too (called NAPT) and uses them to tell each device's connections apart (see the 4-tuple in section 8).
 
 ```mermaid
 flowchart LR
@@ -211,7 +211,7 @@ flowchart LR
 | | 🔄 动态 IP Dynamic IP | 📌 静态 IP Static IP |
 | --- | --- | --- |
 | 分配方式 Assignment | **DHCP** 自动分配，带租期 Assigned automatically by **DHCP**, with a lease | 手动配置，或固定绑定 Configured by hand, or a fixed binding |
-| 会变吗？ Does it change? | 可能会变，例如重连或租期到期后 It can, e.g. after reconnecting or when the lease expires | 不变 No |
+| 会变吗？ Does it change? | 可能会变，例如重连或租期到期后 It can, e.g. after reconnecting or when the lease expires | 不变，除非手动修改 Not unless you change it |
 | 优点 Pros | 零配置，地址池可以复用 No setup; the address pool gets reused | 好找、稳定 Easy to find and stable |
 | 常用于 Typical use | 客户端：手机、笔记本 Clients: phones, laptops | 服务器、打印机、DNS 记录指向的机器 Servers, printers, machines a DNS record points to |
 
@@ -228,16 +228,28 @@ An IP address finds the **device**; a **port** finds the **app** on that device.
 | --- | --- | --- |
 | 0–1023 | 知名端口 Well-known ports | 22 SSH, 53 DNS, 80 HTTP, 443 HTTPS |
 | 1024–49151 | 注册端口 Registered ports | 3306 MySQL, 5432 PostgreSQL, 8080 dev servers |
-| 49152–65535 | 动态端口 Dynamic (ephemeral) ports | 客户端连接时临时使用 Picked temporarily by clients for outgoing connections |
+| 49152–65535 | 动态端口 Dynamic (ephemeral) ports | 通常由客户端连接时临时使用（Linux 默认 32768–60999） Usually picked temporarily by clients for outgoing connections (Linux defaults to 32768–60999) |
 
 > [!example] 全栈项目里的端口 Ports in a full-stack project
-> Angular 开发服务器默认跑在 **4200**，Spring Boot 默认 **8080**。如果再启动一个也想监听 4200 的应用，就会失败，因为这个端口已经被占用了。
-> The Angular dev server runs on **4200** by default and Spring Boot on **8080**. Starting another app that also wants to listen on 4200 fails, because the port is already taken.
+> Angular 开发服务器默认跑在 **4200**，Spring Boot 默认 **8080**。如果再启动一个也想监听 4200 的应用，就会失败，因为这个端口已经被占用了（`ng serve` 会提示改用别的端口）。
+> The Angular dev server runs on **4200** by default and Spring Boot on **8080**. Starting another app that also wants to listen on 4200 fails, because the port is already taken (`ng serve` offers to use another port).
 
 ```java
-// 第二次绑定同一端口会失败 Binding the same port twice fails
-try (ServerSocket a = new ServerSocket(4200);
-     ServerSocket b = new ServerSocket(4200)) { // java.net.BindException: Address already in use
+import java.io.IOException;
+import java.net.BindException;
+import java.net.ServerSocket;
+
+public class PortDemo {
+    public static void main(String[] args) throws IOException {
+        // 第二次绑定同一端口会失败 Binding the same port twice fails
+        try (ServerSocket a = new ServerSocket(4200);
+             ServerSocket b = new ServerSocket(4200)) {
+            System.out.println("never reached");
+        } catch (BindException e) {
+            // 例如 e.g. "Address already in use"（措辞因系统而异 wording varies by OS）
+            System.out.println("Port 4200 is taken: " + e.getMessage());
+        }
+    }
 }
 ```
 
@@ -247,8 +259,8 @@ try (ServerSocket a = new ServerSocket(4200);
 
 ```mermaid
 flowchart LR
-    C1["💻 Client A<br/>10.0.0.5:51234"] --> S
-    C2["📱 Client B<br/>10.0.0.9:62001"] --> S
+    C1["💻 Client A<br/>198.51.100.5:51234"] --> S
+    C2["📱 Client B<br/>192.0.2.9:62001"] --> S
     S["🖥️ Server 203.0.113.7"] --> P1["🌐 :443 web app"]
     S --> P2["🗄️ :5432 PostgreSQL"]
 ```
@@ -260,8 +272,8 @@ When a browser opens `https://example.com/rsvp`, roughly this happens:
 
 1. 🔎 **DNS 查询 DNS lookup:** 把 `example.com` 解析成 IP 地址。
    Resolve `example.com` to an IP address.
-2. 🤝 **TCP 握手 TCP handshake:** 和这个 IP 的 **443** 端口建立连接（HTTPS 还要再做一次 TLS 握手）。
-   Open a connection to port **443** at that IP (HTTPS adds a TLS handshake on top).
+2. 🤝 **TCP 握手 TCP handshake:** 和这个 IP 的 **443** 端口建立连接（HTTPS 还要再做一次 TLS 握手；HTTP/3 则改用基于 UDP 的 QUIC）。
+   Open a connection to port **443** at that IP (HTTPS adds a TLS handshake on top; HTTP/3 uses QUIC over UDP instead).
 3. 📤 **发送请求 Send the request:** HTTP 请求被 TCP 切成段、IP 装成包，经过路由器一跳一跳到达服务器。
    TCP splits the HTTP request into segments, IP wraps them in packets, and routers forward them hop by hop to the server.
 4. 🧩 **重组 Reassemble:** 服务器的 TCP 按序列号重组数据，交给监听 443 端口的应用。
@@ -273,8 +285,8 @@ When a browser opens `https://example.com/rsvp`, roughly this happens:
 
 - **“数据包由头部、载荷和尾部组成” "Packets consist of a header, payload, and trailer":** IP 数据包只有**头部和载荷**，没有尾部。尾部（比如以太网的校验序列 FCS）属于链路层的**帧**。
   An IP packet has only a **header and a payload**, no trailer. The trailer (such as Ethernet's frame check sequence) belongs to the link-layer **frame**.
-- **“IP 和 TCP 一起保证数据准确送达” "TCP and IP together guarantee precise delivery":** IP 本身是**尽力而为**的，不保证送达。可靠性完全来自 TCP 的确认和重传；即使这样，网络断了 TCP 也只能报错，不能“保证”送到。
-  IP itself is **best effort** and guarantees nothing. Reliability comes from TCP's acknowledgments and retransmission, and even TCP can only report an error, not "guarantee" delivery, if the network is down.
+- **“IP 和 TCP 一起保证数据准确送达” "TCP and IP together guarantee precise delivery":** IP 本身是**尽力而为**的，不保证送达。可靠性主要来自 TCP 的确认和重传；即使这样，网络断了 TCP 也只能报错，不能“保证”送到。
+  IP itself is **best effort** and guarantees nothing. Reliability mainly comes from TCP's acknowledgments and retransmission, and even TCP can only report an error, not "guarantee" delivery, if the network is down.
 - **“TCP 确保包按正确顺序到达” "TCP ensures packets arrive in the right sequence":** 包在网络上仍然可能乱序到达。TCP 是在**接收端**按序列号重新排序，再交给应用。另外序列号是给**字节**编号的，不是给包编号。
   Packets can still arrive out of order on the wire. TCP reorders them **at the receiver** by sequence number before handing data to the app. Also, sequence numbers count **bytes**, not packets.
 - **“网络层设定数据传输的物理路径” "The network layer sets the physical pathway":** 网络层负责**逻辑**寻址和路由（选下一跳）。物理传输是链路层和物理层的事。
@@ -291,10 +303,10 @@ When a browser opens `https://example.com/rsvp`, roughly this happens:
   It *can* change, but DHCP often renews the same address, so it frequently stays the same for days.
 - **“静态 IP 需要手动配置” "Static IPs require manual configuration":** 也可以在路由器上做 **DHCP 预留**，或在云上用弹性 IP，效果一样是固定地址。
   A **DHCP reservation** on the router or an elastic IP in the cloud also gives a fixed address without configuring the device by hand.
-- **“前端和后端不能用同一个端口” "Frontend and backend can't use the same port":** 准确地说，是同一个 IP 上、同一种协议（TCP 或 UDP）里，同一个端口只能有一个应用**监听**。但一个端口可以同时承载很多**连接**（见四元组）。
-  Precisely: only one app can **listen** on a given port for the same IP and protocol (TCP or UDP). One port can still carry many **connections** at once (see the 4-tuple).
-- **术语 Terminology:** 课程把各层的数据都叫“包”。严格说：链路层是**帧**，IP 层是**包**，TCP 层是**段**，UDP 层是**数据报**。面试时用对词会加分。
-  The lesson calls everything a "packet". Strictly: a **frame** at the link layer, a **packet** at IP, a **segment** for TCP, and a **datagram** for UDP. Using the right word helps in interviews.
+- **“前端和后端不能用同一个端口” "Frontend and backend can't use the same port":** 准确地说，是同一个 IP 上、同一种协议（TCP 或 UDP）里，同一个端口只能有一个应用**监听**（`SO_REUSEPORT` 等选项除外）。但一个端口可以同时承载很多**连接**（见四元组）。
+  Precisely: only one app can **listen** on a given port for the same IP and protocol (TCP or UDP), except with options like `SO_REUSEPORT`. One port can still carry many **connections** at once (see the 4-tuple).
+- **术语 Terminology:** 课程把各层的数据都叫“包”。严格说：链路层是**帧**，IP 层通常叫**包**（RFC 里也叫数据报），TCP 层是**段**，UDP 层是**数据报**。面试时用对词会加分。
+  The lesson calls everything a "packet". Strictly: a **frame** at the link layer, a **packet** at IP (RFCs also say datagram), a **segment** for TCP, and a **datagram** for UDP. Using the right word helps in interviews.
 
 ## 11. 🧩 复习题 Review Questions
 
@@ -349,8 +361,8 @@ When a browser opens `https://example.com/rsvp`, roughly this happens:
 **Q9.** 什么时候会选 UDP 而不是 TCP？ When would you pick UDP over TCP?
 
 > [!success]- 答案 Answer
-> 当低延迟比可靠性更重要、晚到的数据没有用的时候，比如视频通话、在线游戏和 DNS 查询。
-> When low latency matters more than reliability and late data is useless, such as video calls, online games, and DNS lookups.
+> 当低延迟比可靠性更重要、晚到的数据没有用的时候，比如视频通话和在线游戏。DNS 查询也常用 UDP，因为它是小而快的一问一答，丢了由应用重试即可。
+> When low latency matters more than reliability and late data is useless, such as video calls and online games. DNS queries also usually use UDP, because they're small one-shot exchanges the app can simply retry.
 
 ## 12. 🔗 相关 Related
 
