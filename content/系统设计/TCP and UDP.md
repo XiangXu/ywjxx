@@ -16,8 +16,8 @@ created: 2026-10-31
 # 🚚 TCP and UDP
 
 > [!abstract] 一句话总结 One-line summary
-> **TCP** 先握手建立连接，再用确认和重传保证数据可靠、按顺序到达，代价是更多开销和延迟；**UDP** 不建立连接、不重传、不排序，只管把数据报发出去，换来更低的延迟和开销。
-> **TCP** sets up a connection with a handshake, then uses acknowledgments and retransmission so data arrives reliably and in order, at the cost of more overhead and latency. **UDP** has no connection, no retransmission, and no ordering: it just sends datagrams, which buys lower latency and overhead.
+> **TCP** 先握手建立连接，再用确认和重传让数据可靠、按顺序到达（网络不通时则报错断开），代价是更多开销和延迟；**UDP** 不建立连接、不重传、不排序，只管把数据报发出去，换来更低的延迟和开销。
+> **TCP** sets up a connection with a handshake, then uses acknowledgments and retransmission so data arrives reliably and in order (or the connection fails with an error), at the cost of more overhead and latency. **UDP** has no connection, no retransmission, and no ordering: it just sends datagrams, which buys lower latency and overhead.
 
 ## 1. 太长不看 TL;DR
 
@@ -30,7 +30,7 @@ created: 2026-10-31
 - ⚡ **UDP 的思路 UDP's approach:** 不握手、不确认、不重传、不排序，丢了就丢了，由应用自己决定怎么办。
   No handshake, no acknowledgments, no retransmission, no reordering. Lost data stays lost, and the app decides what to do.
 - 🎮 **怎么选 How to choose:** 数据必须完整正确（网页、API、文件、支付）用 TCP；“晚到不如不到”的实时数据（视频通话、游戏状态）常用 UDP。
-  Use TCP when data must be complete and correct (web pages, APIs, files, payments). Real-time data where late is as bad as lost (video calls, game state) often uses UDP.
+  Use TCP when data must be complete and correct (web pages, APIs, files, payments). Real-time data where late is no better than lost (video calls, game state) often uses UDP.
 
 ## 2. 🤝 TCP 可靠传输 TCP: Reliable Delivery
 
@@ -57,13 +57,13 @@ Before any data is sent, the client and server agree on a connection by exchangi
   Each side has to send its own sequence number **and** acknowledge the other's. Step 2 combines the server's SYN with its ACK of the client, so four jobs fit into three steps.
 - **双向连接 Two-way connection:** 握手完成后，双方都能同时发送和接收（全双工）。
   After the handshake, both sides can send and receive at the same time (full duplex).
-- **关闭连接 Closing:** 结束时通常各自发一个 FIN 并被对方确认，一共四个段（四次挥手）。
-  To close, each side usually sends a FIN that the other acknowledges, four segments in all (the four-way teardown).
+- **关闭连接 Closing:** 结束时通常各自发一个 FIN 并被对方确认，一共四个段（四次挥手；中间的 ACK 和 FIN 有时合并成一个段）。
+  To close, each side usually sends a FIN that the other acknowledges, four segments in all (the four-way teardown; the middle ACK and FIN sometimes merge into one).
 
 ### 2.2 🔁 确认和重传 Acknowledgments and retransmission
 
-连接建立后，接收方会告诉发送方“我已经收到到哪个字节了”（ACK）。发送方给每段数据计时，**超时还没收到确认**就重传。
-Once connected, the receiver tells the sender which bytes it has received so far (the ACK). The sender times each segment and **retransmits it when no acknowledgment arrives in time**.
+连接建立后，接收方用 ACK 告诉发送方“下一个我想要的字节”，也就是它之前的数据都已收到。发送方有重传计时器（通常盯着最早未确认的数据），**超时还没收到确认**就重传。
+Once connected, the receiver's ACK tells the sender the next byte it expects, meaning everything before it has arrived. The sender runs a retransmission timer (usually for the oldest unacknowledged data) and **retransmits when no acknowledgment arrives in time**.
 
 ```text
  Client                                   Server
@@ -78,15 +78,15 @@ Once connected, the receiver tells the sender which bytes it has received so far
 | 机制 Mechanism | 作用 What it does |
 | --- | --- |
 | 序列号 Sequence numbers | 给字节编号，接收方据此去重并按顺序重组 Number the bytes so the receiver can drop duplicates and reassemble in order |
-| 累计确认 Cumulative ACK | “我已经连续收到这个字节之前的所有数据” "I have everything up to this byte" |
+| 累计确认 Cumulative ACK | 确认号是下一个期望的字节，它之前的都已收到 The ACK number is the next byte expected, so everything before it has arrived |
 | 超时重传 Timeout retransmit | 等不到确认就重发 Resend when no ACK arrives in time |
 | 快速重传 Fast retransmit | 连续收到三个重复 ACK 就不等超时，立即重发 Resend right away after three duplicate ACKs, without waiting for the timeout |
 | 流量控制 Flow control | 接收方告诉发送方自己还能收多少（窗口） The receiver advertises how much more it can take (the window) |
 | 拥塞控制 Congestion control | 网络拥堵时主动降速 The sender slows down when the network is congested |
 
 > [!example] 挂号信 Registered mail
-> TCP 像挂号信：每封都要对方签收，没签收就补寄。寄得慢一点，但你知道对方一定收齐了（或者明确知道寄不到）。
-> TCP is like registered mail: each letter needs a signature, and unsigned ones get sent again. It's slower, but you know the recipient got everything (or you find out clearly that delivery failed).
+> TCP 像挂号信：每封都要对方签收，没签收就补寄。寄得慢一点，但你通常能确认对方已经收齐了（或者明确知道寄不到）。
+> TCP is like registered mail: each letter needs a signature, and unsigned ones get sent again. It's slower, but you can usually confirm the recipient got everything (or you find out clearly that delivery failed).
 
 ### 2.3 🐢 TCP 的代价 What TCP costs
 
@@ -98,8 +98,8 @@ Once connected, the receiver tells the sender which bytes it has received so far
 | 队头阻塞 Head-of-line blocking | 一个段丢了，后面已经到达的数据也要等它重传完才能交给应用 One lost segment holds back later data that already arrived until the retransmit lands |
 
 > [!tip] Java 类比 Java analogy
-> TCP 对应 Java 里的 `Socket` / `ServerSocket`：先 `accept()` 建立连接，再用 `InputStream` / `OutputStream` 读写一条字节流。UDP 对应 `DatagramSocket`：没有连接，每次 `send()` / `receive()` 一个独立的 `DatagramPacket`。
-> TCP maps to Java's `Socket` / `ServerSocket`: you `accept()` a connection, then read and write a byte stream through `InputStream` / `OutputStream`. UDP maps to `DatagramSocket`: no connection, and each `send()` / `receive()` handles one standalone `DatagramPacket`.
+> TCP 对应 Java 里的 `Socket` / `ServerSocket`：服务端用 `ServerSocket.accept()` 接收连接，客户端用 `new Socket(host, port)` 发起连接，握手由操作系统完成，之后双方用 `InputStream` / `OutputStream` 读写一条字节流。UDP 对应 `DatagramSocket`：没有连接，每次 `send()` / `receive()` 一个独立的 `DatagramPacket`。
+> TCP maps to Java's `Socket` / `ServerSocket`: the server takes an incoming connection with `ServerSocket.accept()`, the client opens one with `new Socket(host, port)`, and the OS does the handshake. Both sides then read and write a byte stream through `InputStream` / `OutputStream`. UDP maps to `DatagramSocket`: no connection, and each `send()` / `receive()` handles one standalone `DatagramPacket`.
 
 ## 3. ⚡ UDP 轻量传输 UDP: Lightweight Delivery
 
@@ -120,7 +120,7 @@ Once connected, the receiver tells the sender which bytes it has received so far
 | 不重传 No retransmission | 丢了的数据不会补，不会因为等待而卡住 Lost data isn't resent, so nothing stalls waiting for it |
 | 不排序 No ordering | 先发的可能后到，应用自己处理 Earlier datagrams may arrive later, and the app handles it |
 | 保留消息边界 Message boundaries | 一次发送就是一个完整的数据报 One send is one whole datagram |
-| 没有拥塞控制 No congestion control | 发多快由应用决定，也要应用自己别把网络压垮 The app picks the rate and must avoid flooding the network |
+| 协议本身无拥塞控制 No built-in congestion control | 发多快由应用决定，也要应用自己别把网络压垮 The app picks the rate and must avoid flooding the network |
 
 ### 3.1 🎮 为什么要用 UDP Why pick UDP
 
@@ -132,14 +132,14 @@ For real-time data, **stale data is useless data**. If a video call loses a fram
 | 网页和接口 Web pages, REST APIs | TCP / QUIC | 数据必须完整 Every byte must arrive |
 | 文件传输、邮件 File transfer, email | TCP | 少一个字节文件就坏了 One missing byte corrupts the file |
 | 数据库连接 Database connections | TCP | 查询和结果必须准确有序 Queries and results must be exact and ordered |
-| 视频通话、语音 Video and voice calls | UDP (RTP / WebRTC) | 低延迟比完整更重要 Low latency beats completeness |
+| 视频通话、语音 Video and voice calls | UDP 为主（RTP / WebRTC） Mostly UDP (RTP / WebRTC) | 低延迟比完整更重要 Low latency beats completeness |
 | 在线游戏 Online games | UDP 为主 Mostly UDP | 只要最新状态 Only the latest state matters |
 | DNS 查询 DNS lookups | UDP 为主 Mostly UDP | 一问一答，丢了重问就行 One question, one answer, just ask again if lost |
-| 直播 Live streaming | 都有 Both | 低延迟直播用 UDP，普通直播多用基于 HTTP 的 TCP Low-latency streams use UDP, typical ones use HTTP over TCP |
+| 直播 Live streaming | 都有 Both | 低延迟直播用 UDP，普通直播多用 TCP 上的 HTTP 传输 Low-latency streams use UDP, typical ones use HTTP over TCP |
 
 > [!important] UDP 上也能做可靠 Reliability can live on top of UDP
-> UDP 不提供的功能，应用可以自己按需加上。游戏常常只对“开火”“拾取”这种关键事件做确认重传，位置更新则直接丢弃。**QUIC**（HTTP/3 的底层）就是在 UDP 上重新实现了可靠传输、加密和多路复用，避免了 TCP 的队头阻塞。
-> Apps can add whatever UDP leaves out, as much as they need. Games often acknowledge and resend only key events like "fire" or "pick up", and just drop stale position updates. **QUIC** (the base of HTTP/3) rebuilds reliable delivery, encryption, and multiplexing on top of UDP, avoiding TCP's head-of-line blocking.
+> UDP 不提供的功能，应用可以自己按需加上。游戏常常只对“开火”“拾取”这种关键事件做确认重传，位置更新则直接丢弃。**QUIC**（HTTP/3 的底层）就是在 UDP 上重新实现了可靠传输、加密和多路复用，各个流互不阻塞，避免了 TCP 上跨流的队头阻塞。
+> Apps can add whatever UDP leaves out, as much as they need. Games often acknowledge and resend only key events like "fire" or "pick up", and just drop stale position updates. **QUIC** (the base of HTTP/3) rebuilds reliable delivery, encryption, and multiplexing on top of UDP. Its streams don't block each other, which avoids TCP's cross-stream head-of-line blocking.
 
 ## 4. ⚖️ TCP 和 UDP 对比 TCP vs UDP at a Glance
 
@@ -150,7 +150,7 @@ For real-time data, **stale data is useless data**. If a video call loses a fram
 | 顺序 Ordering | 按顺序交给应用 Delivered in order | 不保证顺序 No ordering |
 | 数据形式 Data unit | 字节流（段） Byte stream (segments) | 独立的数据报 Independent datagrams |
 | 头部大小 Header size | 至少 20 字节 At least 20 bytes | 固定 8 字节 Fixed 8 bytes |
-| 流量和拥塞控制 Flow & congestion control | 有 Yes | 没有 No |
+| 流量和拥塞控制 Flow & congestion control | 有 Yes | 协议本身没有 None built in |
 | 延迟 Latency | 较高 Higher | 较低 Lower |
 | 典型应用 Typical uses | 网页、远程登录、邮件、数据库 Web, SSH, email, databases | 通话、游戏、域名查询、QUIC 底层 Calls, games, DNS, QUIC |
 
@@ -162,8 +162,8 @@ For real-time data, **stale data is useless data**. If a video call loses a fram
   TCP **retransmits** lost data, but if the network stays down it can only give up with an error, so it can't truly "ensure" delivery. Retransmission relies on ACKs and timers, not the handshake, which only sets up the connection and syncs sequence numbers.
 - **“UDP 传输更快” "UDP boasts faster data transmission":** 比特在线路上跑得一样快。UDP 的优势是**延迟更低、开销更小**：没有握手往返，没有重传等待，没有队头阻塞。在带宽很大的批量传输里，TCP 的吞吐量并不差。
   Bits travel the wire at the same speed. UDP's edge is **lower latency and overhead**: no handshake round trip, no retransmission waits, no head-of-line blocking. For large bulk transfers, TCP's throughput is perfectly good.
-- **“视频流用 UDP 协议” "Video streaming uses UDP":** 要分情况。YouTube、Netflix 这类点播视频主要走基于 HTTP 的 HLS / DASH，底层是 TCP，或者是 QUIC（虽然跑在 UDP 上，但本身是可靠的）。真正“丢帧就跳过”的是**实时**视频，比如视频通话和低延迟直播（WebRTC / RTP）。
-  It depends. On-demand video like YouTube and Netflix mostly uses HTTP-based HLS / DASH over TCP, or over QUIC (which runs on UDP but is itself reliable). Skipping dropped frames is what **real-time** video does, such as video calls and low-latency live streams (WebRTC / RTP).
+- **“视频流用 UDP 协议” "Video streaming uses UDP":** 要分情况。YouTube、Netflix 这类点播视频主要走基于 HTTP 的 HLS / DASH，底层是 TCP，或者是 QUIC（虽然跑在 UDP 上，但本身是可靠的）。真正“丢帧就跳过”的是**实时**视频，比如视频通话和低延迟直播（WebRTC / RTP）；即便如此，它们也常用重传请求或纠错码补回一部分丢包。
+  It depends. On-demand video like YouTube and Netflix mostly uses HTTP-based HLS / DASH over TCP, or over QUIC (which runs on UDP but is itself reliable). Skipping dropped frames is what **real-time** video does, such as video calls and low-latency live streams (WebRTC / RTP), and even these often recover some losses with retransmission requests or error-correcting codes.
 - **“在线游戏用 UDP 协议” "Online gaming uses UDP":** 快节奏的游戏（射击、竞速）通常用 UDP，并在上面自己做部分可靠性。也有不少游戏（回合制、部分 MMO）直接用 TCP。
   Fast-paced games (shooters, racing) usually use UDP with some reliability of their own on top. Many others (turn-based games, some MMOs) just use TCP.
 - **“丢一帧” "Skip a dropped frame":** 一帧视频通常要拆成好几个数据报。丢的往往是其中一部分，播放器会跳过或修补这一帧，编码器也会设法减少影响。
@@ -200,14 +200,14 @@ For real-time data, **stale data is useless data**. If a video call loses a fram
 **Q5.** HTTP/3 跑在 UDP 上，那它是不是不可靠？ HTTP/3 runs on UDP, so is it unreliable?
 
 > [!success]- 答案 Answer
-> 不是。HTTP/3 跑在 QUIC 上，QUIC 在 UDP 之上自己实现了确认、重传、拥塞控制和加密。用 UDP 是为了绕开 TCP 的队头阻塞，并且能在用户态快速迭代协议。
-> No. HTTP/3 runs on QUIC, which implements acknowledgments, retransmission, congestion control, and encryption itself on top of UDP. UDP is used to avoid TCP's head-of-line blocking and to let the protocol evolve quickly in user space.
+> 不是。HTTP/3 跑在 QUIC 上，QUIC 在 UDP 之上自己实现了确认、重传、拥塞控制和加密。选 UDP 主要是因为全新的传输协议很难穿过现有的 NAT 和防火墙，而 UDP 可以。队头阻塞则靠 QUIC 自己相互独立的流来避免，它还能在用户态快速迭代。
+> No. HTTP/3 runs on QUIC, which implements acknowledgments, retransmission, congestion control, and encryption itself on top of UDP. UDP is chosen mainly because a brand-new transport protocol would struggle to get through existing NATs and firewalls, while UDP gets through. QUIC's own independent streams avoid head-of-line blocking, and it can evolve quickly in user space.
 
 **Q6.** UDP 为什么适合 DNS 查询？ Why does UDP suit DNS lookups?
 
 > [!success]- 答案 Answer
-> DNS 通常是一个小请求加一个小响应。用 UDP 省掉了握手往返，丢了就由客户端超时重问。响应太大时，DNS 会改用 TCP。
-> A DNS lookup is usually one small request and one small response. UDP skips the handshake round trip, and the client simply retries after a timeout if something is lost. When a response is too large, DNS falls back to TCP.
+> DNS 通常是一个小请求加一个小响应。用 UDP 省掉了握手往返，丢了就由客户端超时重问。响应放不下时会被截断（设置 TC 标志），客户端就改用 TCP 重试。
+> A DNS lookup is usually one small request and one small response. UDP skips the handshake round trip, and the client simply retries after a timeout if something is lost. When a response doesn't fit, it's truncated (the TC flag is set) and the client retries over TCP.
 
 ## 7. 🔗 相关 Related
 
