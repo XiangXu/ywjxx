@@ -85,7 +85,7 @@ A stack only touches one end, so an **array** is the natural fit: the top is the
   - **“下一个更大 / 更小” Next greater / smaller element:** 单调栈（739、496、84） A monotonic stack (739, 496, 84)
   - **后缀表达式求值 Evaluate postfix (RPN):** 数字压栈，遇到运算符弹出两个（150） Push numbers and pop two on an operator (150)
   - **把递归改成迭代 Turn recursion into a loop:** DFS、树的遍历都可以改用显式栈，因为[[递归 Recursion|递归 Recursion]]本身就跑在**调用栈**上（[[Reverse Linked List|206]] 的递归版深度是 n，空间 O(n)） → DFS and tree traversals can use an explicit stack, because [[递归 Recursion|recursion]] itself runs on the **call stack** ([[Reverse Linked List|206]]'s recursion is n deep, O(n) space)
-- ❌ 需要先进先出（按到达顺序处理，如 BFS），用队列 → Need first in, first out (e.g. BFS): use a queue
+- ❌ 需要先进先出（按到达顺序处理，如广度优先搜索），用[[队列 Queue|队列 Queue]] → Need first in, first out (e.g. BFS): use a [[队列 Queue|queue]]
 
 ## 3. ⚙️ 原理 How It Works
 
@@ -201,6 +201,7 @@ Stack algorithms are commonly **O(n) time**: each element is pushed once and pop
 ## 9. 🔗 相关 Related
 
 - [[📌 数据结构总览]]
+- 对照 Compare with: [[队列 Queue|队列 Queue]]（先进先出 FIFO）
 - 底层实现 Built on: [[数组 Array|数组 Array]]（也是 [[Design Dynamic Array|动态数组 dynamic array]] 的典型用途 a classic use of a dynamic array） 或 or [[链表 Linked List|链表 Linked List]]
 - 算法 Algorithms: [[一次遍历 One Pass|一次遍历 One Pass]]（栈当状态 stack as state） · [[递归 Recursion|递归 Recursion]]（调用栈 the call stack）
 - 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析 Big-O]]（均摊分析 amortized analysis；[[Min Stack|155]] 用辅助栈换时间 trades space for time）

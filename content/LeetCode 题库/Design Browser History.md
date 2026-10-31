@@ -286,6 +286,7 @@ The first node of the cut-off part still has `prev` pointing at `curr`, but that
 - 🧠 概念 Concepts: [[链表 Linked List|链表 Linked List]]（双向链表加游标 a doubly linked list with a cursor） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（链表 O(steps) 对比数组 O(1) linked list O(steps) vs array O(1)）
 - 对照 Compare with: [[Design Linked List|707. 设计链表 Design Linked List]]（双哨兵，可以在任意位置增删 two sentinels, inserts and deletes anywhere）
 - 上一题 Previous: [[Design Linked List|707. 设计链表 Design Linked List]]（双向链表 doubly linked list）
+- 下一题 Next: [[Number of Students Unable to Eat Lunch|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]]（队列模拟和计数 queue simulation and counting）
 
 ## 9. 🔁 复习记录 Review Log
 

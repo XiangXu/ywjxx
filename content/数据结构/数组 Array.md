@@ -181,10 +181,11 @@ void delete(int[] a, int size, int k) {
 | [[Max Consecutive Ones\|485. 最大连续 1 的个数 Max Consecutive Ones]] | 一次遍历 + 计数器 one pass with a counter |
 | [[Replace Elements with Greatest Element on Right Side\|1299. 将每个元素替换为右侧最大元素 Replace Elements with Greatest Element on Right Side]] | 从右往左，原地覆盖 right-to-left, overwrite in place |
 | [[Remove Element\|27. 移除元素 Remove Element]] | 快慢指针原地删除 read/write pointers |
+| [[Number of Students Unable to Eat Lunch\|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]] | 用 `int[2]` 当计数器，下标就是值 an `int[2]` as counters, indexed by value |
 
 ## 9. 🔗 相关 Related
 
 - [[📌 数据结构总览]]
-- 数据结构 Data structures: [[栈 Stack|栈 Stack]]（用数组实现 array-backed） · [[链表 Linked List|链表 Linked List]]（连续 vs 分散，对比见第 1、4 题 contiguous vs scattered, see Q1 and Q4）
+- 数据结构 Data structures: [[栈 Stack|栈 Stack]]（用数组实现 array-backed） · [[队列 Queue|队列 Queue]]（环形数组 a circular array） · [[链表 Linked List|链表 Linked List]]（连续 vs 分散，对比见第 1、4 题 contiguous vs scattered, see Q1 and Q4）
 - 算法 Algorithms: [[双指针 Two Pointers|双指针 Two Pointers]] · [[一次遍历 One Pass|一次遍历 One Pass]] · [[复杂度分析 Big-O|复杂度分析 Big-O]]
 - 硬件背景 Hardware background: [[Computer Architecture]]

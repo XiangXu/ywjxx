@@ -31,6 +31,7 @@ The brute force is often "for each element, scan the others again": O(n²). The 
 | 变体 Variant | 状态 State | 例题 Example |
 | --- | --- | --- |
 | 🧮 运行计数 / 最值 Running counter / best-so-far | `count`, `max` | [[Max Consecutive Ones\|485]] |
+| 🗃️ 计数数组 A count array | `count[]` | [[Number of Students Unable to Eat Lunch\|1700]] |
 | ⬅️ 反向遍历 + 后缀信息 Reverse scan + suffix info | `rightMax` | [[Replace Elements with Greatest Element on Right Side\|1299]] |
 | 🔢 下标映射 / 取模 Index mapping / modulo | 无，靠公式 none, just a formula | [[Concatenation of Array\|1929]] |
 | ✍️ 写入位置 Write position | `slow` | [[Remove Element\|27]] → 见 see [[双指针 Two Pointers\|双指针 Two Pointers]] |
@@ -41,6 +42,8 @@ The brute force is often "for each element, scan the others again": O(n²). The 
 - 🔎 题目信号 Signals in the problem:
   - “最长连续……”、“出现次数” → 运行计数器
     "Longest consecutive…", "count of…" → a running counter
+  - 只关心每种值有几个、不关心顺序 → 计数数组，模拟可以换成计数（1700）
+    Only how many of each value matters, not the order → a count array; a simulation can become counting (1700)
   - “右边所有元素中最大/最小” → **从右往左**扫，维护后缀最值
     "The max/min of everything to the right" → scan **right to left**, keep a suffix max
   - “左边所有元素……” → 从左往右扫，维护前缀信息
@@ -177,12 +180,13 @@ for (int x : nums) {
 | ✅ [[Valid Parentheses\|20. 有效的括号 Valid Parentheses]] | 栈当状态，扫一遍配对 stack as state, match in one pass | Easy |
 | ✅ [[Baseball Game\|682. 棒球比赛 Baseball Game]] | 栈当状态，扫一遍模拟 stack as state, simulate in one pass | Easy |
 | ✅ [[Reverse Linked List\|206. 反转链表 Reverse Linked List]] | 链表上一次遍历，边走边调头 one pass over a list, flipping as it goes | Easy |
+| ✅ [[Number of Students Unable to Eat Lunch\|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]] | 计数数组代替队列模拟 a count array instead of a queue simulation | Easy |
 | 503. Next Greater Element II | `i % n` 绕两圈（+ 单调栈） two laps with `i % n` (+ monotonic stack) | Medium |
 
 ## 9. 🔗 相关 Related
 
 - [[📌 算法总览]]
-- 数据结构 Data structures: [[数组 Array|数组 Array]] · [[栈 Stack|栈 Stack]]（状态比一个变量复杂时 when the state is more than a variable） · [[链表 Linked List|链表 Linked List]]
+- 数据结构 Data structures: [[数组 Array|数组 Array]] · [[栈 Stack|栈 Stack]]（状态比一个变量复杂时 when the state is more than a variable） · [[链表 Linked List|链表 Linked List]] · [[队列 Queue|队列 Queue]]
 - 递归写法 The recursive alternative: [[递归 Recursion|递归 Recursion]]
 - 写入位置那一类 The write-position variant: [[双指针 Two Pointers|双指针 Two Pointers]]
 - 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析 Big-O]]
