@@ -145,6 +145,7 @@ IP handles **addressing and routing**: routers forward each packet hop by hop ba
 > [!note] TCP 和 UDP TCP vs UDP
 > 并不是所有应用都用 TCP。**UDP** 没有连接、没有重传、不保证顺序，但开销小、延迟低，适合视频通话、在线游戏这类“晚到不如不到”的场景，以及 DNS 查询这类小而快、丢了由应用重试的一问一答。
 > Not everything uses TCP. **UDP** has no connection, no retransmission, and no ordering, but it's lightweight and low-latency. It suits cases where late data is useless, such as video calls and online games, and small one-shot exchanges like DNS queries that the app can simply retry.
+> 👉 详见下一篇 More in the next note: [[TCP and UDP|TCP 与 UDP TCP and UDP]]
 
 ### 4.3 🧑‍💻 应用数据 Application data
 
@@ -367,5 +368,6 @@ When a browser opens `https://example.com/rsvp`, roughly this happens:
 ## 12. 🔗 相关 Related
 
 - ⬅️ 上一篇 Previous: [[Design Requirements|设计需求 Design Requirements]]
+- ➡️ 下一篇 Next: [[TCP and UDP|TCP 与 UDP TCP and UDP]]
 - [[Application Architecture|应用架构 Application Architecture]]
 - [[📌 系统设计总览|系统设计总览 System Design Overview]]
