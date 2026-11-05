@@ -265,6 +265,7 @@ offer:  front → [1, 2, 3]    poll() → 1   （先进先出 FIFO）
 - 🧠 概念 Concepts: [[队列 Queue|队列 Queue]]（转一格 rotating with `offer(poll())`） · [[栈 Stack|栈 Stack]]（要实现的后进先出 the LIFO behavior being built） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（选哪个操作付 O(n)，以及为什么不能均摊 which operation pays O(n), and why it doesn't amortize）
 - 对照 Compare with: [[Min Stack|155. 最小栈 Min Stack]]（也是设计一个栈 also designing a stack）
 - 上一题 Previous: [[Number of Students Unable to Eat Lunch|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]]（同样用 `offer(poll())` 转圈 the same `offer(poll())` rotation）
+- 下一题 Next: [[Climbing Stairs|70. 爬楼梯 Climbing Stairs]]（第一道动态规划题 the first dynamic programming problem）
 
 ## 9. 🔁 复习记录 Review Log
 

@@ -81,7 +81,7 @@ reverseList(1)                      ┐
   - **数据结构本身是递归的** The structure is recursive: 链表 = 一个节点 + 一条更短的链表；树 = 根 + 左子树 + 右子树 → a list is a node plus a shorter list; a tree is a root plus two subtrees → [[Reverse Linked List|206]]、104、226
   - **问题能拆成同样的小问题** The problem splits into smaller copies of itself: 分治（归并排序、快速幂） divide and conquer (merge sort, fast power)
   - **要枚举所有可能** Enumerate all possibilities: 回溯（子集、排列） backtracking (subsets, permutations)
-  - **递推公式** A recurrence: `f(n) = f(n-1) + f(n-2)` → 递归 + 记忆化，再往后就是动态规划 recursion + memoization, which leads to DP
+  - **递推公式 A recurrence:** 形如 `f(n) = f(n-1) + f(n-2)`，递归加记忆化，再往后就是[[动态规划 Dynamic Programming|动态规划]]（[[Climbing Stairs|70]]） → like `f(n) = f(n-1) + f(n-2)`: recursion plus memoization, which leads to [[动态规划 Dynamic Programming|dynamic programming]] ([[Climbing Stairs|70]])
 - ❌ 深度可能很大（如十万个节点的链表）且有简单循环写法 → 用迭代，避免栈溢出 Very deep and a simple loop exists → iterate to avoid stack overflow
 
 ## 3. ⚙️ 原理 How It Works
@@ -175,6 +175,7 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 | 104 树的最大深度 Maximum Depth of Binary Tree | n（每个节点一次 once per node） | O(n) | O(h)，h 是树高（平衡时 O(log n)，链状时 O(n)） O(h) for tree height h (balanced O(log n), skewed O(n)) |
 | 509 朴素斐波那契 Naive Fibonacci | 约 φⁿ ≈ 1.618ⁿ，通常写成上界 O(2ⁿ)，更紧的界是 O(φⁿ) About φⁿ ≈ 1.618ⁿ, usually written as the upper bound O(2ⁿ); the tighter bound is O(φⁿ) | O(2ⁿ) | O(n) |
 | 509 记忆化 memoized | 每个 n 算一次 each n once | O(n) | O(n) |
+| [[Climbing Stairs\|70]] 爬楼梯（记忆化） Climbing Stairs (memoized) | `n >= 2` 时共 `2n - 3` 次 `2n - 3` calls for `n >= 2` | O(n) | O(n) |
 
 > [!example] 递归树 Recursion tree: `F(5)`，`F(n) = F(n-1) + F(n-2)`，`F(0) = 0`，`F(1) = 1`
 >
@@ -210,7 +211,7 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 - **出口要覆盖子调用能走到的所有最小输入 Base cases must cover every input the calls can reach:** 斐波那契调用 `F(n-1)` 和 `F(n-2)`，所以 `F(0)` 和 `F(1)` 两个出口都要有。只写 `F(1) = 1` 的话，`F(2)` 会调用 `F(0)`，`F(0)` 又调用 `F(-1)`，一直往负数走下去直到栈溢出。`if (n <= 1) return n;` 一行就覆盖了两个 → Fibonacci calls `F(n-1)` and `F(n-2)`, so it needs both `F(0)` and `F(1)`. With only `F(1)`, `F(2)` calls `F(0)`, which calls `F(-1)`, and it runs into negatives until the stack overflows. `if (n <= 1) return n;` covers both in one line.
 - **在脑子里展开每一层 Unrolling every level in your head:** 层数一多就乱了。写的时候只看一层，相信合同；验证时再用 2 到 3 个节点的小例子手推 → write one level and trust the contract; check with a 2–3 element example afterwards.
 - **递归太深 Too deep:** 64 位 HotSpot 默认线程栈通常约 1 MB（取决于平台和 `-Xss`），大约能撑几千到几万层（取决于每帧大小）。Java **不做尾调用优化**，尾递归写法也一样会溢出；太深就改成循环或显式栈 → the default thread stack on 64-bit HotSpot is usually about 1 MB (it depends on the platform and `-Xss`), enough for a few thousand to tens of thousands of frames depending on frame size. Java does **not** optimize tail calls, so tail recursion overflows too; switch to a loop or an explicit stack.
-- **重复子问题 Repeated subproblems:** 朴素 `fib(n)` 把同一个 `fib(k)` 算很多次，变成指数级。用记忆化（memo）或改成 DP → memoize or switch to DP.
+- **重复子问题 Repeated subproblems:** 朴素 `fib(n)` 把同一个 `fib(k)` 算很多次，变成指数级。用记忆化（memo）或改成 DP；[[Climbing Stairs|70]] 在 `n = 45` 时，调用次数从约 23 亿次降到 87 次 → memoize or switch to DP; at `n = 45` in [[Climbing Stairs|70]], that cuts the calls from about 2.3 billion to 87.
 - **共享的可变状态 Shared mutable state:** 递归里改了全局变量或传进来的集合，回来时没恢复（回溯里要“撤销选择”） → undo changes on the way back, as backtracking does.
 - **子调用之后数据结构已经变了 The structure changed under you:** 206 里子调用会改 `head.next` 后面的指针，但不会改 `head.next` 本身，所以 `head.next.next = head` 才成立。用之前想清楚子调用改了什么 → know what the child call mutated before using it.
 
@@ -254,6 +255,7 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 | ✅ [[Merge Two Sorted Lists\|21. 合并两个有序链表 Merge Two Sorted Lists]] | 选在前、连在后，返回自己 choose before, connect after, return yourself | Easy |
 | 104. Maximum Depth of Binary Tree | 子结果加工 `max + 1` processing the child results | Easy |
 | 226. Invert Binary Tree | 树上的递归交换 swapping recursively on a tree | Easy |
+| ✅ [[Climbing Stairs\|70. 爬楼梯 Climbing Stairs]] | 重复子问题、记忆化 repeated subproblems, memoization | Easy |
 | 509. Fibonacci Number | 重复子问题、记忆化 repeated subproblems, memoization | Easy |
 | 24. Swap Nodes in Pairs | 和 206 类似，先处理后面再接自己 a similar shape to 206 | Medium |
 | 50. Pow(x, n) | 分治，O(log n) divide and conquer | Medium |
@@ -265,3 +267,4 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 - 数据结构 Data structures: [[链表 Linked List|链表 Linked List]]（天然递归的结构 a naturally recursive structure）
 - 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析 Big-O]]（递归栈也算空间 the recursion stack counts as space）
 - 对比 Compare with: [[一次遍历 One Pass|一次遍历 One Pass]]（206 的迭代写法 iterative version）
+- 下一步 Next step: [[动态规划 Dynamic Programming|动态规划 Dynamic Programming]]（递归加缓存 recursion plus a cache）

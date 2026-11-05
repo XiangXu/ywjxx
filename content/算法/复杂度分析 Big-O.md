@@ -165,6 +165,7 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 | [[Design Linked List\|707]] | 头插 / 尾插 O(1)，按下标 O(i) Head / tail insert O(1), by index O(i) | O(n) | 每个节点多一个 `prev`，换来站在节点上就能删除；从近的一端走只把常数减半 An extra `prev` per node lets you delete in place; walking from the closer end only halves the constant |
 | [[Design Browser History\|1472]] | `visit` O(1)，`back` / `forward` O(min(steps, k)) `visit` O(1), `back` / `forward` O(min(steps, k)) | O(n) | 链表只能一步一步走；数组加下标可以一步算出位置，变成 O(1) A list moves one node at a time; an array with indices computes the position directly, making it O(1) |
 | [[Number of Students Unable to Eat Lunch\|1700]] | 模拟 O(n²) / 计数 O(n) Simulation O(n²) / counting O(n) | 模拟 O(n) / 计数 O(1) Simulation O(n) / counting O(1) | 每有一人吃上，之前最多转一整圈；顺序无关就不用模拟 Each meal can cost up to a full lap of rotations; if order doesn't matter, skip the simulation |
+| [[Climbing Stairs\|70]] | 朴素 O(2ⁿ) / 记忆化 O(n) Plain O(2ⁿ) / memoized O(n) | 记忆化 O(n) / 两个变量 O(1) Memoized O(n) / two variables O(1) | 用 O(n) 的数组换来指数级到线性；调用栈也占 O(n) An O(n) array takes the time from exponential to linear; the call stack is O(n) too |
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
@@ -221,6 +222,7 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 - ✅ [[Design Browser History|1472. 设计浏览器历史记录 Design Browser History]]: 同一个接口，链表 O(steps) 对比数组 O(1)；被剪掉的节点交给 GC，通常不算进操作的时间 The same interface: linked list O(steps) vs array O(1); cut-off nodes are left to the GC rather than deleted one by one, and GC time is usually not charged to the operation
 - ✅ [[Number of Students Unable to Eat Lunch|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]]: 队列模拟最坏 O(n²)，看出顺序无关后计数 O(n)、O(1) 空间 Queue simulation is O(n²) in the worst case; counting is O(n) time and O(1) space once you see order doesn't matter
 - ✅ [[Implement Stack using Queues|225. 用队列实现栈 Implement Stack using Queues]]: 通常有一个操作要付 O(n)，按调用频率决定由压入还是弹出来付；每次都重新转全部元素，所以不能均摊，和 232 的均摊 O(1) 对比 One operation usually pays O(n), so pick `push` or `pop` by which is called more; every push rotates all elements again, so it doesn't amortize, unlike 232's amortized O(1)
+- ✅ [[Climbing Stairs|70. 爬楼梯 Climbing Stairs]]: 同一个公式四种写法，时间从 O(2ⁿ) 到 O(n)，空间从 O(n) 到 O(1) Four versions of one recurrence, from O(2ⁿ) to O(n) time and from O(n) to O(1) space
 - 704. Binary Search: O(log n) 的标准例子 the textbook O(log n) example
 
 ## 9. 🔗 相关 Related
@@ -228,4 +230,5 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 - [[📌 算法总览]]
 - [[一次遍历 One Pass|一次遍历 One Pass]] · [[双指针 Two Pointers|双指针 Two Pointers]]
 - [[递归 Recursion|递归 Recursion]]（递归栈的空间 recursion-stack space）
+- [[动态规划 Dynamic Programming|动态规划 Dynamic Programming]]（状态数乘转移数 states times transitions）
 - 数据结构 Data structures: [[数组 Array|数组 Array]] · [[栈 Stack|栈 Stack]] · [[链表 Linked List|链表 Linked List]] · [[队列 Queue|队列 Queue]]

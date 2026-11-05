@@ -62,6 +62,7 @@ For how dynamic arrays grow and why doubling is amortized O(1), see [[Design Dyn
 - ✅ 主要在**末尾**增删 Adding/removing mostly at the **end** ([[栈 Stack|栈 stack]] 就常用数组实现 stacks are usually array-backed)
 - ✅ 需要顺序遍历、对缓存友好 Sequential scans, cache-friendly
 - ✅ 数据有序时可以二分查找 O(log n) Binary search once sorted
+- ✅ 键是连续的小整数时当查找表，如 [[Climbing Stairs|70]] 的缓存 Keys are small consecutive integers: a lookup table indexed by key, as in [[Climbing Stairs|70]]'s cache
 - ❌ 频繁在**头部或中间**插入/删除，考虑链表或双端队列（`ArrayDeque`） → Frequent inserts/deletes at the **front or middle**: consider a linked list or deque (`ArrayDeque`)
 - ❌ 按值查找很频繁，考虑哈希表 → Frequent lookups by value: consider a hash map
 
@@ -182,10 +183,11 @@ void delete(int[] a, int size, int k) {
 | [[Replace Elements with Greatest Element on Right Side\|1299. 将每个元素替换为右侧最大元素 Replace Elements with Greatest Element on Right Side]] | 从右往左，原地覆盖 right-to-left, overwrite in place |
 | [[Remove Element\|27. 移除元素 Remove Element]] | 快慢指针原地删除 read/write pointers |
 | [[Number of Students Unable to Eat Lunch\|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]] | 用 `int[2]` 当计数器，下标就是值 an `int[2]` as counters, indexed by value |
+| ✅ [[Climbing Stairs\|70. 爬楼梯 Climbing Stairs]] | 用 `int[n + 1]` 当缓存，下标就是级数 an `int[n + 1]` as a cache, indexed by stair |
 
 ## 9. 🔗 相关 Related
 
 - [[📌 数据结构总览]]
 - 数据结构 Data structures: [[栈 Stack|栈 Stack]]（用数组实现 array-backed） · [[队列 Queue|队列 Queue]]（环形数组 a circular array） · [[链表 Linked List|链表 Linked List]]（连续 vs 分散，对比见第 1、4 题 contiguous vs scattered, see Q1 and Q4）
-- 算法 Algorithms: [[双指针 Two Pointers|双指针 Two Pointers]] · [[一次遍历 One Pass|一次遍历 One Pass]] · [[复杂度分析 Big-O|复杂度分析 Big-O]]
+- 算法 Algorithms: [[双指针 Two Pointers|双指针 Two Pointers]] · [[一次遍历 One Pass|一次遍历 One Pass]] · [[复杂度分析 Big-O|复杂度分析 Big-O]] · [[动态规划 Dynamic Programming|动态规划 Dynamic Programming]]
 - 硬件背景 Hardware background: [[Computer Architecture]]

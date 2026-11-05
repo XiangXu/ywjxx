@@ -35,6 +35,7 @@ created: 2026-10-15
 - 🌳 树 Trees / DFS / BFS:
 - 🕸️ 图 Graphs:
 - 🧠 动态规划 Dynamic Programming:
+  - 🟡 [[Climbing Stairs|70. 爬楼梯 Climbing Stairs]]: 看最后一步得到 `f(n) = f(n - 1) + f(n - 2)`，用数组记住算过的结果 The last step gives `f(n) = f(n - 1) + f(n - 2)`, and an array remembers computed results · Easy
 - 🔙 回溯 Backtracking:
 - ⛰️ 堆 Heap / Top-K:
 - 🏗️ 设计 Design:
