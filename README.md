@@ -20,7 +20,7 @@ ywjxx/
 ├── 📝 content/                ← 🪨 the Obsidian vault (open THIS folder in Obsidian)
 │   ├── .obsidian/             ⚙️ shared Obsidian settings (workspace files are git-ignored)
 │   ├── index.md               🏠 homepage of the website
-│   ├── AI 学习库/              🤖 AI & LLM notes
+│   ├── AI 学习库/              🤖 AI & LLM notes (lessons and deep dives)
 │   ├── LeetCode 题库/          🧩 LeetCode walkthroughs
 │   ├── 算法/                   🧮 algorithms
 │   ├── 数据结构/               🧱 data structures

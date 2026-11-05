@@ -5,3 +5,28 @@
 [build.environment]
   NODE_VERSION = "26"
 
+# AI notes moved into lesson and deep-dive folders; keep the old URLs working.
+[[redirects]]
+  from = "/ai-学习库/llm-基础---lesson-1"
+  to = "/ai-学习库/学习课程-lessons/llm-基础---lesson-1"
+  status = 301
+
+[[redirects]]
+  from = "/ai-学习库/prompt-设计与结构化输出---lesson-2"
+  to = "/ai-学习库/学习课程-lessons/prompt-设计与结构化输出---lesson-2"
+  status = 301
+
+[[redirects]]
+  from = "/ai-学习库/工具调用---lesson-3"
+  to = "/ai-学习库/学习课程-lessons/工具调用---lesson-3"
+  status = 301
+
+[[redirects]]
+  from = "/ai-学习库/贪心算法-vs-top-p-vs-temperature-讲解区别"
+  to = "/ai-学习库/延伸专题-deep-dives/贪心算法-vs-top-p-vs-temperature-讲解区别"
+  status = 301
+
+[[redirects]]
+  from = "/ai-学习库/prompt-caching"
+  to = "/ai-学习库/延伸专题-deep-dives/prompt-caching"
+  status = 301
