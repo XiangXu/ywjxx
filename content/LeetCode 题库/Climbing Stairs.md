@@ -41,7 +41,7 @@ You're climbing a staircase with `n` steps. Each time you can climb 1 or 2 steps
 
 - **关键观察 Key insight:** 不要从第一步开始数，看最后一步。每种走法的最后一步只可能是 1 级或 2 级，两类不重复也不遗漏，所以两类的数量直接相加。
   Don't count forward from the first step; look at the last one. Every way ends in exactly one of a 1-step or a 2-step, and the two groups neither overlap nor miss anything, so their counts simply add up.
-- **顺序算不同的走法 Order matters:** `1+2` 和 `2+1` 是两种走法，这是一道数排列的题，不是数组合的题。
+- **顺序算不同的走法 Order matters:** `1+2` 和 `2+1` 是两种走法，这道题数的是有顺序的走法，不是组合。
   `1+2` and `2+1` are two different ways, so this counts ordered sequences, not combinations.
 - **套路 Pattern:** 递推公式加重复子问题，就是[[动态规划 Dynamic Programming|动态规划]]。
   A recurrence plus repeated subproblems means [[动态规划 Dynamic Programming|dynamic programming]].
@@ -71,8 +71,8 @@ public int climbStairs(int n) {
 
 - ⏱️ **复杂度 Complexity:** 时间约为 1.618 的 `n` 次方，通常写成上界 O(2ⁿ)；空间 O(n)，是调用栈的深度。
   Time is about 1.618 to the power `n`, usually written as the upper bound O(2ⁿ); space is O(n) for the call stack.
-- `n = 45` 时要调用约 23 亿次，按每秒约 10⁸ 次粗略估算要二十多秒，通常会超时。
-  At `n = 45` that's about 2.3 billion calls, which at a rough 10⁸ per second takes over 20 seconds and will usually time out.
+- `n = 45` 时要调用约 23 亿次。按每秒 10⁸ 次的经验值估算要二十多秒；JIT 优化后实际快得多（本地运行约 2 秒），但仍远慢于记忆化的 87 次调用，在线判题时可能超时。
+  At `n = 45` that's about 2.3 billion calls. The 10⁸-per-second rule of thumb suggests over 20 seconds; JIT-compiled Java is much faster in practice (about 2 seconds in a local run), but that's still far slower than the 87 memoized calls, and it can time out on a judge.
 
 ## 4. 🚀 最优解 Optimal Solution
 
@@ -163,7 +163,7 @@ A Java `int[]` starts as all zeros, and every answer here is at least 1, so 0 ca
 
 | 写法 Approach | ⏱️ Time | 🗄️ Space | 说明 Notes |
 | --- | --- | --- | --- |
-| 朴素递归 Plain recursion | O(2ⁿ) | O(n) | 通常超时 Usually times out |
+| 朴素递归 Plain recursion | O(2ⁿ) | O(n) | 可能超时 Can time out |
 | 记忆化递归（我的解法） Memoized recursion (mine) | O(n) | O(n) | 直接照公式写 Follows the recurrence directly |
 | 自底向上填表 Bottom-up table | O(n) | O(n) | 没有递归 No recursion |
 | 两个变量 Two variables | O(n) | O(1) | 面试时通常的最终答案 The usual final answer in an interview |
@@ -175,7 +175,7 @@ A Java `int[]` starts as all zeros, and every answer here is at least 1, so 0 ca
 - [x] 只有一级 One stair: 填表时写 `dp[2] = 2` 且数组长度是 `n + 1`，`n = 1` 就数组越界；所以上面从 `dp[0]`、`dp[1]` 开始 → writing `dp[2] = 2` with length `n + 1` goes out of bounds at `n = 1`, which is why the table above starts from `dp[0]` and `dp[1]`
 - [x] 数组长度 Array length: 要用下标 `n`，长度必须是 `n + 1` → to use index `n`, the length must be `n + 1`
 - [x] 出口只对正数成立 The base case only holds for positive n: `n <= 2` 时返回 `n`，但 `n = 0` 会返回 0，而按“什么都不走也算一种”的约定应该是 1；约束保证 `n >= 1`，所以这里没问题 → returning `n` gives 0 at `n = 0`, while the "doing nothing is one way" convention says 1; the constraints guarantee `n >= 1`, so it's fine here
-- [x] 整数溢出 Integer overflow: `f(45) = 1836311903` 刚好放得下，`f(46) = 2971215073` 就超过了 `int` 上限；这也是约束停在 45 的原因之一，放宽约束就要用 `long` → `f(45)` just fits, while `f(46)` exceeds the `int` limit, which is likely why the constraint stops at 45; a larger `n` needs `long`
+- [x] 整数溢出 Integer overflow: `f(45) = 1836311903` 刚好放得下，`f(46) = 2971215073` 就超过了 `int` 上限；这很可能是约束停在 45 的原因，放宽约束就要用 `long` → `f(45)` just fits, while `f(46)` exceeds the `int` limit, which is likely why the constraint stops at 45; a larger `n` needs `long`
 - [x] ⚠️ 忘了写回缓存 Forgetting to store: 只写 `return calculator(n - 1, cache) + calculator(n - 2, cache)` 能得到正确答案，但没有写入缓存，退化成指数级 → this still gives the right answer but never fills the cache, so it falls back to exponential time
 
 ## 6. 🔁 进阶 Follow-ups
@@ -209,8 +209,8 @@ The last step has `k` options, so `f(n) = f(n - 1) + … + f(n - k)`. Adding eac
 **Q3.** 这个解法的空间由哪两部分组成？ Which two things make up this solution's space?
 
 > [!success]- 答案 Answer
-> 数组 `cache` 是 O(n)，调用栈最深 `n - 1` 层也是 O(n)。即使去掉数组、只留递归，调用栈的 O(n) 也还在（见[[递归 Recursion|递归]]）。
-> The `cache` array is O(n), and the call stack, at most `n - 1` frames deep, is O(n) too. Even without the array, the recursion's O(n) stack remains (see [[递归 Recursion|Recursion]]).
+> 数组 `cache` 是 O(n)，调用栈最深约 `n` 层也是 O(n)。即使去掉数组、只留递归，调用栈的 O(n) 也还在（见[[递归 Recursion|递归]]）。
+> The `cache` array is O(n), and the call stack, about `n` frames deep, is O(n) too. Even without the array, the recursion's O(n) stack remains (see [[递归 Recursion|Recursion]]).
 
 **Q4.** 怎么把空间降到 O(1)？ How do you get the space down to O(1)?
 
@@ -221,8 +221,8 @@ The last step has `k` options, so `f(n) = f(n - 1) + … + f(n - k)`. Adding eac
 **Q5.** `cache` 用 `0` 表示没算过，什么时候这样做会出问题？ `cache` uses `0` for "not computed". When would that go wrong?
 
 > [!success]- 答案 Answer
-> 当 0 本身是合法答案时，比如 91 解码方法里某些位置的方案数就是 0。这时 `cache[n] != 0` 判断不出“算过了”，结果是 0 的子问题每次都重算，可能退化成指数级。可以用 `Arrays.fill(cache, -1)`，或者用 `Integer[]` 以 `null` 表示没算过。
-> When 0 is a valid answer, as in 91 Decode Ways, where some positions have zero ways. Then `cache[n] != 0` can't tell it was computed, so zero-valued subproblems are recomputed every time, which can turn exponential. Use `Arrays.fill(cache, -1)`, or an `Integer[]` with `null` for "not computed".
+> 当 0 本身是合法答案时，比如 91 解码方法里某些位置的方案数就是 0（`"111…100"` 每个位置都是 0）。这时 `cache[n] != 0` 判断不出“算过了”，结果是 0 的子问题每次都重算，可能退化成指数级。可以用 `Arrays.fill(cache, -1)`，或者用 `Integer[]` 以 `null` 表示没算过。
+> When 0 is a valid answer, as in 91 Decode Ways, where some positions have zero ways (in `"111…100"`, every position does). Then `cache[n] != 0` can't tell it was computed, so zero-valued subproblems are recomputed every time, which can turn exponential. Use `Arrays.fill(cache, -1)`, or an `Integer[]` with `null` for "not computed".
 
 ## 8. 🔗 相关题目 Related
 

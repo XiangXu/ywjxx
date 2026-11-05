@@ -67,8 +67,8 @@ In optimization problems the second condition is usually called **optimal substr
 
 ### 3.1 解题四步 Four steps to solve one
 
-1. **定状态 Define the state:** 用一句话写下 `f(i)` 是什么。这是最难也最重要的一步。如 “`f(i)` 是爬到第 `i` 级的方法数”。
-   Write one sentence saying what `f(i)` means. This is the hardest and most important step, e.g. "`f(i)` is the number of ways to reach stair `i`".
+1. **定状态 Define the state:** 用一句话写下 `f(i)` 是什么。这通常是最难也最重要的一步。如 “`f(i)` 是爬到第 `i` 级的方法数”。
+   Write one sentence saying what `f(i)` means. This is usually the hardest and most important step, e.g. "`f(i)` is the number of ways to reach stair `i`".
 2. **找递推 Find the recurrence:** 看最后一步有哪些选择，每个选择对应哪个更小的子问题。
    Look at the choices for the last step, and which smaller subproblem each one leads to.
 3. **定出口 Set the base cases:** 最小的、不能再拆的状态是什么？要覆盖递推能走到的所有最小输入。
@@ -94,8 +94,8 @@ Taking 70 as the example, the same recurrence has four versions, usually improve
 
 ### 3.3 复杂度怎么算 Working out the complexity
 
-**时间 Time:** 约等于状态数乘以每个状态的转移数。70 有 `n` 个状态，每个看 2 个选择，所以是 O(n)；322 零钱兑换有 `amount` 个状态，每个试 `k` 种硬币，所以是 O(amount × k)。
-About the number of states times the transitions per state. 70 has `n` states with 2 choices each, so O(n); 322 Coin Change has `amount` states trying `k` coins each, so O(amount × k).
+**时间 Time:** 约等于状态数乘以每个状态的转移数（假设每次转移是常数时间）。70 有 `n` 个状态，每个看 2 个选择，所以是 O(n)；322 零钱兑换有 `amount` 个状态，每个试 `k` 种硬币，所以是 O(amount × k)。
+About the number of states times the transitions per state, assuming each transition takes constant time. 70 has `n` states with 2 choices each, so O(n); 322 Coin Change has `amount` states trying `k` coins each, so O(amount × k).
 
 ## 4. 💻 模板代码 Code Template
 
@@ -147,7 +147,7 @@ The last two templates assume `n >= 1`; if `n` can be 0, check first. The table 
 - **用错“没算过”的标记 The wrong "not computed" marker:** `int[]` 默认是 0，如果 0 是合法答案，`memo[i] != 0` 就判断不出来，结果是 0 的状态每次都重算。[[Climbing Stairs|70]] 的答案至少是 1，所以用 0 没问题；一般情况用 `Arrays.fill(memo, -1)` 或 `Integer[]` → `int[]` defaults to 0, so if 0 is a valid answer, `memo[i] != 0` can't tell and those states are recomputed every time. 70's answers are at least 1, so 0 works there; in general use `Arrays.fill(memo, -1)` or `Integer[]`.
 - **算了但没存 Computing without storing:** 只 `return` 不写 `memo[i]`，答案对，但时间还是指数级 → returning without writing `memo[i]` gives the right answer in exponential time.
 - **状态定义含糊 A vague state:** 说不清 `f(i)` 是什么，递推也就写不对。先写下一句话的定义 → if you can't say what `f(i)` means, the recurrence won't come out right. Write the one-sentence definition first.
-- **数组越界 Going out of bounds:** 要用下标 `n` 就要 `new int[n + 1]`；`n` 很小时，给 `dp[2]` 赋值也可能越界（见 [[Climbing Stairs|70]]） → using index `n` needs `new int[n + 1]`, and at small `n` even assigning `dp[2]` can go out of bounds.
+- **数组越界 Going out of bounds:** 要用下标 `n` 就要 `new int[n + 1]`；`n` 很小时，给 `dp[2]` 赋值也可能越界（见 [[Climbing Stairs|70]]） → using index `n` needs `new int[n + 1]`, and at small `n` even assigning `dp[2]` can go out of bounds (see [[Climbing Stairs|70]]).
 - **整数溢出 Integer overflow:** 方案数增长很快，[[Climbing Stairs|70]] 的 `f(46)` 就超过了 `int` 上限。注意题目的约束，或者用 `long`、按题目要求取模 → counts grow fast, and 70's `f(46)` already exceeds the `int` limit. Watch the constraints, or use `long` or the modulus the problem asks for.
 - **压缩空间时覆盖了还要用的值 Overwriting a value still needed:** 滚动更新要注意顺序，先算出 `next`，再移动 `prev` 和 `curr` → with rolling variables, compute `next` first, then shift `prev` and `curr`.
 - **递归太深 Recursing too deep:** 记忆化也要占调用栈，状态很多时可能 `StackOverflowError`，这时改成填表（见[[递归 Recursion|递归]]） → memoization still uses the call stack, so many states can overflow it; switch to a table (see [[递归 Recursion|Recursion]]).
@@ -175,8 +175,8 @@ The last two templates assume `n >= 1`; if `n` can be 0, check first. The table 
 **Q4.** 怎么估算动态规划的时间复杂度？ How do you estimate a DP's time complexity?
 
 > [!success]- 答案 Answer
-> 状态数乘以每个状态的转移数。例如 322 零钱兑换有 `amount` 个状态，每个状态试 `k` 种硬币，所以是 O(amount × k)。
-> The number of states times the transitions per state. For example, 322 Coin Change has `amount` states trying `k` coins each, so O(amount × k).
+> 状态数乘以每个状态的转移数（假设每次转移是常数时间）。例如 322 零钱兑换有 `amount` 个状态，每个状态试 `k` 种硬币，所以是 O(amount × k)。
+> The number of states times the transitions per state, assuming each transition takes constant time. For example, 322 Coin Change has `amount` states trying `k` coins each, so O(amount × k).
 
 **Q5.** 什么时候可以把一维的表压缩成几个变量？ When can a one-dimensional table shrink to a few variables?
 

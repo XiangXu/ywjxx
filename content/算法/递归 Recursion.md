@@ -81,7 +81,7 @@ reverseList(1)                      ┐
   - **数据结构本身是递归的** The structure is recursive: 链表 = 一个节点 + 一条更短的链表；树 = 根 + 左子树 + 右子树 → a list is a node plus a shorter list; a tree is a root plus two subtrees → [[Reverse Linked List|206]]、104、226
   - **问题能拆成同样的小问题** The problem splits into smaller copies of itself: 分治（归并排序、快速幂） divide and conquer (merge sort, fast power)
   - **要枚举所有可能** Enumerate all possibilities: 回溯（子集、排列） backtracking (subsets, permutations)
-  - **递推公式 A recurrence:** 形如 `f(n) = f(n-1) + f(n-2)`，递归加记忆化，再往后就是[[动态规划 Dynamic Programming|动态规划]]（[[Climbing Stairs|70]]） → like `f(n) = f(n-1) + f(n-2)`: recursion plus memoization, which leads to [[动态规划 Dynamic Programming|dynamic programming]] ([[Climbing Stairs|70]])
+  - **递推公式 A recurrence:** 形如 `f(n) = f(n-1) + f(n-2)`，递归加记忆化就是自顶向下的[[动态规划 Dynamic Programming|动态规划]]（[[Climbing Stairs|70]]） → like `f(n) = f(n-1) + f(n-2)`: recursion plus memoization is top-down [[动态规划 Dynamic Programming|dynamic programming]] ([[Climbing Stairs|70]])
 - ❌ 深度可能很大（如十万个节点的链表）且有简单循环写法 → 用迭代，避免栈溢出 Very deep and a simple loop exists → iterate to avoid stack overflow
 
 ## 3. ⚙️ 原理 How It Works
@@ -211,7 +211,7 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 - **出口要覆盖子调用能走到的所有最小输入 Base cases must cover every input the calls can reach:** 斐波那契调用 `F(n-1)` 和 `F(n-2)`，所以 `F(0)` 和 `F(1)` 两个出口都要有。只写 `F(1) = 1` 的话，`F(2)` 会调用 `F(0)`，`F(0)` 又调用 `F(-1)`，一直往负数走下去直到栈溢出。`if (n <= 1) return n;` 一行就覆盖了两个 → Fibonacci calls `F(n-1)` and `F(n-2)`, so it needs both `F(0)` and `F(1)`. With only `F(1)`, `F(2)` calls `F(0)`, which calls `F(-1)`, and it runs into negatives until the stack overflows. `if (n <= 1) return n;` covers both in one line.
 - **在脑子里展开每一层 Unrolling every level in your head:** 层数一多就乱了。写的时候只看一层，相信合同；验证时再用 2 到 3 个节点的小例子手推 → write one level and trust the contract; check with a 2–3 element example afterwards.
 - **递归太深 Too deep:** 64 位 HotSpot 默认线程栈通常约 1 MB（取决于平台和 `-Xss`），大约能撑几千到几万层（取决于每帧大小）。Java **不做尾调用优化**，尾递归写法也一样会溢出；太深就改成循环或显式栈 → the default thread stack on 64-bit HotSpot is usually about 1 MB (it depends on the platform and `-Xss`), enough for a few thousand to tens of thousands of frames depending on frame size. Java does **not** optimize tail calls, so tail recursion overflows too; switch to a loop or an explicit stack.
-- **重复子问题 Repeated subproblems:** 朴素 `fib(n)` 把同一个 `fib(k)` 算很多次，变成指数级。用记忆化（memo）或改成 DP；[[Climbing Stairs|70]] 在 `n = 45` 时，调用次数从约 23 亿次降到 87 次 → memoize or switch to DP; at `n = 45` in [[Climbing Stairs|70]], that cuts the calls from about 2.3 billion to 87.
+- **重复子问题 Repeated subproblems:** 朴素 `fib(n)` 把同一个 `fib(k)` 算很多次，变成指数级。用记忆化（memo）或改成填表；[[Climbing Stairs|70]] 在 `n = 45` 时，调用次数从约 23 亿次降到 87 次 → memoize or switch to a bottom-up table; at `n = 45` in [[Climbing Stairs|70]], that cuts the calls from about 2.3 billion to 87.
 - **共享的可变状态 Shared mutable state:** 递归里改了全局变量或传进来的集合，回来时没恢复（回溯里要“撤销选择”） → undo changes on the way back, as backtracking does.
 - **子调用之后数据结构已经变了 The structure changed under you:** 206 里子调用会改 `head.next` 后面的指针，但不会改 `head.next` 本身，所以 `head.next.next = head` 才成立。用之前想清楚子调用改了什么 → know what the child call mutated before using it.
 

@@ -165,7 +165,7 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 | [[Design Linked List\|707]] | 头插 / 尾插 O(1)，按下标 O(i) Head / tail insert O(1), by index O(i) | O(n) | 每个节点多一个 `prev`，换来站在节点上就能删除；从近的一端走只把常数减半 An extra `prev` per node lets you delete in place; walking from the closer end only halves the constant |
 | [[Design Browser History\|1472]] | `visit` O(1)，`back` / `forward` O(min(steps, k)) `visit` O(1), `back` / `forward` O(min(steps, k)) | O(n) | 链表只能一步一步走；数组加下标可以一步算出位置，变成 O(1) A list moves one node at a time; an array with indices computes the position directly, making it O(1) |
 | [[Number of Students Unable to Eat Lunch\|1700]] | 模拟 O(n²) / 计数 O(n) Simulation O(n²) / counting O(n) | 模拟 O(n) / 计数 O(1) Simulation O(n) / counting O(1) | 每有一人吃上，之前最多转一整圈；顺序无关就不用模拟 Each meal can cost up to a full lap of rotations; if order doesn't matter, skip the simulation |
-| [[Climbing Stairs\|70]] | 朴素 O(2ⁿ) / 记忆化 O(n) Plain O(2ⁿ) / memoized O(n) | 记忆化 O(n) / 两个变量 O(1) Memoized O(n) / two variables O(1) | 用 O(n) 的数组换来指数级到线性；调用栈也占 O(n) An O(n) array takes the time from exponential to linear; the call stack is O(n) too |
+| [[Climbing Stairs\|70]] | 朴素 O(2ⁿ) / 记忆化 O(n) Plain O(2ⁿ) / memoized O(n) | 记忆化 O(n) / 两个变量 O(1) Memoized O(n) / two variables O(1) | 用 O(n) 的数组把时间从指数级降到线性；调用栈也占 O(n) An O(n) array takes the time from exponential to linear; the call stack is O(n) too |
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
