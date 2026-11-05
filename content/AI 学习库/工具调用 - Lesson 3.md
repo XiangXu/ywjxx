@@ -45,12 +45,12 @@ The model decides which tool (API) to call, and your code actually runs it.
   The model never runs your tools itself; your code always sits in between.
 - 你的代码这一层负责：校验参数、拦截危险操作、处理错误。
   That layer of code validates arguments, blocks dangerous actions and handles errors.
-- 真实 API 用 `tools` 参数传工具定义，模型返回 `tool_use` 块，你回传带同一个 `tool_use_id` 的 `tool_result`。
-  The real API takes tool definitions in the `tools` parameter. The model returns a `tool_use` block, and you send back a `tool_result` with the same `tool_use_id`.
+- 真实 API 用 `tools` 参数传工具定义，模型返回 `tool_use` 块，你回传 `tool_result`，它的 `tool_use_id` 等于该块的 `id`，两者由此对应。
+  The real API takes tool definitions in the `tools` parameter. The model returns a `tool_use` block, and you send back a `tool_result` whose `tool_use_id` matches that block's `id`.
 - 出错时 `is_error` 写在 `tool_result` 块上，不是写在内容 JSON 里。
   On failure, `is_error` goes on the `tool_result` block, not inside the content JSON.
-- 要限制循环次数，写操作要人工确认。
-  Cap the number of loops, and get a human to confirm write actions.
+- 要限制循环次数，有风险的写操作通常要人工确认。
+  Cap the number of loops, and usually get a human to confirm risky write actions.
 
 ```json
 {
@@ -176,7 +176,7 @@ if __name__ == "__main__":
 > | 2 | 调用 `get_weather` Calls `get_weather` | 返回 9°C，小雨 Returns 9°C, light rain |
 > | 3 | 直接回答穿什么 Answers what to wear | 显示回答 Shows the answer |
 
-## 5. 🏠 我的 Daily Brief My Daily Brief
+## 5. 🏠 我的每日简报 My Daily Brief
 
 现在的规则方案（天气、穿衣、关键词排新闻）很好，不需要改。
 The current rule-based approach (weather, clothing, news ranked by keyword) works well and doesn't need changing.
@@ -199,8 +199,8 @@ Most AI agents are built on it: Claude Code, support bots and ops troubleshootin
 > The source says the model never runs anything itself. That holds for tools you define; server tools such as web search run on Anthropic's side, without going through your code.
 
 > [!note] 2. “几号”不一定能直接答对 "What's the date?" may not get a correct direct answer
-> 模型本身不知道今天的日期。这个例子不调用工具，但要答对，得在 system prompt 里告诉它日期，或者提供一个查日期的工具。
-> The model doesn't know today's date by itself. This example calls no tools, but a correct answer needs the date in the system prompt or a tool that returns it.
+> 模型本身不知道今天的日期。这个例子不调用工具，但要答对，得在 prompt 里告诉它日期，或者提供一个查日期的工具。
+> The model doesn't know today's date by itself. This example calls no tools, but a correct answer needs the date in the prompt or a tool that returns it.
 
 > [!note] 3. 模型也会看参数定义 The model reads parameter definitions too
 > 代码注释说模型只看 `name` 和 `description`。它其实也会看 `input_schema`，所以才知道该传什么参数。
@@ -210,8 +210,8 @@ Most AI agents are built on it: Claude Code, support bots and ops troubleshootin
 > 工具不存在或执行失败时，程序会直接崩溃。生产代码要捕获异常，并用 `is_error` 把错误还给模型。
 > If a tool doesn't exist or fails, the program crashes. Production code should catch the exception and return the error to the model with `is_error`.
 >
-> 另外，任何不是 `tool_use` 的停止原因都会被当成最终回答，包括被 `max_tokens` 截断的情况。生产代码要分开处理。
-> Also, any stop reason other than `tool_use` is treated as the final answer, including output cut off by `max_tokens`. Production code should handle those separately.
+> 另外，任何不是 `tool_use` 的停止原因都会被当成最终回答，包括被 `max_tokens` 截断的情况。生产代码要分开处理。这些情况下，最后一行也可能直接报错，因为最后一块不一定是文本，内容也可能为空。
+> Also, any stop reason other than `tool_use` is treated as the final answer, including output cut off by `max_tokens`. Production code should handle those separately. In those cases the last line can also crash, because the last block may not be text or the content may be empty.
 
 ```python
 try:
@@ -226,9 +226,9 @@ except Exception as e:
 > 模型生成了订单号，不代表这个订单属于当前用户。用户身份要从登录会话里取，由你的代码检查。
 > A model producing an order ID doesn't mean that order belongs to the current user. Take the user's identity from the login session and check it in your code.
 
-> [!note] 6. MCP 不是 Agent MCP isn't an agent
-> 原文把 MCP 和 Agent 列在一起。MCP 是一种打包和共享工具的标准协议，Agent 可以通过它使用工具。
-> The source lists MCP alongside agents. MCP is a standard protocol for packaging and sharing tools, and agents can use tools through it.
+> [!note] 6. MCP 不是智能体 MCP isn't an agent
+> 原文把 MCP 和 Agent 列在一起。MCP 是连接 AI 应用和外部工具、数据的开放标准，Agent 可以通过它使用工具。
+> The source lists MCP alongside agents. MCP is an open standard for connecting AI applications to external tools and data, and agents can use tools through it.
 
 ## 8. ❓ 复习题 Review Questions
 
@@ -266,7 +266,7 @@ except Exception as e:
 
 - ⬅️ 上一课 Previous: [[Prompt 设计与结构化输出 - Lesson 2|第 2 课：Prompt 设计 Lesson 2: Prompt Design]]
 - 🧩 [[LLM 基础 - Lesson 1|第 1 课：LLM 基础 Lesson 1: LLM Basics]]
-- ⚡ [[Prompt Caching]]: 工具定义也是 prompt 前缀的一部分，改动它会让之后的缓存失效
-  Tool definitions are part of the prompt prefix; changing them invalidates the cache after them
+- ⚡ [[Prompt Caching]]: 工具定义也是 prompt 前缀的一部分，改动它会让整个缓存失效
+  Tool definitions are part of the prompt prefix; changing them invalidates the entire cache
 - ➡️ 下一课 Next: 第 4 课，检索增强生成，把你自己的文档交给模型
   Lesson 4, RAG: giving the model your own documents
