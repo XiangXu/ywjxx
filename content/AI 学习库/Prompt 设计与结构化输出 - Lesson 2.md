@@ -391,5 +391,5 @@ Check whether it still returns JSON. Newer models usually classify it as a ticke
 - ⚡ [[Prompt Caching]]: 为什么稳定的 system prompt 更便宜、更快
   Why a stable system prompt is cheaper and faster
 - 🎲 [[贪心算法 vs Top-p vs Temperature 讲解区别|Greedy vs Top-p vs Temperature]]
-- ➡️ 下一课 Next: Lesson 3 · Tool calling（模型请求你的代码执行一个函数）
+- ➡️ 下一课 Next: [[工具调用 - Lesson 3|第 3 课：工具调用 Lesson 3: Tool Calling]]（模型请求你的代码执行一个函数）
   The model asks your code to run a function

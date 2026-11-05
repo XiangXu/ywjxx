@@ -18,3 +18,4 @@ created: 2026-10-16
 - 🎲 [[贪心算法 vs Top-p vs Temperature 讲解区别|LLM 解码 LLM Decoding]]: LLM 怎么选下一个 token（贪心、top-p、temperature） How LLMs pick the next token (greedy, top-p, temperature)
 - ⚡ [[Prompt Caching]]: 复用 prompt 前缀，省 💸 又省 ⏳ Reusing prompt prefixes to save 💸 and ⏳
 - ✍️ [[Prompt 设计与结构化输出 - Lesson 2]]: Prompt 设计习惯、🧾 结构化 JSON 输出和 🛡️ 提示注入 Prompt design habits, 🧾 structured JSON output, and 🛡️ prompt injection
+- 🛠️ [[工具调用 - Lesson 3]]: 工具调用循环、🔐 授权与校验和 🔁 循环上限 The tool-calling loop, 🔐 authorization and validation, and 🔁 loop limits
