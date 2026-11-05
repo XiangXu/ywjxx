@@ -82,11 +82,12 @@ Different questions need different lookups.
 
 ```python
 """最小的 tool calling 示例：家庭助手。
+A minimal tool calling example: a family assistant.
 
-运行：
+运行 Run:
     pip install anthropic
-    export ANTHROPIC_API_KEY=你的key
-    python family_assistant.py "明天接孩子要穿什么？"
+    export ANTHROPIC_API_KEY=your-api-key
+    python family_assistant.py "What should I wear for school pickup tomorrow?"
 """
 
 import json
@@ -97,22 +98,23 @@ import anthropic
 client = anthropic.Anthropic()
 
 # ① 工具清单：告诉模型"你能让我做什么"。模型只看 name 和 description 来判断。
+#    Tool list: tells the model "what you can ask me to do". It decides using only name and description.
 TOOLS = [
     {
         "name": "get_weather",
-        "description": "查询某个时间的天气（温度、是否下雨）",
+        "description": "Get the weather at a given time (temperature, whether it will rain)",
         "input_schema": {
             "type": "object",
-            "properties": {"time": {"type": "string", "description": "例如 '明天 15:00'"}},
+            "properties": {"time": {"type": "string", "description": "e.g. 'tomorrow 15:00'"}},
             "required": ["time"],
         },
     },
     {
         "name": "get_calendar",
-        "description": "查询某天的日程安排",
+        "description": "Get the schedule for a given day",
         "input_schema": {
             "type": "object",
-            "properties": {"date": {"type": "string", "description": "例如 '明天'"}},
+            "properties": {"date": {"type": "string", "description": "e.g. 'tomorrow'"}},
             "required": ["date"],
         },
     },
@@ -120,22 +122,24 @@ TOOLS = [
 
 
 # ② 真正干活的函数。这里用假数据，实际可以换成调 Open-Meteo、Google Calendar。
+#    The functions that do the real work. They use fake data here; swap in calls to Open-Meteo or Google Calendar.
 def get_weather(time):
-    return {"time": time, "temperature": 9, "rain": "小雨"}
+    return {"time": time, "temperature": 9, "rain": "light rain"}
 
 
 def get_calendar(date):
-    return {"date": date, "events": [{"time": "15:00", "title": "接孩子"}]}
+    return {"date": date, "events": [{"time": "15:00", "title": "school pickup"}]}
 
 
 FUNCTIONS = {"get_weather": get_weather, "get_calendar": get_calendar}
 
 
 # ③ 循环：问模型 → 它要调工具就执行 → 把结果给它 → 再问，直到它直接回答。
+#    The loop: ask the model → run any tool it wants → give it the result → ask again, until it answers directly.
 def ask(question):
     messages = [{"role": "user", "content": question}]
 
-    for _ in range(5):  # 最多 5 轮，防止停不下来
+    for _ in range(5):  # 最多 5 轮，防止停不下来 At most 5 rounds, so it can't run forever
         response = client.messages.create(
             model="claude-sonnet-5-5",
             max_tokens=1024,
@@ -145,12 +149,12 @@ def ask(question):
         messages.append({"role": "assistant", "content": response.content})
 
         if response.stop_reason != "tool_use":
-            return response.content[-1].text  # 模型决定不再查了，这就是最终回答
+            return response.content[-1].text  # 模型决定不再查了，这就是最终回答 The model is done looking things up; this is the final answer
 
         results = []
         for block in response.content:
             if block.type == "tool_use":
-                print(f"🔧 模型要调用 {block.name}({block.input})")
+                print(f"🔧 Model wants to call {block.name}({block.input})")
                 output = FUNCTIONS[block.name](**block.input)
                 results.append({
                     "type": "tool_result",
@@ -159,11 +163,11 @@ def ask(question):
                 })
         messages.append({"role": "user", "content": results})
 
-    return "查询次数太多，已停止。"
+    return "Too many lookups, stopped."
 
 
 if __name__ == "__main__":
-    print(ask(sys.argv[1] if len(sys.argv) > 1 else "明天接孩子要穿什么？"))
+    print(ask(sys.argv[1] if len(sys.argv) > 1 else "What should I wear for school pickup tomorrow?"))
 ```
 
 > [!example] 一次可能的运行 One possible run
