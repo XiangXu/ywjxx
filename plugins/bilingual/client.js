@@ -209,11 +209,19 @@ function addToggles() {
     toggle.type = "button"
     toggle.className = "lang-toggle"
     toggle.innerHTML = '<span data-opt="zh">中</span><span data-opt="en">EN</span>'
-    toggle.addEventListener("click", () => setLang(currentLang() === "en" ? "zh" : "en"))
     wrapper.append(toggle)
     item.before(wrapper)
   }
 }
+
+// One delegated listener instead of one per button: on SPA navigation Quartz
+// morphs the old DOM into the new page and can turn our button into the
+// reader-mode button, and a listener on the element would go along with it.
+document.addEventListener("click", (e) => {
+  if (e.target instanceof Element && e.target.closest(".lang-toggle")) {
+    setLang(currentLang() === "en" ? "zh" : "en")
+  }
+})
 
 let scheduled = false
 const observer = new MutationObserver(() => {
