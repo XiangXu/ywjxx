@@ -1,5 +1,5 @@
 ---
-title: "TCP 与 UDP TCP and UDP"
+title: "TCP 与 UDP 协议 TCP and UDP"
 aliases:
   - TCP 与 UDP
   - TCP vs UDP
@@ -212,6 +212,6 @@ For real-time data, **stale data is useless data**. If a video call loses a fram
 ## 7. 🔗 相关 Related
 
 - ⬅️ 上一篇 Previous: [[Networking Basics|网络基础 Networking Basics]]
-- ➡️ 下一篇 Next: [[DNS and URLs|域名系统与 URL DNS and URLs]]
+- ➡️ 下一篇 Next: [[DNS and URLs|域名系统与 URL 基础 DNS and URLs]]
 - [[Design Requirements|设计需求 Design Requirements]]
 - [[📌 系统设计总览|系统设计总览 System Design Overview]]

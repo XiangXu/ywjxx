@@ -1,5 +1,5 @@
 ---
-title: "域名系统与 URL DNS and URLs"
+title: "域名系统与 URL 基础 DNS and URLs"
 aliases:
   - 域名系统与 URL
   - 域名系统 Domain Name System
@@ -86,8 +86,8 @@ The lesson skips how a lookup actually happens, but interviews ask about it ofte
 
 - **递归和迭代 Recursive vs iterative:** 你的电脑只问解析器一次，由解析器跑完全程（递归查询）；解析器问根、顶级域和权威服务器时，每一层只告诉它“下一步去问谁”（迭代查询）。
   Your computer asks the resolver once and the resolver does the whole walk (a recursive query). When the resolver asks the root, TLD, and authoritative servers, each one only says "ask this server next" (iterative queries).
-- **传输协议 Transport:** DNS 查询默认走 **UDP 53 端口**，响应太大时改用 TCP。见 [[TCP and UDP|TCP 与 UDP TCP and UDP]]。
-  DNS lookups use **UDP port 53** by default and fall back to TCP when a response is too large. See [[TCP and UDP|TCP 与 UDP TCP and UDP]].
+- **传输协议 Transport:** DNS 查询默认走 **UDP 53 端口**，响应太大时改用 TCP。见 [[TCP and UDP|TCP 与 UDP 协议 TCP and UDP]]。
+  DNS lookups use **UDP port 53** by default and fall back to TCP when a response is too large. See [[TCP and UDP|TCP 与 UDP 协议 TCP and UDP]].
 - **为什么分层 Why a hierarchy:** 没有任何一台服务器存着所有域名。每一层只负责自己那一段，既能分摊负载，又能各自管理。
   No single server holds every name. Each level only answers for its own part, which spreads the load and lets each part be managed separately.
 
@@ -294,6 +294,6 @@ When a browser opens `https://neetcode.io/practice`:
 
 ## 9. 🔗 相关 Related
 
-- ⬅️ 上一篇 Previous: [[TCP and UDP|TCP 与 UDP TCP and UDP]]
+- ⬅️ 上一篇 Previous: [[TCP and UDP|TCP 与 UDP 协议 TCP and UDP]]
 - [[Networking Basics|网络基础 Networking Basics]]
 - [[📌 系统设计总览|系统设计总览 System Design Overview]]
