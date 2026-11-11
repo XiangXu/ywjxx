@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="120 130 800 810" role="img" aria-label="Insertion sort flowchart: start, i = 1, loop while i is less than n, set j = i, swap left while a[j] is less than a[j-1], then i = i + 1, end when sorted">
+<style>
+:root{--line:#6e6e73;--text:#1d1d1f;--mute:#6e6e73;--proc:#ffffff;--stroke:#d2d2d7;--dec:#dbeafe;--term:#0071e3;--termtext:#ffffff}
+text{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Arial,sans-serif;fill:var(--text);font-size:16px;text-anchor:middle}
+.m{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:15px}
+.s{font-size:13px;fill:var(--mute)}
+.l{fill:var(--mute);font-size:12px;font-weight:600;letter-spacing:.6px;text-anchor:start}
+.t{fill:var(--termtext);font-weight:600}
+.ln{fill:none;stroke:var(--line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.p{fill:var(--proc);stroke:var(--stroke)}
+.d{fill:var(--dec)}
+.e{fill:var(--term)}
+</style>
+<defs><marker id="h" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="var(--line)"/></marker></defs>
+
+<path class="ln" d="M380 206 V261" marker-end="url(#h)"/>
+<path class="ln" d="M380 326 V381" marker-end="url(#h)"/>
+<path class="ln" d="M380 494 V549" marker-end="url(#h)"/>
+<path class="ln" d="M380 614 V669" marker-end="url(#h)"/>
+<path class="ln" d="M380 802 V857" marker-end="url(#h)"/>
+<path class="ln" d="M500 438 H639" marker-end="url(#h)"/>
+<path class="ln" d="M500 736 H639" marker-end="url(#h)"/>
+<path class="ln" d="M260 890 H140 V438 H259" marker-end="url(#h)"/>
+<path class="ln" d="M770 700 V642 H381" marker-end="url(#h)"/>
+
+<rect class="e" x="280" y="150" width="200" height="56" rx="28"/>
+<text class="t" x="380" y="184">Start</text>
+
+<rect class="p" x="260" y="262" width="240" height="64" rx="8"/>
+<text class="m" x="380" y="299">i = 1</text>
+
+<polygon class="d" points="380,382 500,438 380,494 260,438"/>
+<text class="m" x="380" y="443">i &lt; n ?</text>
+
+<rect class="p" x="260" y="550" width="240" height="64" rx="8"/>
+<text class="m" x="380" y="587">j = i</text>
+
+<polygon class="d" points="380,670 530,736 380,802 230,736"/>
+<text class="m" x="380" y="731" style="font-size:14px">j &gt; 0 and</text>
+<text class="m" x="380" y="751" style="font-size:14px">a[j] &lt; a[j−1] ?</text>
+
+<rect class="p" x="260" y="858" width="240" height="64" rx="8"/>
+<text class="m" x="380" y="895">i = i + 1</text>
+
+<rect class="e" x="640" y="410" width="200" height="56" rx="28"/>
+<text class="t" x="740" y="444">End: sorted</text>
+
+<rect class="p" x="640" y="700" width="260" height="72" rx="8"/>
+<text class="m" x="770" y="731" style="font-size:14px">swap(a[j], a[j−1])</text>
+<text class="m" x="770" y="751" style="font-size:14px">j = j − 1</text>
+
+<text class="s" x="408" y="526">Yes</text>
+<text class="s" x="408" y="834">No</text>
+<text class="s" x="570" y="422">No</text>
+<text class="s" x="570" y="720">Yes</text>
+<text class="s" x="576" y="630">repeat</text>
+<text class="s" x="178" y="668">next i</text>
+
+<rect x="540" y="840" width="380" height="82" rx="14" fill="none" stroke="var(--stroke)"/>
+<text class="l" x="560" y="862">LEGEND</text>
+<rect class="e" x="560" y="880" width="40" height="20" rx="10"/>
+<text class="s" style="fill:var(--text);font-size:14px;text-anchor:start" x="608" y="895">Start / End</text>
+<rect class="p" x="696" y="880" width="40" height="20" rx="4"/>
+<text class="s" style="fill:var(--text);font-size:14px;text-anchor:start" x="744" y="895">Process</text>
+<polygon class="d" points="822,876 836,890 822,904 808,890"/>
+<text class="s" style="fill:var(--text);font-size:14px;text-anchor:start" x="844" y="895">Decision</text>
+</svg>

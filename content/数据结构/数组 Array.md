@@ -182,6 +182,7 @@ void delete(int[] a, int size, int k) {
 | [[Max Consecutive Ones\|485. 最大连续 1 的个数 Max Consecutive Ones]] | 一次遍历 + 计数器 one pass with a counter |
 | [[Replace Elements with Greatest Element on Right Side\|1299. 将每个元素替换为右侧最大元素 Replace Elements with Greatest Element on Right Side]] | 从右往左，原地覆盖 right-to-left, overwrite in place |
 | [[Remove Element\|27. 移除元素 Remove Element]] | 快慢指针原地删除 read/write pointers |
+| ✅ [[Insertion Sort\|插入排序题 Insertion Sort (NeetCode)]] | 原地交换元素，稳定排序 in-place swaps, stable sort |
 | [[Number of Students Unable to Eat Lunch\|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]] | 用 `int[2]` 当计数器，下标就是值 an `int[2]` as counters, indexed by value |
 | ✅ [[Climbing Stairs\|70. 爬楼梯 Climbing Stairs]] | 用 `int[n + 1]` 当缓存，下标就是级数 an `int[n + 1]` as a cache, indexed by stair |
 

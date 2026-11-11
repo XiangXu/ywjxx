@@ -36,6 +36,8 @@ created: 2026-10-15
 - 🕸️ 图 Graphs:
 - 🧠 动态规划 Dynamic Programming:
   - 🟡 [[Climbing Stairs|70. 爬楼梯 Climbing Stairs]]: 看最后一步得到 `f(n) = f(n - 1) + f(n - 2)`，用数组记住算过的结果 The last step gives `f(n) = f(n - 1) + f(n - 2)`, and an array remembers computed results · Easy
+- 🔢 排序 Sorting:
+  - 🟡 [[Insertion Sort|插入排序题 Insertion Sort (NeetCode)]]: 左边有序，新元素向左冒泡，只在 key 严格更大时交换以保持稳定；每轮复制快照 Keep the left part sorted and bubble each new element left, swapping only when the key is strictly greater to stay stable; copy a snapshot each round · Easy
 - 🔙 回溯 Backtracking:
 - ⛰️ 堆 Heap / Top-K:
 - 🏗️ 设计 Design:

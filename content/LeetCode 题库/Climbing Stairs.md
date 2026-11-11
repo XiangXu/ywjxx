@@ -229,6 +229,7 @@ The last step has `k` options, so `f(n) = f(n - 1) + … + f(n - k)`. Adding eac
 - [[📌 LeetCode 总览]]
 - 🧠 概念 Concepts: [[动态规划 Dynamic Programming|动态规划 Dynamic Programming]]（递推公式和重复子问题 the recurrence and repeated subproblems） · [[递归 Recursion|递归 Recursion]]（出口和记忆化 base cases and memoization） · [[数组 Array|数组 Array]]（下标当 key 的缓存 a cache with the index as the key） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（从指数级到线性，调用栈也算空间 from exponential to linear, and the call stack counts as space）
 - 上一题 Previous: [[Implement Stack using Queues|225. 用队列实现栈 Implement Stack using Queues]]
+- 下一题 Next: [[Insertion Sort|插入排序题 Insertion Sort (NeetCode)]]
 
 ## 9. 🔁 复习记录 Review Log
 
