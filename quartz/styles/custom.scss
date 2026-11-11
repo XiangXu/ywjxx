@@ -1338,6 +1338,91 @@ ul.section-ul {
   }
 }
 
+// ── Diagrams (Mermaid) ───────────────────────────────────────
+// Flat, rounded, system-font flowcharts. Nodes opt in with `:::step`,
+// `:::ask` (decision) and `:::good` (result) in the diagram source.
+pre:has(code.mermaid) {
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  padding: 1rem 0.5rem;
+
+  svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .node.step > rect,
+  .node.step > path {
+    fill: var(--light) !important;
+    stroke: var(--lightgray) !important;
+  }
+
+  .node.ask > rect,
+  .node.ask > polygon,
+  .node.ask > path {
+    fill: var(--highlight) !important;
+    stroke: var(--secondary) !important;
+  }
+
+  .node.good > rect,
+  .node.good > path {
+    fill: var(--secondary) !important;
+    stroke: var(--secondary) !important;
+  }
+
+  .node.good .label,
+  .node.good .label * {
+    color: #fff !important;
+    fill: #fff !important;
+  }
+
+  .edgePath .path,
+  .flowchart-link {
+    stroke-width: 1.5px !important;
+  }
+
+  .edgeLabel,
+  .edgeLabel p,
+  .edgeLabel span {
+    background: var(--light) !important;
+    color: var(--darkgray) !important;
+    font-size: 1em;
+    font-weight: 600;
+  }
+
+  .edgeLabel rect {
+    fill: var(--light) !important;
+    opacity: 1 !important;
+  }
+}
+
+// ── Theme-aware images ───────────────────────────────────────
+// Diagrams ship as `name-light.svg` + `name-dark.svg`; show the one that
+// matches the site theme (the dark one is hidden until dark mode).
+img[src$="-light.svg"],
+img[src$="-dark.svg"] {
+  display: block;
+  width: 100%;
+  max-width: 34rem;
+  margin: 1.5rem auto;
+}
+
+img[src$="-dark.svg"] {
+  display: none;
+}
+
+:root[saved-theme="dark"] {
+  img[src$="-dark.svg"] {
+    display: block;
+  }
+
+  img[src$="-light.svg"] {
+    display: none;
+  }
+}
+
 // ── Motion ───────────────────────────────────────────────────
 @media (prefers-reduced-motion: no-preference) {
   body,
