@@ -111,9 +111,6 @@ class Solution {
 > | `(` | push `)` | `)` |
 > | `[` | push `]` | `)` `]` |
 > | `)` | pop `]`，`]` ≠ `)` | ❌ return `false` |
->
-> 对比 `"([])"`：第三个字符是 `]`，弹出 `]` 相等；第四个 `)` 弹出 `)` 相等；栈空 → `true` ✅
-> Compare `"([])"`: the third char `]` pops `]`, the fourth `)` pops `)`, the stack ends empty → `true`.
 
 > [!note] 其他写法 Alternatives
 > **`ArrayDeque` + 奇数长度提前返回 `ArrayDeque` + early exit on odd length:** `Stack` 是遗留类，官方推荐用 `ArrayDeque`（空栈 `pop()` 同样会抛异常，仍要先判空）。长度为奇数一定无法两两配对。
@@ -165,25 +162,13 @@ class Solution {
 
 ## 7. ❓ 复习题 Review Questions
 
-**Q1.** 为什么压入的是右括号，而不是左括号？ Why push the closing bracket instead of the opener?
-
-> [!success]- 答案 Answer
-> 遇到右括号时可以直接比较 `stack.pop() == c`，不需要再写一个左右括号的对应关系（`Map` 或一串 `if`）。两种都对，压右括号代码更短。
-> A closer can be checked with `stack.pop() == c` directly, with no opener-to-closer mapping. Both work; pushing the closer is shorter.
-
-**Q2.** 循环结束后为什么还要检查 `stack.isEmpty()`？ Why check `stack.isEmpty()` after the loop?
-
-> [!success]- 答案 Answer
-> 循环只能发现“多余的右括号”和“不匹配”。像 `"(("` 这样有没闭合的左括号，循环里不会出错，只有最后栈不为空才能发现。
-> The loop only catches extra closers and mismatches. Unclosed openers like `"(("` never fail inside the loop; only a non-empty stack at the end reveals them.
-
-**Q3.** `"([)]"` 每种括号都是一开一关，为什么无效？计数器能判断吗？ `"([)]"` has one open and one close of each type. Why is it invalid, and can counters detect it?
+**Q1.** `"([)]"` 每种括号都是一开一关，为什么无效？计数器能判断吗？ `"([)]"` has one open and one close of each type. Why is it invalid, and can counters detect it?
 
 > [!success]- 答案 Answer
 > 因为 `[` 是最后打开的，必须最先闭合，但先来的是 `)`。计数器只看数量不看顺序，所以判断不了；这正是需要栈的原因。
 > `[` opened last so it must close first, but `)` comes first. Counters only see totals, not order, so they can't detect it. That's why a stack is needed.
 
-**Q4.** 为什么奇数长度可以直接返回 `false`？ Why can an odd-length string return `false` immediately?
+**Q2.** 为什么奇数长度可以直接返回 `false`？ Why can an odd-length string return `false` immediately?
 
 > [!success]- 答案 Answer
 > 有效字符串里每个字符都恰好和另一个字符配对，所以长度一定是偶数。

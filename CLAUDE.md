@@ -39,9 +39,11 @@ npm run format                       # prettier --write
   working branch; keep it in sync with `master`.
 - **Test fixes for real.** Reproduce the bug, fix it, then verify every page and link,
   not only the one that was reported (see "Verifying changes").
-- **Have Fable review.** After writing or substantially editing a note, Xiang usually
-  asks for a review by the Fable model (spawn an agent with `model: fable`) to check
-  accuracy before pushing. Offer it for new notes.
+- **Fable reviews only when asked.** Xiang sometimes asks for an accuracy review by the
+  Fable model (spawn an agent with `model: fable`) before pushing. Don't start one, or
+  offer to, unless Xiang asks; do the checks yourself. (Parallel Fable agents once hit
+  the session rate limit and stalled mid-task.) When asked for another model, such as
+  Opus, spawn the agent with that `model`.
 - **Emoji everywhere it fits:** README, note headings, homepage copy. Keep it playful
   but tidy.
 - Personal laptop: installing or upgrading tools (Node via `n`, npm packages) is fine.
@@ -212,7 +214,7 @@ Use → ⚙️ How It Works → 💻 Code Template (Java) → ⏱️ Complexity 
 ❓ Review Questions → 🧩 Practice Problems → 🔗 Related. Add each to its
 `📌 算法总览` / `📌 数据结构总览` topic line, and use the LeetCode notes as examples.
 
-### ✅ What Fable reviews tend to catch
+### ✅ What reviews tend to catch
 
 Hedge absolutes ("always", "almost always" → "usually"), state Java version details
 (`.toList()` is Java 16+ and unmodifiable), keep code snippets complete (a missing

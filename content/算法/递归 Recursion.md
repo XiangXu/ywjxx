@@ -37,31 +37,15 @@ publish: true
 每次递归调用都必须**更接近** base case（链表变短、`n` 变小、树变矮），否则永远停不下来，Java 里就是 `StackOverflowError`。
 Every recursive call must move **closer** to the base case (a shorter list, a smaller `n`, a shallower tree), or it never stops; in Java that's a `StackOverflowError`.
 
-> [!tip] 🎁 礼物盒比喻 The gift box analogy
-> 打开一个盒子，里面要么直接是礼物（base case，不用再拆），要么是更小的盒子（recursive case，继续拆）。盒子一层比一层小，所以最后一定拆到礼物。
-> Open a box: inside is either the gift (base case, stop unwrapping) or a smaller box (recursive case, keep going). Each box is smaller than the last, so you eventually reach the gift.
-
 ### 1.2 相信合同 Trust the contract (recursive leap of faith)
 
 最难也最重要的一点：站在某一层看，子调用就是一个**已经写好、能用的函数**，只用它的**结果**，不追踪它的**过程**。这和数学归纳法是同一个思路：证明 n = 1 成立，再证明“n − 1 成立则 n 也成立”。
 The hardest and most important part: from any one level, the child call is **a finished function that works**. Use its **result** without tracing its **process**. It's the same idea as mathematical induction: prove n = 1, then prove "if n − 1 holds, n holds".
 
-> [!important] “只管自己这一层”是什么意思 What "only handle your own level" means
-> 例如 [[Reverse Linked List|206]]：`newHead` 是“子链表反转后的头”。本层把自己接到**尾巴**上，头不受影响，所以本层推出“整条链表的新头还是 `newHead`”。它看起来像从最底层一路传上来，其实每一层都在做同样的推理。
-> In 206, `newHead` is "the head of the reversed sublist". This level attaches itself at the **tail**, so the head is unaffected, and the level concludes that the whole list's new head is still `newHead`. It looks like a value passed straight up, but every level makes the same deduction.
-
 ### 1.3 调用栈 The call stack
 
-每次调用在[[栈 Stack|调用栈]]上压一帧（参数、局部变量、返回地址），返回时弹出。递归有两个阶段：**“递”**（一路调用到 base case）和**“归”**（一层层返回）。
-Each call pushes a frame (parameters, locals, return address) onto the call stack, popped on return. Recursion has two phases: going **down** to the base case, and **unwinding** back up.
-
-```
-reverseList(1)                      ┐
-  reverseList(2)                    │ 递 going down：一层层压栈 frames pushed
-    reverseList(3) → 触底，返回 3    ┘ base case
-  ← 2 这层：3.next = 2，返回 3       ┐ 归 unwinding：一层层弹栈 frames popped
-← 1 这层：2.next = 1，返回 3         ┘ 206 的活都在这里做 206 does its work here
-```
+每次调用在[[栈 Stack|调用栈]]上压一帧（参数、局部变量、返回地址），返回时弹出。递归有两个阶段：**“递”**（一路调用到 base case）和**“归”**（一层层返回，后序递归的活都在这里做）。
+Each call pushes a frame (parameters, locals, return address) onto the call stack, popped on return. Recursion has two phases: going **down** to the base case, and **unwinding** back up, which is where post-order recursion does its work.
 
 ## 2. 🧠 什么时候用 When to Use
 
@@ -91,18 +75,8 @@ reverseList(1)                      ┐
 | 信息流向 Information flows | 父 → 子，靠参数传下去 parent → child via parameters | 子 → 父，靠返回值交上来 child → parent via the return value |
 | 例子 Example | 打印链表、带 `prev` 参数的反转写法 print a list, the reversal with a `prev` parameter | [[Reverse Linked List\|206]] 的 `newHead` 写法、104 maxDepth |
 
-后序递归都是“**拿到子结果 → 结合自己 → 返回本层结果**”，区别只在加工多少。返回值是谁，取决于本层把自己放在哪：
-Every post-order recursion is "**take the child's result → combine with yourself → return this level's result**"; they differ only in how much processing happens. What to return depends on where this level puts itself:
-
-```java
-return Math.max(left, right) + 1;   // 104 maxDepth: 加工 +1 processed
-return newHead;                     // 206: 接在子结果尾巴，头没变 attached at the tail, head unchanged
-return l1.val + sum(l1.next);       // 链表求和 list sum: 加上自己 add yourself
-return list1;                       // 21 merge: 放在子结果前面，自己成了头 placed in front, so it is the head
-```
-
-[[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]] 前后混合：调用**之前**选出本层的节点，调用**之后**把子结果接到它后面。
-21 mixes both: it picks this level's node **before** the call and hangs the child's result after it **after** the call.
+后序递归都是“**拿到子结果 → 结合自己 → 返回本层结果**”；[[Merge Two Sorted Lists|21]] 前后混合：调用前选出本层的节点，调用后把子结果接到它后面。
+Every post-order recursion is "**take the child's result → combine with yourself → return this level's result**"; 21 mixes both: it picks this level's node before the call and hangs the child's result after it afterwards.
 
 ## 4. 💻 模板代码 Code Template
 
@@ -150,32 +124,19 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 | 509 朴素斐波那契 Naive Fibonacci | 约 φⁿ ≈ 1.618ⁿ，通常写成上界 About φⁿ ≈ 1.618ⁿ, usually written as the upper bound | O(2ⁿ) | O(n) |
 | [[Climbing Stairs\|70]] 爬楼梯（记忆化） Climbing Stairs (memoized) | `n >= 2` 时共 `2n - 3` 次 `2n - 3` calls for `n >= 2` | O(n) | O(n) |
 
-> [!example] 递归树 Recursion tree: `F(5)`，`F(n) = F(n-1) + F(n-2)`
->
-> ```
-> F(5)
-> ├── F(4)
-> │   ├── F(3)                     ← 第一次算 F(3) first time
-> │   │   ├── F(2) → F(1) 🎁, F(0) 🎁
-> │   │   └── F(1) 🎁
-> │   └── F(2) → F(1) 🎁, F(0) 🎁
-> └── F(3)                         ← 又算一次 F(3) computed again
->     ├── F(2) → F(1) 🎁, F(0) 🎁
->     └── F(1) 🎁
-> ```
->
-> - **时间 Time:** 一共 15 次调用，`F(3)` 算了 2 次、`F(2)` 算了 3 次，调用次数随 n 指数增长；记忆化后每个 `F(k)` 只算一次。
->   15 calls: `F(3)` is computed twice and `F(2)` three times, so calls grow exponentially with n; with memoization each `F(k)` is computed once.
-> - **空间 Space:** 树有很多节点，但同一时刻调用栈上只有**一条从根到叶子的路径**（最深 5 层），所以空间是 O(n)，不是 O(2ⁿ)。
->   The tree has many nodes, but the call stack only ever holds **one root-to-leaf path** (at most 5 deep), so space is O(n), not O(2ⁿ).
+> [!example] 递归树 Recursion tree: `F(n) = F(n-1) + F(n-2)`
+> - **时间 Time:** 画出 `F(5)` 的树共 15 次调用，`F(3)` 算了 2 次、`F(2)` 算了 3 次，调用次数随 n 指数增长；记忆化后每个 `F(k)` 只算一次。
+>   Drawing the tree for `F(5)` gives 15 calls: `F(3)` is computed twice and `F(2)` three times, so calls grow exponentially with n; with memoization each `F(k)` is computed once.
+> - **空间 Space:** 树有很多节点，但调用栈上同一时刻只有**一条从根到叶子的路径**，所以空间是 O(n)，不是 O(2ⁿ)。
+>   The tree has many nodes, but the call stack only ever holds **one root-to-leaf path**, so space is O(n), not O(2ⁿ).
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
-- **出口缺失或不全 Missing or incomplete base case:** 没有出口是无限递归；漏掉 `null` 是 NPE（206 只写 `head.next == null`，空链表就会 NPE）；斐波那契调用 `F(n-1)` 和 `F(n-2)`，所以 `F(0)` 和 `F(1)` 都要有，`if (n <= 1) return n;` 一行覆盖两个 → no base case means infinite recursion; a missed `null` means an NPE (206 with only `head.next == null` fails on an empty list); Fibonacci calls `F(n-1)` and `F(n-2)`, so it needs both `F(0)` and `F(1)`, which `if (n <= 1) return n;` covers in one line.
+- **出口缺失或不全 Missing or incomplete base case:** 没有出口是无限递归；漏掉 `null` 是 NPE（206 只写 `head.next == null`，空链表就会 NPE）；斐波那契要同时覆盖 `F(0)` 和 `F(1)`，`if (n <= 1) return n;` 一行搞定 → no base case means infinite recursion; a missed `null` means an NPE (206 with only `head.next == null` fails on an empty list); Fibonacci needs both `F(0)` and `F(1)`, which `if (n <= 1) return n;` covers.
 - **在脑子里展开每一层 Unrolling every level in your head:** 写的时候只看一层，相信合同；验证时用 2 到 3 个元素的小例子手推 → write one level and trust the contract; check with a 2–3 element example afterwards.
 - **递归太深 Too deep:** 64 位 HotSpot 默认线程栈通常约 1 MB（取决于平台和 `-Xss`），大约撑几千到几万层。Java **不做尾调用优化**，尾递归一样会溢出；太深就改成循环或显式栈 → the default thread stack on 64-bit HotSpot is usually about 1 MB (it depends on the platform and `-Xss`), roughly a few thousand to tens of thousands of frames. Java does **not** optimize tail calls, so tail recursion overflows too; switch to a loop or an explicit stack.
 - **重复子问题 Repeated subproblems:** 朴素 `fib(n)` 把同一个 `fib(k)` 算很多次，变成指数级。用记忆化或填表，[[Climbing Stairs|70]] 在 `n = 45` 时调用次数从约 23 亿次降到 87 次 → memoize or use a table; at `n = 45` in [[Climbing Stairs|70]], that cuts the calls from about 2.3 billion to 87.
-- **子调用之后数据结构已经变了 The structure changed under you:** 206 里子调用会改 `head.next` 后面的指针，但不会改 `head.next` 本身，所以 `head.next.next = head` 才成立。用之前想清楚子调用改了什么；回溯里还要“撤销选择” → know what the child call mutated before using it, and undo changes on the way back in backtracking.
+- **子调用之后数据结构已经变了 The structure changed under you:** 用子结果之前想清楚子调用改了什么（206 的子调用不会改 `head.next` 本身，所以 `head.next.next = head` 才成立）；回溯里还要撤销选择 → know what the child call mutated before using its result (206's child never changes `head.next` itself, which is why `head.next.next = head` works), and undo choices on the way back in backtracking.
 
 ## 7. ❓ 复习题 Review Questions
 

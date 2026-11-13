@@ -55,16 +55,6 @@ This repeats until **no one** in the queue wants the top sandwich. Return the nu
 - **套路 Pattern:** 直接按题意用队列模拟；再往前想一步，就能把模拟换成计数。
   Simulate with a queue as described; one step further, the simulation collapses into counting.
 
-```
-students（队头在左 front on the left）  sandwiches（栈顶在左 top on the left）
-
-[1, 1, 1, 0, 0, 1]                     [1, 0, 0, 0, 1, 1]
- ...三个人吃上之后 after three students eat...
-[1, 1, 1]                              [0, 1, 1]
- 剩下的人都要 1，栈顶是 0：卡死，答案 3
- everyone left wants 1 but the top is 0: stuck, the answer is 3
-```
-
 ## 3. 🐢 暴力解 Brute Force
 
 - 思路 Idea: 用 `ArrayList` 当队列，转圈时 `remove(0)` 再 `add`，每次扫一遍剩下的学生判断是否卡死。
@@ -107,11 +97,8 @@ class Solution {
   O(n²): each time someone eats, there were at most `queue.size()` rotations before it, which adds up to quadratic (see the worst case below)
 - 🗄️ Space: O(n)，队列 for the queue
 
-**为什么转一圈就够 Why one lap is enough:** 转圈不改变任何人的口味，也不改变栈顶。连续 `queue.size()` 个人都不要，就是剩下的每个人都看过了这个三明治，再转也一样。
-Rotating changes neither anyone's preference nor the top sandwich. If `queue.size()` students in a row said no, everyone left has seen this sandwich, and more laps change nothing.
-
-**答案怎么来 Why `result` is the answer:** 循环只有两种结束方式：队列空了（`result` 刚清成 `0`，答案是 `0`），或者 `result == queue.size()`（剩下的人都连续被跳过）。两种情况下 `result` 都等于 `queue.size()`，所以写 `return queue.size();` 也一样，而且更好懂。
-The loop ends in only two ways: the queue is empty (`result` was just reset to `0`, the answer), or `result == queue.size()` (everyone left was skipped in a row). Either way `result` equals `queue.size()`, so `return queue.size();` works too and reads more clearly.
+**答案怎么来 Why `result` is the answer:** 循环结束时要么队列空了（`result` 是 `0`），要么 `result == queue.size()`，两种情况都等于剩下的人数，所以写 `return queue.size();` 更好懂。
+The loop ends with either an empty queue (`result` is `0`) or `result == queue.size()`; both equal the number left, so `return queue.size();` reads more clearly.
 
 > [!example] 走一遍 Trace: `students = [1,1,1,0,0,1]`, `sandwiches = [1,0,0,0,1,1]`
 >
@@ -150,20 +137,6 @@ class Solution {
 
 - ⏱️ Time: O(n)，两次遍历 two passes
 - 🗄️ Space: O(1)，只有两个计数器 just two counters
-
-**剩余人数 What `sandwiches.length - i` means:** 前 `i` 个三明治每个对应一个吃上的学生，所以剩下 `n - i` 个学生，他们全都要另一种，这个数也等于 `count[1 - sandwiches[i]]`。
-The first `i` sandwiches were eaten, one per student, so `n - i` students are left, all wanting the other kind; it also equals `count[1 - sandwiches[i]]`.
-
-> [!example] 走一遍 Trace: 同一个例子 The same example
->
-> 开始 Start: `count = [2, 4]`（要 0 的两人、要 1 的四人 two want 0, four want 1）
->
-> | `i` | `sandwiches[i]` | 有人要吗 Anyone want it? | `count` 之后 after |
-> | --- | --- | --- | --- |
-> | 0 | `1` | ✅（四人 four） | `[2, 3]` |
-> | 1 | `0` | ✅（两人 two） | `[1, 3]` |
-> | 2 | `0` | ✅（一人 one） | `[0, 3]` |
-> | 3 | `0` | ❌ `count[0] == 0` | 返回 `6 - 3 = 3` Returns `6 - 3 = 3` |
 
 | 写法 Approach | ⏱️ Time | 🗄️ Space | 说明 Notes |
 | --- | --- | --- | --- |

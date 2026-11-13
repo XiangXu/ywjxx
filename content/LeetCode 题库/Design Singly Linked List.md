@@ -60,23 +60,6 @@ The index passed to `get(i)` and `remove(i)` is guaranteed `>= 0`, but may be ou
 - **套路 Pattern:** 设计题 + 链表指针操作（哑节点、尾指针）。和 [[Design Dynamic Array|设计动态数组 Design Dynamic Array]] 正好互补。
   A design problem with linked-list pointer work (dummy head, tail pointer), the counterpart of Design Dynamic Array.
 
-```
-空链表 Empty list:
-
-  head(dummy)        tail ──► head(dummy)
-  ┌────┬───┐
-  │ -1 │ ∅ │
-  └────┴───┘
-
-insertHead(1), insertTail(2), insertHead(0) 之后 after:
-
-  head(dummy)
-  ┌────┬───┐   ┌───┬───┐   ┌───┬───┐   ┌───┬───┐
-  │ -1 │ ●─┼──►│ 0 │ ●─┼──►│ 1 │ ●─┼──►│ 2 │ ∅ │
-  └────┴───┘   └───┴───┘   └───┴───┘   └───┴───┘
-   下标 -1       index 0     index 1     index 2 ◄── tail
-```
-
 把哑节点看成**下标 -1**，后面所有推理都会简单很多。
 Think of the dummy as **index -1**; everything below gets simpler.
 
@@ -84,12 +67,8 @@ Think of the dummy as **index -1**; everything below gets simpler.
 
 - 思路 Idea: 只存 `head`，不用哑节点也不存 `tail`。
   Store only `head`: no dummy, no `tail`.
-- `insertTail` 每次都要从头走到最后一个节点，O(n)。
-  `insertTail` walks from the head to the last node every time: O(n).
-- `insertHead` 和 `remove(0)` 会改变 `head` 本身，要写 `if (index == 0)` 和 `if (head == null)` 之类的特殊分支，容易漏。
-  `insertHead` and `remove(0)` change `head` itself, so you need special branches like `if (index == 0)` and `if (head == null)`, which are easy to get wrong.
-- ⏱️ 正确但慢：推 n 个元素到尾部总共 O(n²)。
-  Correct but slow: n tail inserts cost O(n²) in total.
+- ⏱️ `insertTail` 每次从头走到尾，是 O(n)，`n` 次尾插共 O(n²)；`insertHead` 和 `remove(0)` 还要特殊处理“头变了”。
+  `insertTail` walks to the end every time, O(n), so `n` tail inserts cost O(n²); `insertHead` and `remove(0)` also need "the head changed" special cases.
 
 ## 4. 🚀 最优解 Optimal Solution
 
@@ -189,17 +168,6 @@ class LinkedList {
 
 ### 4.1 🔍 `remove` 详解 `remove` in detail
 
-**① 停在前一个 Stop at the predecessor.** 删除 `B` 就是让 `A` 直接指向 `C`，要改的是 **`A.next`**，所以手里必须拿着 `A`。循环停在 `B` 上的话，`B` 不知道谁指向它（单链表没有 `prev`），摘不掉。
-Removing `B` means making `A` point straight at `C`; the field that changes is **`A.next`**, so you must be holding `A`. If the loop stops on `B`, it has no idea who points at it (no `prev` in a singly linked list), so it can't be unlinked.
-
-```
-删除前 Before:   A ──► B ──► C
-删除后 After:    A ─────────► C        A.next = A.next.next
-```
-
-**② 从哑节点出发走 `index` 步 Start at the dummy and walk `index` steps.** 把哑节点当成下标 -1，走 `index` 步正好停在下标 `index - 1`。`remove(0)` 时 `curr` 就是哑节点，`head.next = head.next.next` 和删中间节点是同一行代码，这就是哑节点的价值。
-Treat the dummy as index -1; `index` steps land exactly on index `index - 1`. For `remove(0)`, `curr` is the dummy, and `head.next = head.next.next` is the same line as removing from the middle. That's what the dummy buys you.
-
 > [!important] 和 `get` 对比：故意差一个 Compared with `get`: off by one on purpose
 >
 > | | 起点 Start | 起点下标 Start index | 停在 Stops at |
@@ -210,31 +178,10 @@ Treat the dummy as index -1; `index` steps land exactly on index `index - 1`. Fo
 > `get` 只**读**目标，所以停在目标上；`remove` 要**改前一个节点的 `next`**，所以起点往前挪一格。两个循环看起来像，含义差了一个位置，最容易写混。
 > `get` only **reads** the target, so it stops on it; `remove` must **change the previous node's `next`**, so it starts one node earlier. The loops look alike but mean different positions, which is the easiest thing to mix up.
 
-**③ 两处 null 检查 The two null checks.** 以 `[0, 2]`（长度 2）为例 For `[0, 2]` (length 2):
-
-| 调用 Call | `curr` 最后在 `curr` ends at | 哪个检查失败 Failing check | 返回 Returns |
-| --- | --- | --- | --- |
-| `remove(1)` | 0 | 无 none | `true`，值 2 被删掉 `true`, removes the 2 |
-| `remove(2)` | 2 | `curr.next == null`：前一个是最后一个，后面没有要删的 the predecessor is the last node; nothing after it | `false` |
-| `remove(5)` | 第 3 步走到 `null` Reaches `null` at step 3 | `curr == null`：连前一个都不存在；循环里的同一检查防止 `null.next` 空指针 even the predecessor doesn't exist; the same check in the loop prevents an NPE on `null.next` | `false` |
-
-**④ 删尾巴时维护 `tail` Keep `tail` right when removing the last node.** 这是最容易漏的一步：`tail` 还指着被摘掉的节点，下一次 `insertTail` 就接到一个**不在链表里**的节点后面，新值凭空消失。
-This is the step most often missed: `tail` still points at the detached node, so the next `insertTail` hangs the new node off a node that's **no longer in the list**, and the value silently disappears.
-
-```
-[0, 2]，remove(1) 删掉 2 removes 2:
-
-  忘了更新 tail Without the update:          更新了 With tail = curr:
-  dummy ─► 0 ─► ∅                            dummy ─► 0 ─► ∅
-           2 ◄── tail（已脱离 detached）              ▲ tail
-  insertTail(5): 2 ─► 5                      insertTail(5): dummy ─► 0 ─► 5
-  getValues() → [0]  ❌                      getValues() → [0, 5]  ✅
-```
-
+- **两处 null 检查 The two null checks:** `curr == null` 表示连前一个都不存在（下标远超长度），`curr.next == null` 表示前一个是最后一个、没有目标。
+  `curr == null` means even the predecessor doesn't exist (index far past the end); `curr.next == null` means the predecessor is the last node, so there's no target.
 - **先判断再断开 Check before unlinking:** `curr.next == tail` 必须写在 `curr.next = curr.next.next` 之前，断开之后 `curr.next` 已经是下一个节点了。
   `curr.next == tail` must come before `curr.next = curr.next.next`; after unlinking, `curr.next` is already a different node.
-- **删掉唯一一个元素 Removing the only element:** `curr` 是哑节点，于是 `tail = head`，正好回到构造函数里的空链表状态。
-  `curr` is the dummy, so `tail = head`, exactly the empty state from the constructor.
 
 > [!example] 走一遍 Trace: 示例 1 Example 1
 >

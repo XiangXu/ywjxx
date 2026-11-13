@@ -44,9 +44,6 @@ A browser has one tab and starts on `homepage`. You can visit a new URL, or move
 输出 Output: [null, null, null, null, "facebook.com", "google.com", "facebook.com", null, "linkedin.com", "google.com", "leetcode.com"]
 ```
 
-关键是第 8 步：在 `facebook.com` 上访问 `linkedin.com`，原来排在后面的 `youtube.com` 就没了，所以之后的 `forward(2)` 只能停在 `linkedin.com`。
-The key is call 8: visiting `linkedin.com` from `facebook.com` drops `youtube.com`, which used to come next, so the later `forward(2)` can only reach `linkedin.com`.
-
 约束 Constraints: 主页和网址长度在 `[1, 20]` 之间，只含 `.` 和小写字母；`steps` 在 `[1, 100]` 之间；三个方法总共最多调用 5000 次。
 `homepage` and `url` have length in `[1, 20]` and contain only `.` and lowercase letters; `steps` is in `[1, 100]`; there are at most 5000 calls in total to `visit`, `back` and `forward`.
 
@@ -125,20 +122,13 @@ class BrowserHistory {
 
 ### 4.1 ✂️ 一行代码清空前进历史 One line clears the forward history
 
-`visit` 的第一行 `curr.next = new ListNode(url, curr, null)` 同时做了三件事：
-The first line of `visit`, `curr.next = new ListNode(url, curr, null)`, does three things at once:
-
-1. 新节点的 `prev` 指向 `curr`，以后能退回来 → the new node's `prev` is `curr`, so you can come back
-2. 新节点的 `next` 是 `null`，它就是新的最后一页 → the new node's `next` is `null`, so it's the new last page
-3. 覆盖 `curr.next`，原来的整段前进历史从此不可达 → overwriting `curr.next` makes the old forward history unreachable
-
-被剪掉的那段里，第一个节点的 `prev` 还指着 `curr`，但方向是“它指向我们”，不是“我们指向它”。GC 只看从根出发能不能到达，所以整段都会被回收，不用一个个删。
-The first node of the cut-off part still has `prev` pointing at `curr`, but that's "it points at us", not "we point at it". The GC only cares what's reachable from the roots, so the whole segment is reclaimed with no node-by-node deletion.
+`curr.next = new ListNode(url, curr, null)` 一次完成：新节点能退回 `curr`、是新的最后一页、旧的前进历史不可达。被剪掉的第一个节点虽然还用 `prev` 指着 `curr`，但从根出发到不了它，GC 会回收整段。
+`curr.next = new ListNode(url, curr, null)` does it all: the new node can go back to `curr`, it's the new last page, and the old forward history becomes unreachable. The first cut-off node still points at `curr` through `prev`, but nothing reachable from the roots points at it, so the GC reclaims the whole segment.
 
 ### 4.2 🧱 循环条件 The loop condition
 
-`curr.prev != null` / `curr.next != null` 让循环到头就停，这就是“最多走 `steps` 步”。`curr != null` 是多余的：`curr` 只会被赋成主页、新节点，或确认过非空的 `prev` / `next`，所以永远不是 `null`；留着也无害。
-`curr.prev != null` / `curr.next != null` stop the loop at the end, which is the "at most `steps`" rule. `curr != null` is redundant: `curr` is only ever the homepage, a new node, or a `prev` / `next` already checked for `null`, so it's never `null`; keeping it is harmless.
+`curr.prev != null` / `curr.next != null` 让循环到头就停。`curr != null` 是多余的，`curr` 永远不是 `null`，留着也无害。
+`curr.prev != null` / `curr.next != null` stop the loop at the end. `curr != null` is redundant since `curr` is never `null`, but harmless.
 
 > [!example] 走一遍 Trace: 题目示例 The example
 >
@@ -208,7 +198,7 @@ The first node of the cut-off part still has `prev` pointing at `curr`, but that
 - [x] 前进超过结尾 Forward past the end: 停在最后一页 → stop on the last page (`forward(2)` after a `visit`)
 - [x] ⚠️ 忘了清空前进历史 Forgetting to clear forward history: 如果 `visit` 把新节点插在 `curr` 和 `curr.next` 中间，旧的前进页还在，`forward` 会走到不该存在的页面 → if `visit` inserts between `curr` and `curr.next`, the old forward pages survive and `forward` reaches pages that should be gone
 - [x] ⚠️ 新节点漏设 `prev` Missing `prev` on the new node: 写成 `new ListNode(url, null, null)` 的话，`visit` 之后就退不回去了 → with `new ListNode(url, null, null)`, you can't go back after a `visit`
-- [x] 先移动再接 Moving before linking: 只写 `curr = new ListNode(url, curr, null)` 的话，旧页的 `next` 没更新，退回去之后 `forward` 到不了新页面，还会走进本该清空的旧前进历史；要先接 `curr.next` 再移动 `curr` → with only `curr = new ListNode(url, curr, null)`, the old page's `next` is never updated, so after going back, `forward` can't reach the new page and walks into the old forward history that should be gone; link `curr.next` first, then move `curr`
+- [x] 先移动再接 Moving before linking: 只写 `curr = new ListNode(url, curr, null)` 的话，旧页的 `next` 没更新，退回去后 `forward` 会走进旧前进历史 → with only `curr = new ListNode(url, curr, null)`, the old page's `next` is never updated, so after going back, `forward` walks into the old forward history; link `curr.next` first, then move `curr`
 - [x] 数组写法的 `last` The array version's `last`: `forward` 必须用 `last` 而不是 `history.size() - 1` 当上界，否则会走进作废的旧页面 → `forward` must clamp to `last`, not `history.size() - 1`, or it walks into stale pages
 
 ## 6. 🔁 进阶 Follow-ups
@@ -240,17 +230,10 @@ The first node of the cut-off part still has `prev` pointing at `curr`, but that
 > `visit` 只覆盖 `curr + 1` 这一个位置，后面的旧网址还留在数组里。`last` 记录真正有效的最后一页；用 `size() - 1` 的话，`forward` 会走到已经作废的页面。
 > `visit` overwrites only slot `curr + 1`, so older URLs remain after it. `last` marks the real last page; with `size() - 1`, `forward` would reach invalidated pages.
 
-**Q4.** 链表写法的 `back(steps)` 是 O(steps) 还是 O(1)？ Is the linked-list `back(steps)` O(steps) or O(1)?
-
-> [!success]- 答案 Answer
-> O(min(steps, k))，`k` 是后面还能退的页数，因为链表只能一步一步走。数组写法能直接算出下标，所以是 O(1)。这题 `steps ≤ 100`，两种都很快。
-> O(min(steps, k)), where `k` is the number of pages you can go back, because a linked list moves one node at a time. The array version computes the index directly, so it's O(1). With `steps ≤ 100`, both are fast here.
-
 ## 8. 🔗 相关题目 Related
 
 - [[📌 LeetCode 总览]]
 - 🧠 概念 Concepts: [[链表 Linked List|链表 Linked List]]（双向链表加游标 a doubly linked list with a cursor） · [[复杂度分析 Big-O|复杂度分析 Big-O]]（链表 O(steps) 对比数组 O(1) linked list O(steps) vs array O(1)）
-- 对照 Compare with: [[Design Linked List|707. 设计链表 Design Linked List]]（双哨兵，可以在任意位置增删 two sentinels, inserts and deletes anywhere）
 - 上一题 Previous: [[Design Linked List|707. 设计链表 Design Linked List]]（双向链表 doubly linked list）
 - 下一题 Next: [[Number of Students Unable to Eat Lunch|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]]（队列模拟和计数 queue simulation and counting）
 

@@ -28,15 +28,6 @@ publish: true
 
 ### 1.1 先进先出 FIFO
 
-像食堂排队：先来的先打饭，新来的排到最后。和[[栈 Stack|栈 Stack]]正好相反，栈是最后来的最先走。
-Like a cafeteria line: whoever arrives first is served first, and newcomers join at the end. It's the opposite of a [[栈 Stack|stack]], where the last one in leaves first.
-
-```
-offer 1, offer 2, offer 3            poll() → 1             peek() → 2
-
-front → [1, 2, 3] ← back             front → [2, 3] ← back   front → [2, 3]（不删除 not removed）
-```
-
 | 操作 Operation | 作用 What it does |
 | --- | --- |
 | `offer(x)` | 放到队尾 Add `x` at the back |
@@ -123,11 +114,6 @@ offer:  front → [1, 2, 3]    poll() → 1   （队列 queue）
 先进先出保证了**先发现的先处理**。起点的邻居（第 1 层）全部出队之前，第 2 层的节点只会排在它们后面，所以节点是按距离从近到远处理的，第一次发现（入队）某个点时走的就是最短步数（无权图，入队时就标记已访问）。
 FIFO means **discovered first, processed first**. Level-2 nodes wait behind every level-1 node, so nodes are processed in order of distance, and the first time you discover (enqueue) a node is by the fewest steps (in an unweighted graph, marking nodes visited when enqueued).
 
-### 3.2 按层处理 Processing level by level
-
-要知道“这是第几层”时，在每层开始前先把 `size()` 存下来，只处理这么多个；循环里新加入的是下一层。
-To know which level you're on, save `size()` before each level and process exactly that many; anything added inside the loop belongs to the next level.
-
 ## 4. 💻 模板代码 Code Template
 
 ```java
@@ -165,7 +151,7 @@ int y = data[head]; head = (head + 1) % capacity; size--;   // poll（先检查�
 
 | 操作 Operation | ⏱️ Time | 🗄️ Space |
 | --- | --- | --- |
-| `offer` | O(1)（`ArrayDeque` 扩容时 O(n)，均摊 O(1) amortized with resizing） | O(1) |
+| `offer` | 均摊 O(1)，扩容的那一次是 O(n) Amortized O(1); O(n) for the offer that resizes | O(1) |
 | `poll` / `peek` / `isEmpty` / `size` | O(1) | O(1) |
 | 查找或删除任意元素 Search or remove a value | O(n) | O(1) |
 | 整个队列 The whole queue | | O(n) |
@@ -179,7 +165,7 @@ In BFS each node is enqueued and dequeued at most once, so the total is O(V + E)
 - **循环条件用 `size()` Using `size()` in the loop condition:** 按层 BFS 时写 `for (i < q.size())`，`size` 一边循环一边变，层就乱了；先存到变量里 → in level-order BFS, `size()` changes as you add children, so save it to a variable first.
 - **`Integer` 用 `==` 比较 Comparing `Integer`s with `==`:** 两个 `queue.peek()` 比较的是引用，超出 -128 到 127 通常就错；和 `int` 比较时会拆箱，没问题 → two `peek()` results compare references, which usually fails outside the cached range -128 to 127; comparing with an `int` unboxes and is fine, see [[Number of Students Unable to Eat Lunch|1700]].
 - **用 `ArrayList` 当队列 Using an `ArrayList` as a queue:** `remove(0)` 是 O(n)，要平移所有元素 → `remove(0)` shifts every element, O(n).
-- **`ArrayDeque` 不能存 `null` `ArrayDeque` rejects `null`:** `offer(null)` 直接抛 NPE，所以 `poll()` 返回 `null` 就表示队列空了 → `offer(null)` throws, so `poll()` returning `null` means "empty" (a `LinkedList` can hold `null`).
+- **`ArrayDeque` 不能存空值 `ArrayDeque` rejects `null`:** `offer(null)` 直接抛 NPE，所以 `poll()` 返回 `null` 就表示队列空了 → `offer(null)` throws, so `poll()` returning `null` means "empty" (a `LinkedList` can hold `null`).
 
 ## 7. ❓ 复习题 Review Questions
 
@@ -189,19 +175,13 @@ In BFS each node is enqueued and dequeued at most once, so the total is O(V + E)
 > 队头删除后，后面每个元素都要前移一位，O(n)。环形数组只是把 `head` 往后挪一格，O(1)，空出来的位置以后会被绕回来的 `tail` 重新使用。
 > Removing the front shifts every later element, O(n). A circular array just moves `head` forward one slot, O(1), and the freed slot is reused later when `tail` wraps around.
 
-**Q2.** 环形数组里怎么算下一个入队的位置？ In a circular array, where does the next element go?
-
-> [!success]- 答案 Answer
-> `(head + size) % capacity`。取模让下标走到末尾后绕回开头，所以数组前面空出来的位置能被重复利用。
-> `(head + size) % capacity`. The modulo wraps the index from the end back to the start, so slots freed at the front get reused.
-
-**Q3.** BFS 为什么用队列，DFS 为什么用栈？ Why does BFS use a queue and DFS a stack?
+**Q2.** BFS 为什么用队列，DFS 为什么用栈？ Why does BFS use a queue and DFS a stack?
 
 > [!success]- 答案 Answer
 > BFS 要先处理离起点近的，先发现的先处理，正好是先进先出。DFS 要沿着一条路一直走下去，最新发现的先处理，正好是后进先出（递归本身就跑在调用栈上）。
 > BFS handles nearer nodes first: discovered first, processed first, which is FIFO. DFS goes deep along one path: the newest discovery first, which is LIFO (recursion itself runs on the call stack).
 
-**Q4.** 按层 BFS 为什么要先把 `q.size()` 存下来？ In level-order BFS, why save `q.size()` first?
+**Q3.** 按层 BFS 为什么要先把 `q.size()` 存下来？ In level-order BFS, why save `q.size()` first?
 
 > [!success]- 答案 Answer
 > 处理这一层时会把下一层的节点加进队列，`size()` 一直在变。先存下来，才能只处理这一层的节点，不把下一层混进来。
@@ -217,8 +197,8 @@ In BFS each node is enqueued and dequeued at most once, so the total is O(V + E)
 | 232. 用栈实现队列 Implement Queue using Stacks | 两个栈实现队列 a queue from two stacks | Easy |
 | ✅ [[Implement Stack using Queues\|225. 用队列实现栈 Implement Stack using Queues]] | 一个队列，压入后转 `n - 1` 格 one queue, rotating `n - 1` steps after each push | Easy |
 | 622. 设计循环队列 Design Circular Queue | 环形数组 a circular array | Medium |
-| 102. 二叉树的层序遍历 Binary Tree Level Order Traversal | 按层 BFS level-by-level BFS | Medium |
-| 994. 腐烂的橘子 Rotting Oranges | 多源 BFS multi-source BFS | Medium |
+| 102. 二叉树的层序遍历 Binary Tree Level Order Traversal | 按层 BFS 遍历 level-by-level BFS | Medium |
+| 994. 腐烂的橘子 Rotting Oranges | 多源 BFS 遍历 multi-source BFS | Medium |
 | 239. 滑动窗口最大值 Sliding Window Maximum | 单调双端队列 a monotonic deque | Hard |
 
 ## 9. 🔗 相关 Related

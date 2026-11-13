@@ -49,11 +49,6 @@ public class ListNode {
 }
 ```
 
-- **`head`** 是唯一的入口。丢了 `head`（或者某个节点之后的引用），那部分链表就再也找不到了，Java 里会被 GC 回收。
-  `head` is the only entry point. Lose it (or the reference past some node) and that part of the list is unreachable; in Java it gets garbage-collected.
-- Java 的 `next` 是**引用**，相当于 C 里的指针。`a.next = b` 只是让箭头指向 `b`，不复制任何节点。
-  In Java `next` is a **reference**, the equivalent of a C pointer. `a.next = b` points the arrow at `b`; nothing is copied.
-
 ### 1.2 单向、双向、循环 Singly, doubly, circular
 
 | 类型 Type | 每个节点 Each node | 特点 Notes |
@@ -70,7 +65,7 @@ public class ListNode {
 | 按下标访问 Access by index | O(1) | O(n)，从头走 walk from the head |
 | 头部插入/删除 Insert/delete at front | O(n)，要平移 shifting | O(1) |
 | 已知节点后插入/删除 Insert/delete after a known node | O(n)，要平移 shifting | O(1) |
-| 末尾追加 Append | 均摊 O(1) amortized | 有 `tail` 指针时 O(1)，否则 O(n) O(1) with a tail pointer, else O(n) |
+| 末尾追加 Append | 均摊 O(1) amortized | 有尾指针时 O(1)，否则 O(n) With a tail pointer O(1), else O(n) |
 | 缓存 Cache | 友好 friendly | 每个节点都可能 cache miss each node may miss |
 
 > [!note] 链表的 O(1) 插入有前提 The O(1) insert has a catch
@@ -157,9 +152,6 @@ index -1                       index n
   curr.prev = node;     // 最后改 curr.prev last
 ```
 
-把 `dummyTail` 看成下标 `n`：从第 0 个走 `i` 步，落在真实节点上才能读或删，落在 `dummyTail` 上可以插入（就是追加），走到 `null` 就是越界。
-Treat `dummyTail` as index `n`: after `i` steps from node 0, reads and deletes need a real node, an insert may land on `dummyTail` (an append), and reaching `null` means out of bounds.
-
 ## 4. 💻 模板代码 Code Template
 
 ```java
@@ -220,7 +212,6 @@ while (fast != null && fast.next != null) {
 - **忘了断开旧指针，形成环 Forgetting to cut the old pointer:** 反转、重排时新尾巴的 `next` 要设成 `null`，否则遍历死循环 → set the new tail's `next` to `null`, or traversal loops forever (206's `head.next = null`).
 - **删除时停错了位置 Stopping in the wrong place to remove:** 要站在目标的**前一个**节点上改 `prev.next`；从哑节点出发走 `i` 步正好到第 `i - 1` 个 → stand on the node **before** the target; `i` steps from the dummy gets you there, see [[Design Singly Linked List|设计单链表 Design Singly Linked List]].
 - **双向链表少改一个指针 One pointer short in a doubly linked list:** 插入要改四个指针、删除改两个，漏了 `prev` 正向遍历看不出来，但之后的插入会出错 → an insert updates four pointers and a delete two; a missed `prev` is invisible going forward but breaks later inserts, see [[Design Linked List|707]].
-- **以为要逐个删除 Deleting node by node:** 在 Java 里剪掉一整段只需覆盖一个引用，没人指向的节点会被 GC 回收 → in Java, cutting off a whole tail takes one overwritten reference; unreachable nodes are garbage-collected (C or C++ must free them), see [[Design Browser History|1472]].
 - **头节点变了还返回旧头 Returning a stale head:** 用 dummy，返回 `dummy.next` → use a dummy and return `dummy.next`.
 - **拼接时尾巴没前进 Not advancing the tail while building:** 每接一个节点都要 `tail = tail.next`，否则一直覆盖同一个 `next`（[[Merge Two Sorted Lists|21]]） → after each attach, `tail = tail.next`, or you keep overwriting the same `next`.
 - **`LinkedList.get(i)` 是 O(n) 的 `LinkedList.get(i)` is O(n)**: 在循环里 `list.get(i)` 整体变 O(n²)；要遍历用迭代器或 for-each → looping with `get(i)` is O(n²); use an iterator or for-each.

@@ -52,7 +52,7 @@ The address of element `i` is **base + i × element size**. `a[2]` is at `1000 +
 | 末尾追加 Append | 没有空位就不行 only if there's room | 均摊 O(1) amortized |
 | 实现 How | 一块连续内存 one block | 静态数组 + size/capacity，满了按比例扩容并复制 a static array + size/capacity, grown by a factor and copied when full |
 
-扩容倍数常见是 2，Java 的 `ArrayList` 约是 1.5 倍；扩容细节和为什么按比例扩容是均摊 O(1)，见 [[Design Dynamic Array|Design Dynamic Array]] 和 [[复杂度分析 Big-O|复杂度分析 Big-O]]。
+扩容倍数常见是 2，Java 的 `ArrayList` 约是 1.5 倍；扩容细节和为什么按比例扩容是均摊 O(1)，见 [[Design Dynamic Array|设计动态数组 Design Dynamic Array]] 和 [[复杂度分析 Big-O|复杂度分析 Big-O]]。
 The factor is commonly 2 (Java's `ArrayList` uses about 1.5). For how dynamic arrays grow and why growing by a factor is amortized O(1), see [[Design Dynamic Array|Design Dynamic Array]] and [[复杂度分析 Big-O|Big-O analysis]].
 
 ## 2. 🧠 什么时候用 When to Use
@@ -74,16 +74,6 @@ The factor is commonly 2 (Java's `ArrayList` uses about 1.5). For how dynamic ar
 
 在下标 `k` 插入 `x`，要先把 `[k, size)` 整体右移一格。**必须从后往前挪**，否则前面的值会把后面的覆盖掉。
 To insert `x` at index `k`, shift `[k, size)` right by one first. **Shift from the back**, or each write overwrites the value you haven't moved yet.
-
-```
-插入 9 到 k = 1  insert 9 at k = 1      size = 4, capacity ≥ 5
-
-[5, 8, 2, 7, _]
-[5, 8, 2, 7, 7]   a[4] = a[3]
-[5, 8, 2, 2, 7]   a[3] = a[2]
-[5, 8, 8, 2, 7]   a[2] = a[1]
-[5, 9, 8, 2, 7]   a[1] = 9
-```
 
 ### 3.2 中间删除：从前往后挪 Deleting in the middle: shift from the front
 
@@ -116,9 +106,9 @@ void delete(int[] a, int size, int k) {
 > | --- | --- |
 > | `new int[n]` | 长度 `n`，全部为默认值：数字 0、`boolean` 为 `false`、对象为 `null` Length `n`, all defaults: 0, `false`, or `null` |
 > | `a.length` | 长度，是字段不是方法（`list.size()` 才是方法） A field, not a method (`list.size()` is the method) |
-> | `Arrays.copyOf(a, newLen)` | 复制并改变长度，多出的补 0 Copies with a new length, padding with 0 |
+> | `Arrays.copyOf(a, newLen)` | 复制并改变长度，多出的补默认值 Copies with a new length, padding with defaults |
 > | `System.arraycopy(src, sp, dst, dp, len)` | 批量复制，源和目标重叠时也正确 bulk copy, correct even when ranges overlap |
-> | `Arrays.fill(a, v)` | 全部设为 `v` set every slot to `v` |
+> | `Arrays.fill(a, v)` | 把每个位置设为 `v` Set every slot to `v` |
 > | `Arrays.sort(a)` | 排序，`int[]` 用双轴快排 sorts; dual-pivot quicksort for `int[]` |
 > | `Arrays.toString(a)` | 调试打印 print for debugging (`System.out.println(a)` 只会打印地址样的哈希 prints a hash-like id) |
 
@@ -143,7 +133,7 @@ void delete(int[] a, int size, int k) {
 - **平移方向 Shift direction:** 插入从后往前，删除从前往后（3.1、3.2） → insert back-to-front, delete front-to-back.
 - **原地覆盖前先保存 Save before overwriting:** 如 [[Replace Elements with Greatest Element on Right Side|1299]] 要先存 `temp` 再写 `arr[i]` → e.g. 1299 saves `temp` before writing `arr[i]`.
 - **遍历时删除 Removing while iterating:** 在 `for-each` 里调用 `list.remove(...)` 通常会抛 `ConcurrentModificationException`；用快慢指针原地过滤，或用 `Iterator.remove()` / `removeIf` → use read/write pointers, `Iterator.remove()` or `removeIf`.
-- **`int[]` 不能直接放进 `List`:** `Arrays.asList(intArray)` 得到的是 `List<int[]>`，只有一个元素 → gives a `List<int[]>` with one element; use `Arrays.stream(a).boxed().toList()` (Java 16+，结果不可修改 unmodifiable; 旧版本 older: `.collect(Collectors.toList())`).
+- **`int[]` 转 `List` 的坑 `int[]` to `List`:** `Arrays.asList(intArray)` 得到只有一个元素的 `List<int[]>`，要用 `Arrays.stream(a).boxed().toList()`（Java 16+，结果不可修改） → `Arrays.asList(intArray)` gives a one-element `List<int[]>`; use `Arrays.stream(a).boxed().toList()` (Java 16+, unmodifiable; older: `.collect(Collectors.toList())`).
 
 ## 7. ❓ 复习题 Review Questions
 
@@ -169,13 +159,13 @@ void delete(int[] a, int size, int k) {
 
 | 题目 Problem | 练的是什么 What it practices |
 | --- | --- |
-| [[Design Dynamic Array\|Design Dynamic Array]] | size vs capacity，翻倍扩容 doubling growth |
-| [[Concatenation of Array\|1929. 数组串联 Concatenation of Array]] | 下标映射，`i % n` Index mapping with `i % n` |
-| [[Max Consecutive Ones\|485. 最大连续 1 的个数 Max Consecutive Ones]] | 一次遍历 + 计数器 one pass with a counter |
-| [[Replace Elements with Greatest Element on Right Side\|1299. 将每个元素替换为右侧最大元素 Replace Elements with Greatest Element on Right Side]] | 从右往左，原地覆盖 right-to-left, overwrite in place |
-| [[Remove Element\|27. 移除元素 Remove Element]] | 快慢指针原地删除 read/write pointers |
+| ✅ [[Design Dynamic Array\|设计动态数组 Design Dynamic Array]] | size vs capacity，翻倍扩容 doubling growth |
+| ✅ [[Concatenation of Array\|1929. 数组串联 Concatenation of Array]] | 下标映射，`i % n` Index mapping with `i % n` |
+| ✅ [[Max Consecutive Ones\|485. 最大连续 1 的个数 Max Consecutive Ones]] | 一次遍历 + 计数器 one pass with a counter |
+| ✅ [[Replace Elements with Greatest Element on Right Side\|1299. 将每个元素替换为右侧最大元素 Replace Elements with Greatest Element on Right Side]] | 从右往左，原地覆盖 right-to-left, overwrite in place |
+| ✅ [[Remove Element\|27. 移除元素 Remove Element]] | 快慢指针原地删除 read/write pointers |
 | ✅ [[Insertion Sort\|插入排序题 Insertion Sort (NeetCode)]] | 原地交换元素，稳定排序 in-place swaps, stable sort |
-| [[Number of Students Unable to Eat Lunch\|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]] | 用 `int[2]` 当计数器，下标就是值 an `int[2]` as counters, indexed by value |
+| ✅ [[Number of Students Unable to Eat Lunch\|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]] | 用 `int[2]` 当计数器，下标就是值 an `int[2]` as counters, indexed by value |
 | ✅ [[Climbing Stairs\|70. 爬楼梯 Climbing Stairs]] | 用 `int[n + 1]` 当缓存，下标就是级数 an `int[n + 1]` as a cache, indexed by stair |
 
 ## 9. 🔗 相关 Related

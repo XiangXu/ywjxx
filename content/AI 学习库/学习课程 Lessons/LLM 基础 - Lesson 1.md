@@ -22,17 +22,13 @@ An LLM doesn't read characters directly. A **tokenizer** first cuts the text int
 | --- | --- |
 | 英文 English | 每个 token 约等于 4 个字符或 0.75 个单词 One token ≈ 4 characters ≈ 0.75 words |
 | 中文 Chinese | 一个汉字通常对应 1–2 个词元 One Chinese character is usually ≈ 1–2 tokens |
-| 代码、JSON、生僻词 Code, JSON, rare words | 消耗更多 token Use more tokens |
+| 代码、JSON、生僻词 Code, JSON, rare words | 消耗的 token 更多 Use more tokens |
 
 **为什么重要 Why it matters:** 计费、上下文长度、生成速度，全部按 token 计算，而不是按字数。
 Billing, context length and generation speed are all counted in tokens, not words.
 
 模型本质上只做一件事：给定之前所有 Token，预测下一个 Token 的概率分布 → 选一个 → 追加到末尾 → 重复，直到停止。这就是 **自回归生成**。
 At its core the model does one thing: given all previous tokens, predict a probability distribution for the next token → pick one → append it → repeat until it stops. This is **autoregressive generation**.
-
-> [!example] Java 类比 Java analogy
-> Tokenizer ≈ 一个 `Map<String, Integer>` 词表 + 一套切分规则（例如 BPE 的合并规则）。模型输入是 `int[]`，输出是“下一个 int”的概率表。
-> A tokenizer ≈ a `Map<String, Integer>` vocabulary + a set of splitting rules (e.g. BPE merge rules). The model's input is an `int[]`; its output is a probability table for "the next int".
 
 ## 2. Context Window：模型的工作记忆 The model's working memory
 
@@ -80,7 +76,7 @@ Prices are quoted **per million tokens (MTok)**:
 
 | 模型 Model | Input \$/1M | Output \$/1M | Context |
 | --- | --- | --- | --- |
-| Claude Opus 5.5（最强，默认 most capable, default） | \$4.00 | \$20.00 | 1M |
+| Claude Opus 5.5（默认 default） | \$4.00 | \$20.00 | 1M |
 | Claude Sonnet 5.5（均衡 balanced） | \$2.00 | \$10.00 | 1M |
 | Claude Haiku 5.5（最便宜、最快 cheapest, fastest） | \$0.10 | \$0.50 | 1M |
 | Claude Haiku 4.5（上一代 previous generation） | \$1.00 | \$5.00 | 200K |
@@ -97,8 +93,8 @@ A support bot handles 100,000 requests a day, each with 2,000 input tokens + 300
 > - Output: 100,000 × 300 = 30M tokens × \$10 = **\$300**
 > - 合计 Total: **\$700 / 天 per day**，约 **\$21,000 / 月**
 >   About **\$21,000 / month**
-> - 换成 Haiku 5.5（每次 2,000 Token，低于 100K 档）：200M × \$0.10 + 30M × \$0.50 = \$20 + \$15 = **\$35 / 天**，是 Sonnet 5.5 的 1/20。
->   With Haiku 5.5 (2,000 tokens per request, under the 100K tier): 200M × \$0.10 + 30M × \$0.50 = \$20 + \$15 = **\$35 / day**, 1/20 of Sonnet 5.5.
+> - 换成 Haiku 5.5：200M × \$0.10 + 30M × \$0.50 = **\$35 / 天**，是 Sonnet 5.5 的 1/20。
+>   With Haiku 5.5: 200M × \$0.10 + 30M × \$0.50 = **\$35 / day**, 1/20 of Sonnet 5.5.
 
 **要点 Key points:**
 
@@ -130,21 +126,10 @@ LLM 把文本切成 Token，在固定大小的上下文窗口内自回归地预�
 
 "An LLM splits text into tokens and autoregressively predicts the next token within a fixed-size context window. Sampling parameters control randomness. Cost is priced separately for input and output tokens, with output more expensive. Latency is roughly TTFT plus output length divided by generation speed. So the core of reducing both cost and latency is managing tokens: cache prefixes, shorten outputs, pick the right model, and stream to improve perceived latency."
 
-## 7. 动手写 LlmHello.java Hands-on: LlmHello.java
+## 7. 一次 API 调用长什么样 What One API Call Looks Like
 
-只用 JDK 自带的 `java.net.http.HttpClient`，不需要 Maven。
-Uses only the JDK's built-in `java.net.http.HttpClient`; no Maven needed.
-
-1. **获取密钥 Get an API key:** 在 console.anthropic.com 创建 key，充值少量额度（\$5 能用很久）。
-   Create a key at console.anthropic.com and add a little credit (\$5 lasts a long time).
-2. **设置并运行 Set it and run**（Java 11+ 可以直接运行单个源文件）：
-   Java 11+ can run a single source file directly:
-   ```bash
-   export ANTHROPIC_API_KEY=sk-ant-...
-   java LlmHello.java "Explain what a token is in one sentence"
-   ```
-3. **在输出中找到 Find in the output:** `content[0].text`（回答 the answer）、`stop_reason`（`end_turn` 表示正常结束 means a normal finish）、`usage.input_tokens` / `usage.output_tokens`。
-   `content[0].text`, `stop_reason` and `usage.input_tokens` / `usage.output_tokens`.
+底层就是一个 HTTPS POST；真实项目用官方 SDK（Java：`com.anthropic:anthropic-java`），不要手拼 JSON。
+Underneath it's just an HTTPS POST; real projects use the official SDK (Java: `com.anthropic:anthropic-java`) instead of building JSON by hand.
 
 ```http
 POST https://api.anthropic.com/v1/messages
@@ -167,16 +152,8 @@ content-type: application/json
   Three fields, `model`, `max_tokens` and `messages` (an array of `role` + `content`), plus the three headers above.
 - **无状态 Stateless:** 多轮对话时，把之前的 user 和 assistant 消息都放进 `messages` 再发一次。
   For a multi-turn conversation, put the earlier user and assistant messages into `messages` and send them again.
-
-| 实验 Experiment | 做法 How | 观察 Observe |
-| --- | --- | --- |
-| A. 中英文 Token Chinese vs English tokens | 分别问 “What is a token?” 和 “什么是 token？” Ask both questions separately | 比较 `input_tokens` Compare `input_tokens` |
-| B. 截断 Truncation | 把 `max_tokens` 设为 20，问一个需要长回答的问题 Set `max_tokens` to 20 and ask for a long answer | `stop_reason` 会变成 `max_tokens` 这个值 The `stop_reason` becomes `max_tokens` |
-| C. 延迟 vs 输出长度 Latency vs output length | 先要求一句话回答，再要求 500 字回答 Ask for a one-sentence answer, then a 500-word one | 比较延迟 Compare latency |
-
-> [!tip] 真实项目 Real projects
-> 不要手拼 JSON，也不要用正则解析。使用官方 Java SDK（`com.anthropic:anthropic-java`）或 Jackson。这里用 `HttpClient` 只是为了说明：底层就是一个 HTTPS POST。
-> Don't build JSON by hand or parse it with regexes. Use the official Java SDK (`com.anthropic:anthropic-java`) or Jackson. `HttpClient` here only shows that underneath it's just an HTTPS POST.
+- **响应里看 In the response:** `content[0].text`（回答 the answer）、`stop_reason`（`end_turn` / `max_tokens`）、`usage.input_tokens` / `usage.output_tokens`。
+  `content[0].text`, `stop_reason` (`end_turn` / `max_tokens`) and `usage.input_tokens` / `usage.output_tokens`.
 
 ## 8. 🔗 相关笔记 Related Notes
 

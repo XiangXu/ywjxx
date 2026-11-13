@@ -46,16 +46,11 @@ Remove every occurrence of `val` from `nums` **in place** and return `k`, the nu
 - **不变量 Invariant:** `nums[0..left-1]` 永远是目前为止保留下来的元素，而且 `left <= right`，所以写入不会覆盖还没读过的元素。
   `nums[0..left-1]` always holds the elements kept so far, and `left <= right`, so a write never clobbers an element that hasn't been read yet.
 
-> [!tip] Java 类比 Java analogy
-> 就像 `list.removeIf(x -> x == val)`。`ArrayList.removeIf` 内部也是这样压缩数组的：把保留的元素往前挪，再把尾部清空（置为 `null`）并更新 `size`。
-> It's `list.removeIf(x -> x == val)` done by hand. `ArrayList.removeIf` compacts its backing array the same way: shift the survivors forward, then null out the tail and update `size`.
-
 ## 3. 🐢 暴力解 Brute Force
 
 - **思路 Idea:** 每找到一个 `val`，就把它后面的所有元素左移一位（就像 `ArrayList.remove(index)`），长度减一。
   Each time you find `val`, shift everything after it one slot left (like `ArrayList.remove(index)`) and shrink the length.
 - ⏱️ Time: O(n²) · 🗄️ Space: O(1)
-- 问题：每次删除都要移动后面所有元素。 Every removal shifts the whole tail.
 
 ## 4. 🚀 最优解 Optimal Solution
 
@@ -115,7 +110,6 @@ class Solution {
 
 - [x] 空数组 Empty array (`[]`): 循环不执行，返回 0 → the loop never runs, returns 0
 - [x] 全是 `val` All `val` (`[3,3]`, `val = 3`): 一次都不写，返回 0 → no writes, returns 0
-- [x] 没有 `val` No `val` at all: 每个元素原地复制到自己 (`left == right`)，无害 → each element is copied onto itself, harmless
 - [x] 返回的是个数 `k`，不是下标 Return the count `k`, not an index: `left` 每保留一个加一，正好等于个数 → `left` goes up once per kept element, so it is exactly the count
 
 ## 6. 🔁 进阶 Follow-ups
@@ -129,10 +123,6 @@ The same "fast reads, slow writes" template solves a whole family of in-place fi
 | 26. Remove Duplicates from Sorted Array | `left == 0 \|\| nums[right] != nums[left - 1]` (和上一个保留的不同；第一个总是保留 differs from the last kept; the first is always kept) |
 | 80. Remove Duplicates from Sorted Array II | `left < 2 \|\| nums[right] != nums[left - 2]` (最多保留两个 keep at most two) |
 | 283. Move Zeroes | `nums[right] != 0`，然后把尾部填 0（或直接交换） Keep `nums[right] != 0`, then zero-fill the tail (or swap) |
-
-> [!important] 和 485 对比 Compare with 485
-> [[Max Consecutive Ones|485. 最大连续 1 的个数 Max Consecutive Ones]] 只有一个下标，计数器记录当前连续段的长度，窗口左边界是隐含的；这题的 `left` 是**真正的第二个指针**，它指向数组里的一个位置并往里写数据。
-> 485 has only one index; its counter tracks the current run's length, so the left edge is only implied. Here `left` is a **real second pointer**: it points into the array and is written through.
 
 ## 7. ❓ 复习题 Review Questions
 
@@ -159,7 +149,6 @@ The same "fast reads, slow writes" template solves a whole family of in-place fi
 - [[📌 LeetCode 总览]]
 - 🧠 套路 Pattern: [[双指针 Two Pointers|双指针 Two Pointers]] · [[数组 Array|数组 Array]]
 - 上一题 Previous: [[Max Consecutive Ones|485. 最大连续 1 的个数 Max Consecutive Ones]]
-- 同一模板 Same template: 26. Remove Duplicates from Sorted Array, 283. Move Zeroes
 - 下一题 Next note: [[Replace Elements with Greatest Element on Right Side|1299. 将每个元素替换为右侧最大元素 Replace Elements with Greatest Element on Right Side]]
 
 ## 9. 🔁 复习记录 Review Log

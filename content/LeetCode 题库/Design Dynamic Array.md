@@ -54,15 +54,6 @@ Design a dynamic (resizable) array, like Java's `ArrayList` or C++'s `vector`.
 - **套路 Pattern:** 设计题 / 倍增扩容 (design, geometric growth)。Java 数组长度不能改，所以“扩容”其实是**新建更大的数组 + 复制**。
   Java arrays can't change length, so "resizing" really means **allocate a bigger array + copy**.
 
-```
-capacity = 4, length = 3
-┌───┬───┬───┬───┐
-│ 5 │ 8 │ 2 │   │
-└───┴───┴───┴───┘
-  0   1   2   3
-              ↑ length：下一个写入位置 next write goes here
-```
-
 ## 3. 🐢 暴力解 Brute Force
 
 - 思路 Idea: 每次 `pushback` 都只扩容 1 格（或固定加 `k` 格）。
@@ -154,9 +145,6 @@ class DynamicArray {
 > | `pushback(2)` | ✅ 1 → 2, 复制 1 个 copy 1 | `[1,2]` | 2 | 2 |
 > | `pushback(3)` | ✅ 2 → 4, 复制 2 个 copy 2 | `[1,2,3,_]` | 3 | 4 |
 > | `popback()` → 3 | | `[1,2,3,_]` | 2 | 4 |
->
-> pop 之后 `arr[2]` 里还留着 3，但 `length = 2`，这一格已被视为空，下次 push 会覆盖它。
-> After the pop, `arr[2]` still holds 3, but with `length = 2` that slot counts as empty and the next push overwrites it.
 
 > [!note] 其他写法 Alternatives
 > **用 JDK 复制 Use the JDK copy:** `resize()` 可以写成一行，效果相同，常数更小。 One line, same effect, smaller constant:
@@ -181,7 +169,6 @@ class DynamicArray {
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
 
 - [x] **先扩容再写** Resize *before* writing: `length == capacity` 时直接写 `arr[length]` 会 `ArrayIndexOutOfBoundsException` → writing first throws.
-- [x] **只复制 `length` 个** Copy `length` elements: 这题只在满时扩容，两者相等；一般情况下复制 `length` 个更省，复制 `capacity` 个也对，只是白做功 → they're equal here since resize only happens when full; in general copying `length` skips wasted work, though copying `capacity` is still correct.
 - [x] **弹出不缩容** Popping doesn't shrink capacity: 示例 3 最后的容量仍是 `2` → Example 3 ends with capacity `2`.
 - [x] **`popback` 先减再读** Decrement, then read: 最后一个元素在 `length - 1`，不是 `length` → the last element is at `length - 1`.
 - [x] **`popback` 里的 `if (length > 0)`** The guard: 题目保证非空，所以它不会生效。但如果真的空了，它会悄悄返回 `arr[0]` 的旧值，反而掩盖了 bug。真实代码里应该抛异常（`ArrayList.remove` 会抛 `IndexOutOfBoundsException`）→ the problem guarantees non-empty, so it never triggers. If it did, it would silently return a stale `arr[0]` and hide the bug; real code should throw instead.
@@ -199,9 +186,6 @@ class DynamicArray {
 > | 元素类型 Element type | `int`（基本类型 primitive） | `Object[]`，泛型 + 自动装箱 `Object[]` with generics + boxing |
 > | 删除后清空 Clears on remove | 不需要 not needed | 把空位设为 `null`，让 GC 回收对象 sets the slot to `null` so the object can be GC'd |
 > | 缩容 Shrinks | 否 No | 不会自动缩，可手动调用 `trimToSize()` Never automatically; call `trimToSize()` |
->
-> C++ 标准只要求 `push_back` 均摊 O(1)，因子由标准库决定：libstdc++ 和 libc++ 是 ×2，MSVC STL 是 ×1.5。
-> The C++ standard only requires amortized O(1) `push_back`; the factor is up to the standard library: ×2 in libstdc++ and libc++, ×1.5 in the MSVC STL.
 
 > [!warning] 如果要支持缩容 If you add shrinking
 > 不要在“半满”时缩容一半：在临界点上交替 push/pop 会让每次操作都触发 O(n) 的复制（抖动 thrashing）。
@@ -210,8 +194,6 @@ class DynamicArray {
 
 - **在中间插入/删除** Insert/remove in the middle: 需要把后面的元素整体平移，O(n)。这就是 `ArrayList.add(i, x)` 慢、链表擅长的场景。
   Shifts every later element: O(n). That's why `ArrayList.add(i, x)` is slow and where linked lists shine.
-- **为什么有人选 ×1.5？ Why ×1.5?** 空闲空间更少；因子小于黄金比例（约 1.618）时，释放的旧内存块最终可能拼起来被复用（取决于分配器）。
-  Less idle space; with a factor below the golden ratio (~1.618), freed old blocks can eventually be reused for a new array (allocator-dependent).
 
 ## 7. ❓ 复习题 Review Questions
 
@@ -245,7 +227,7 @@ class DynamicArray {
 - 🧠 概念 Concepts: [[数组 Array|数组 Array]] · [[复杂度分析 Big-O|均摊分析 Amortized analysis]]
 - 上一题 Previous: [[Concatenation of Array|1929. 数组串联 Concatenation of Array]]（也是“新建更大的数组 + 复制” also "allocate bigger + copy"）
 - 下一题 Next: [[Baseball Game|682. 棒球比赛 Baseball Game]]（用数组当栈 an array used as a stack）
-- 705 / 706. Design HashSet / HashMap: 另一个设计题。常见解法是固定桶数 + 链表；真实的哈希表（如 Java `HashMap`）超过负载因子时才扩容并重新哈希 Another design problem. Typical solutions use a fixed number of buckets with chaining; real hash tables like Java's `HashMap` double and rehash once they pass the load factor
+- 705 / 706. Design HashSet / HashMap: 另一个设计题：桶 + 链表，Java `HashMap` 超过负载因子时翻倍并重新哈希 Another design problem: buckets with chaining; Java's `HashMap` doubles and rehashes past the load factor
 - 对照 Counterpart: [[Design Linked List|707. 设计链表 Design Linked List]]（已知节点处插入 O(1)、随机访问 O(n)，正好相反 Insert at a known node is O(1), random access O(n)）
 
 ## 9. 🔁 复习记录 Review Log

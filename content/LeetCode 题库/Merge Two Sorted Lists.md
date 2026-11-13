@@ -23,8 +23,8 @@ last-reviewed: 2026-10-27
 # 🔀 21. Merge Two Sorted Lists
 
 > [!abstract] TL;DR
-> **递归：** 合同是“`mergeTwoLists(a, b)` 返回 `a`、`b` 合并后的头”。两条链表的头里**较小的那个一定是结果的头**，所以本层选出它，让它的 `next` 等于“剩下的部分合并好的结果”（相信子调用），然后返回它自己。有一条为空就直接返回另一条。**迭代：** 用哑节点 `dummyHead` 和尾指针 `curr`，每次把较小的节点接到尾巴上；一条走完后，把另一条剩下的整段直接接上。
-> **Recursive:** the contract is "`mergeTwoLists(a, b)` returns the head of `a` and `b` merged". **The smaller of the two heads must be the merged list's head**, so this level picks it, sets its `next` to "the rest, merged" (trusting the child call), and returns itself. If either list is empty, return the other. **Iterative:** keep a `dummyHead` and a tail pointer `curr`, attach the smaller node to the tail each step, and once one list runs out, attach the rest of the other in one go.
+> **递归：** 两条链表的头里**较小的那个一定是结果的头**，本层选出它，让它的 `next` 等于“剩下的部分合并好的结果”（相信子调用），然后返回它自己；有一条为空就返回另一条。**迭代：** 哑节点 `dummyHead` 加尾指针 `curr`，每次把较小的节点接到尾巴上；一条走完后，把另一条剩下的整段直接接上。
+> **Recursive:** **the smaller of the two heads must be the merged list's head**, so this level picks it, sets its `next` to "the rest, merged" (trusting the child call), and returns itself; if either list is empty, return the other. **Iterative:** a `dummyHead` plus a tail pointer `curr`, attach the smaller node to the tail each step, and once one list runs out, attach the rest of the other in one go.
 >
 > ⏱️ O(n + m) · 🗄️ 迭代 O(1) / 递归 O(n + m) 调用栈 Iterative O(1) / recursive O(n + m) call stack
 
@@ -67,30 +67,8 @@ public class ListNode {
 
 ## 3. 🐢 暴力解 Brute Force
 
-把两条链表的值全部倒进一个数组，排序，再新建一条链表。
-Dump every value from both lists into an array, sort it, and build a new list.
-
-```java
-public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
-    List<Integer> vals = new ArrayList<>();
-    for (ListNode p = list1; p != null; p = p.next) vals.add(p.val);
-    for (ListNode p = list2; p != null; p = p.next) vals.add(p.val);
-    Collections.sort(vals);                     // 没用上“已经有序” ignores that the inputs are sorted
-
-    ListNode dummy = new ListNode();
-    ListNode tail = dummy;
-    for (int v : vals) {
-        tail.next = new ListNode(v);            // 新建节点 new nodes
-        tail = tail.next;
-    }
-    return dummy.next;
-}
-```
-
-- ⏱️ Time: O((n + m) log(n + m))，排序 sorting
-- 🗄️ Space: O(n + m)，数组和新节点 the array and the new nodes
-- 浪费了题目给的“已经有序”这个条件；而且题目要求拼接原节点，这样写不符合题意。
-  It wastes the fact that both inputs are already sorted, and it creates new nodes instead of splicing the existing ones as the problem asks.
+把两条链表的值全部倒进一个数组，排序，再新建一条链表。O((n + m) log(n + m)) 时间、O(n + m) 空间；浪费了“已经有序”这个条件，而且新建节点不符合“拼接原节点”的题意。
+Dump every value from both lists into an array, sort it, and build a new list. O((n + m) log(n + m)) time, O(n + m) space; it wastes the fact that the inputs are sorted and creates new nodes instead of splicing the existing ones.
 
 ## 4. 🚀 最优解 Optimal Solution
 
@@ -123,66 +101,12 @@ class Solution {
 - ⏱️ Time: O(n + m)，每次调用 O(1)，每次调用拿走一个节点 each call is O(1) and consumes one node
 - 🗄️ Space: O(n + m)，最坏情况下递归深度等于节点总数 worst-case recursion depth is n + m on the [[栈 Stack|call stack]]（本题 n + m ≤ 100，完全没问题 at most 100 here, no problem）
 
-#### 4.1.1 用三个问题拆解 The three questions
+**三个问题 The three questions:** ① 合同：返回 `a`、`b` 合并后的头；② 出口：一条为空返回另一条（两条都空返回 `null` 也对）；③ 本层：较小的头当结果的头，`next` 交给子调用，返回自己。每次调用拿走一个节点，总长度每次减 1，迟早有一条变空，所以出口够用（见 [[递归 Recursion|递归 Recursion]]）。
+① Contract: return the head of `a` and `b` merged; ② base case: one list empty, return the other (both empty returns `null`, also correct); ③ this level: the smaller head leads, its `next` comes from the child call, return yourself. Every call consumes one node, so one list eventually empties and the base cases are enough (see [[递归 Recursion|递归 Recursion]]).
 
-[[递归 Recursion|递归 Recursion]] 里说写递归只需回答三个问题，本题的答案：
-The recursion note says every recursive function answers three questions. Here are this problem's answers:
-
-| 问题 Question | 本题 This problem |
-| --- | --- |
-| ① 合同 Contract | `mergeTwoLists(a, b)` 把有序链表 `a` 和 `b` 合并，返回**合并后的头** merges sorted lists `a` and `b` and returns **the merged head** |
-| ② 出口 Base case | `a` 为空 → 返回 `b`；`b` 为空 → 返回 `a`（两条都空时返回 `null`，也对） `a` empty → return `b`; `b` empty → return `a` (both empty returns `null`, also correct) |
-| ③ 本层 This level | 较小的头当结果的头；它的 `next` = 子调用合并剩下部分的结果；返回它 the smaller head leads; its `next` = the child's merge of the rest; return it |
-
-**出口为何够用 Why these base cases are enough:** 每次调用都拿走一个节点，总长度每次减 1，迟早有一条变空；这时另一条本身已经有序、已经串好，直接返回。
-Every call takes one node, so the total length drops by one each time and eventually one list is empty; the other list is already sorted and linked, so return it as is.
-
-**选在调用前，连在调用后 Choose before the call, connect after:** 本层只比较两个头选出自己的节点，再把子调用交回的“剩下部分合并好的头”接在自己后面。子结果里每个值都 ≥ 本层的值（本层选的是两个头里最小的），所以接上之后整条链表仍然有序。
-This level only compares the two heads to pick its node, then hangs the child's "head of the rest, merged" after itself. Every value in the child's result is ≥ this level's value (this level took the smaller head), so the whole list stays sorted.
-
-#### 4.1.2 走一遍 Trace
-
-> [!example] 走一遍 Trace: `list1 = 1a → 2a → 4a`，`list2 = 1b → 3b → 4b`
->
-> `a` / `b` 标出节点来自哪条链表。先一路“递”下去，每层选一个节点；到一条为空时触底；再一路“归”回来，每层把子结果接到自己后面。
-> `a` / `b` mark which list a node came from. Going down, each level picks one node; it bottoms out when one list is empty; unwinding, each level hangs the child's result after itself.
->
-> | 层 Level | `list1` | `list2` | 选 Chosen | 子调用交回 Child returns | 本层做的事 This level's work | 返回 Returns |
-> | --- | --- | --- | --- | --- | --- | --- |
-> | 1 | `1a→2a→4a` | `1b→3b→4b` | 1a（相等时 list1 优先 ties favor list1） | `1b→2a→3b→4a→4b` | `1a.next = 1b…` | 1a |
-> | 2 | `2a→4a` | `1b→3b→4b` | 1b | `2a→3b→4a→4b` | `1b.next = 2a…` | 1b |
-> | 3 | `2a→4a` | `3b→4b` | 2a | `3b→4a→4b` | `2a.next = 3b…` | 2a |
-> | 4 | `4a` | `3b→4b` | 3b | `4a→4b` | `3b.next = 4a…` | 3b |
-> | 5 | `4a` | `4b` | 4a（相等时 list1 优先 ties favor list1） | `4b` | `4a.next = 4b` | 4a |
-> | 6 | `null` | `4b` | 触底 base case | — | 无 none | 4b |
->
-> 从下往上看“返回”这一列：`4b`、`4a`、`3b`、`2a`、`1b`、`1a`，链表是**从尾巴往头**一节一节接起来的，最外层拿到的 1a 就是整条链表的头。
-> Read the Returns column bottom-up: `4b`, `4a`, `3b`, `2a`, `1b`, `1a`. The list is linked **from the tail back to the head**, and the outermost call ends up with 1a, the head of the whole list.
-
-#### 4.1.3 和 206 反转链表对比 Compared with 206
-
-两道题都是“拿到子结果 → 结合自己 → 返回本层结果”，但**自己接在哪**不一样，所以返回值也不一样：
-Both are "take the child's result → combine with yourself → return this level's result", but **where you attach** differs, and so does the return value:
-
-| | [[Reverse Linked List\|206. 反转链表 Reverse Linked List]] | 21. 合并 Merge |
-| --- | --- | --- |
-| 子调用交回 Child returns | 反转好的后半段 the reversed rest | 合并好的剩余部分 the merged rest |
-| 本层接在 This level attaches | 子链表的**尾巴** at the child's **tail** | 子链表的**前面** in **front** of the child |
-| 返回 Returns | `newHead`（头没变，原样传上去 head unchanged, passed up） | `list1` / `list2`（我自己就是新头 I am the new head） |
-| 本层的活在 Work happens | 全在调用之后（后序） all after the call (post-order) | 选在调用前，连在调用后 choose before, connect after |
-
-[[递归 Recursion|递归 Recursion]] 里说“返回值是谁，取决于本层把自己放在哪”，本题就是例子：本层放在最前面，所以返回自己，而不是子调用的结果。
-The recursion note says "what you return depends on where this level puts itself"; here this level goes in front, so it returns itself, not the child's result.
-
-#### 4.1.4 容易卡住的细节 Details that trip people up
-
-> [!important] 为什么 `list1.next = mergeTwoLists(...)` 不会丢节点 Why `list1.next = mergeTwoLists(...)` doesn't lose nodes
-> Java 先求右边：**旧的** `list1.next` 先作为参数传进子调用，等子调用返回后才赋给 `list1.next`。旧的后续节点已经交给子调用了，不会丢。
-> Java evaluates the right-hand side first: the **old** `list1.next` is passed into the child call, and only after it returns is the result assigned to `list1.next`. The old successors were already handed off, so nothing is lost.
-
-> [!tip] `<=` 还是 `<`？ `<=` or `<`?
-> 两个都对。`<=` 在相等时先取 `list1`，相同值保持原来的先后，这叫**稳定**；对 `int` 看不出区别，按字段给对象归并排序时才有意义。两种写法都改的是原节点的 `next`，合并后原来的两条链表就不存在了。
-> Both are correct. `<=` takes `list1` first on ties, keeping equal values in their original order: the merge is **stable**. With `int` you can't tell, but it matters when merge-sorting objects by a key. Both versions rewire the existing nodes' `next`, so the original two lists are gone afterwards.
+> [!important] 和 206 反转链表对比 Compared with 206
+> 两道题都是“拿到子结果 → 结合自己 → 返回”，但 [[Reverse Linked List|206. 反转链表 Reverse Linked List]] 把自己接在子链表的**尾巴**上，头没变，所以原样返回 `newHead`；本题把自己放在子链表**前面**，自己成了新头，所以返回自己。
+> Both are "take the child's result → combine with yourself → return", but 206 attaches itself at the child's **tail**, so the head is unchanged and `newHead` is passed up; here this level goes in **front** of the child's list, becomes the new head, and returns itself.
 
 ### 4.2 迭代 Iterative (dummy head)
 
@@ -234,23 +158,16 @@ class Solution {
 > | 5 | 4 ≤ 4 | 4a | `…→3b→4a` | `null` | 4b |
 > | 收尾 Finish | | 4b（剩下的整段 the leftover） | `1a→1b→2a→3b→4a→4b` | | |
 >
-> 和递归选节点的顺序完全一样，区别是迭代**从头往尾**接，递归**从尾往头**接。
-> The nodes are picked in exactly the same order as the recursion; the iteration links **head to tail**, the recursion **tail to head**.
-
-> [!tip] 为什么迭代需要哑节点，递归不需要 Why the iteration needs a dummy and the recursion doesn't
-> 迭代是从前往后接，第一个节点之前没有“尾巴”可接，所以放一个哑节点当初始尾巴，省掉“结果还空着”的特判，最后返回 `dummyHead.next`。递归是从后往前接，每层**返回**自己作为头，返回值本身就扮演了 `dummyHead.next` 的角色。
-> The iteration links front to back, and before the first node there's no tail to attach to, so a dummy serves as the initial tail, removing the "result is still empty" special case; return `dummyHead.next`. The recursion links back to front and each level **returns** itself as the head, so the return value plays the role of `dummyHead.next`.
-
-### 4.3 其他写法 Alternatives
+> 和递归选节点的顺序完全一样，区别是迭代**从头往尾**接，递归**从尾往头**接。迭代需要哑节点，因为第一个节点之前没有“尾巴”可接；递归每层**返回**自己当头，返回值就扮演了 `dummyHead.next` 的角色。
+> The nodes are picked in exactly the same order as the recursion; the iteration links **head to tail**, the recursion **tail to head**. The iteration needs a dummy because there's no tail to attach to before the first node; the recursion **returns** itself as the head, so the return value plays the role of `dummyHead.next`.
 
 > [!note] 其他写法 Alternatives
-> **收尾可以写成一行 The finish can be one line:** 循环结束时最多一条非空，两条都空时接 `null` 也没问题，所以 `if / else if` 可以合并。
-> When the loop ends, at most one list is non-empty, and attaching `null` when both are empty is harmless, so the `if / else if` collapses to one line.
+> **收尾一行 One-line finish:** 循环结束时最多一条非空，接 `null` 也无害 at most one list is non-empty when the loop ends, and attaching `null` is harmless
 > ```java
 > curr.next = (list1 != null) ? list1 : list2;
 > ```
-> **递归的另一种写法 A shorter recursive shape:** 先保证 `list1` 的头更小，然后只写一个分支。思路相同，只是少一个分支。
-> Swap so `list1` always has the smaller head, then write one branch. Same idea, one branch fewer.
+> **递归只写一个分支 One-branch recursion:** 先交换让 `list1` 的头更小，再只写一个分支。注意这个版本**不稳定**：交换后参数顺序反了，之后的相等值会先取原来的 `list2`（`[1a, 3a]` 和 `[0b, 1b]` 得到 1b 在 1a 前面）。
+> Swap so `list1` has the smaller head, then write one branch. This version is **not stable**: after a swap the arguments are reversed, so later ties take the original `list2` first (`[1a, 3a]` and `[0b, 1b]` put 1b before 1a).
 > ```java
 > public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
 >     if (list1 == null) return list2;
@@ -262,18 +179,15 @@ class Solution {
 >     return list1;
 > }
 > ```
-> 注意这个版本**不稳定**：交换之后参数顺序反了，之后的相等值会先取原来的 `list2`。例如 `[1a, 3a]` 和 `[0b, 1b]`，结果里 1b 排在 1a 前面。
-> This version is **not stable**: after a swap the arguments are reversed, so later ties take the original `list2` first. With `[1a, 3a]` and `[0b, 1b]`, 1b ends up before 1a.
 
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
 
-- [x] 两条都空 Both empty: 递归在第一个出口返回 `list2 = null`；迭代不进循环，返回的 `dummyHead.next` 就是空 → recursive returns `list2 = null` at the first check; iterative skips the loop and returns `null`
-- [x] 一条为空 One empty: 直接返回另一条 → return the other one as is
+- [x] 两条都空 / 一条为空 Both or one empty: 返回另一条（都空时是 `null`）；迭代不进循环，`dummyHead.next` 就是 `null` → return the other (`null` when both are empty); the iteration skips the loop and `dummyHead.next` is `null`
 - [x] 长度不同 Different lengths: 一条先走完，另一条剩下的整段直接接上，不用逐个走 → when one runs out, attach the rest of the other in one step
-- [x] 值相等 Equal values: `<=` 先取 `list1`，结果稳定；写 `<` 也对 → `<=` takes `list1` first (stable); `<` is also correct
-- [x] ⚠️ 迭代版别忘了 Don't forget `curr = curr.next`: 尾巴不前进的话，每次都覆盖 `dummyHead.next`，最后收尾又把它覆盖成剩余部分，之前选的节点全丢了 → without it, every step overwrites `dummyHead.next`, and the final attach overwrites it again, so only the leftover run survives
-- [x] ⚠️ 返回哑节点的下一个 Return `dummyHead.next`, not `dummyHead`: 返回 `dummyHead` 的话，结果开头多一个值为 0 的假节点 → otherwise the result starts with a fake 0
-- [x] ⚠️ 别直接返回子调用 Don't return the child call directly: 写成 `return mergeTwoLists(list1.next, list2);` 会把选中的 `list1` 丢掉，要先接到 `list1.next` 再返回 `list1` 本身 → that drops the chosen node; hang the result on `list1.next`, then return `list1`
+- [x] 值相等 Equal values: `<=` 先取 `list1`，相同值保持原来的先后（**稳定**），按字段给对象归并排序时才看得出来；写 `<` 也对 → `<=` takes `list1` first, keeping equal values in their original order (**stable**), which only matters when merge-sorting objects by a key; `<` is also correct
+- [x] ⚠️ 迭代版别忘了 Don't forget `curr = curr.next`: 尾巴不前进的话，每次都覆盖 `dummyHead.next`，之前选的节点全丢了 → without it, every step overwrites `dummyHead.next` and the chosen nodes are lost
+- [x] ⚠️ 返回哑节点的下一个 Return `dummyHead.next`, not `dummyHead`: 否则结果开头多一个值为 0 的假节点 → otherwise the result starts with a fake 0
+- [x] ⚠️ 别直接返回子调用 Don't return the child call directly: `return mergeTwoLists(list1.next, list2);` 会把选中的 `list1` 丢掉，要先接到 `list1.next` 再返回 `list1` → that drops the chosen node; hang the result on `list1.next`, then return `list1`
 - [x] 递归深度 Recursion depth: 最坏 n + m 层，本题最多 100 层；合并很长的链表（比如在归并排序里）时用迭代版 → worst case n + m frames, at most 100 here; for very long lists (e.g. inside merge sort) use the iterative version
 
 ## 6. 🔁 进阶 Follow-ups
@@ -303,8 +217,8 @@ class Solution {
 **Q3.** `list1.next = mergeTwoLists(list1.next, list2)` 会不会把 `list1` 后面的节点弄丢？ Does this line lose the nodes after `list1`?
 
 > [!success]- 答案 Answer
-> 不会。Java 先求右边：旧的 `list1.next` 作为参数传进子调用，子调用把它们合并好后返回，才赋给 `list1.next`。后面的节点在赋值之前已经交出去了。
-> No. Java evaluates the right side first: the old `list1.next` is passed into the child call, which merges those nodes and returns, and only then is the result assigned to `list1.next`. The successors were handed off before the assignment.
+> 不会。Java 先求右边：旧的 `list1.next` 先作为参数传进子调用，子调用返回后才赋给 `list1.next`。
+> No. Java evaluates the right side first: the old `list1.next` is passed into the child call, and only after it returns is the result assigned to `list1.next`.
 
 **Q4.** 两种写法的空间复杂度分别是多少？什么时候选迭代？ What's the space of each, and when do you pick the iteration?
 

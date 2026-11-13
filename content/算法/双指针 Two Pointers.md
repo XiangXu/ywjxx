@@ -28,14 +28,8 @@ publish: true
 | --- | --- | --- |
 | 🐇🐢 同向 / 快慢 Same direction (fast/slow) | 都从左边出发，快指针每步都走，慢指针满足条件才走 both start left; fast always moves, slow only when a condition holds | 原地删除、去重、移动元素 in-place remove, dedupe, move |
 | 👉👈 相向 Opposite direction | 一个从左、一个从右，往中间走直到相遇 one from each end, moving inward until they meet | 反转、回文、有序数组两数之和 reverse, palindrome, pair sum on sorted input |
-
-> [!note] 滑动窗口也是双指针 Sliding window is two pointers too
-> 同向双指针围出一个区间 `[left, right]`，右边扩、左边缩，以后单独写笔记。
-> Same-direction pointers bound a range `[left, right]` that grows on the right and shrinks on the left; it gets its own note later.
-
-> [!note] 两个输入各一个指针 One pointer per input
-> 还有一种：两条**有序**的数组或链表各放一个指针，每次比较两边，取较小的那个并前进。这就是归并排序的 merge 步骤，O(n + m)（[[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]]；88 则从后往前取较大的）。
-> Another shape: one pointer in each of two **sorted** arrays or lists; compare, take the smaller, advance that side. It's the merge step of merge sort, O(n + m) (88 instead goes from the back and takes the larger).
+| 🪟 滑动窗口 Sliding window | 同向，围出区间 `[left, right]`，右边扩、左边缩 same direction, bounding `[left, right]`: grow on the right, shrink on the left | 子数组 / 子串问题，以后单独写笔记 subarray / substring problems; its own note later |
+| 🔀 两个输入各一个 One per input | 两条有序序列各放一个指针，取较小的并前进 one pointer per sorted sequence; take the smaller and advance it | 归并排序的合并步骤 the merge step of merge sort, O(n + m) → [[Merge Two Sorted Lists\|21]], 88 |
 
 ## 2. 🧠 什么时候用 When to Use
 

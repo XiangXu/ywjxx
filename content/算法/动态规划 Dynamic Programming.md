@@ -90,11 +90,6 @@ Taking 70 as the example, the same recurrence has four versions, usually improve
 > 看 `f(i)` 依赖多远。[[Climbing Stairs|70]] 只看前两个值，两个变量就够。如果依赖所有更小的状态（如 300 最长递增子序列的 DP 写法），就要留下整张表。
 > Check how far back `f(i)` looks. 70 only needs the previous two values, so two variables are enough. If it depends on every smaller state (like the DP version of 300 Longest Increasing Subsequence), you need the whole table.
 
-### 3.3 复杂度怎么算 Working out the complexity
-
-**时间 Time:** 约等于状态数乘以每个状态的转移数（假设每次转移是常数时间）。70 有 `n` 个状态，每个看 2 个选择，所以是 O(n)；322 零钱兑换有 `amount` 个状态，每个试 `k` 种硬币，所以是 O(amount × k)。
-About the number of states times the transitions per state, assuming each transition takes constant time. 70 has `n` states with 2 choices each, so O(n); 322 Coin Change has `amount` states trying `k` coins each, so O(amount × k).
-
 ## 4. 💻 模板代码 Code Template
 
 ```java
@@ -128,10 +123,10 @@ int solve(int n) {
 }
 ```
 
-后两个模板假设 `n >= 1`；`n` 可能是 0 时，先判断。填表写法的 `dp[1]` 会越界，滚动写法会错误地返回 `BASE_1`。
-The last two templates assume `n >= 1`; if `n` can be 0, check first. The table version's `dp[1]` would go out of bounds, and the rolling version would wrongly return `BASE_1`.
-
 ## 5. ⏱️ 复杂度 Complexity
+
+**估算 Estimating:** 时间约等于状态数 × 每个状态的转移数（假设每次转移是常数时间）；空间是表的大小，记忆化还要加上调用栈。
+Time is about the number of states × transitions per state, assuming constant-time transitions; space is the table size, plus the call stack when memoizing.
 
 | 题目 Problem | 状态 State | ⏱️ Time | 🗄️ Space |
 | --- | --- | --- | --- |
@@ -142,9 +137,9 @@ The last two templates assume `n >= 1`; if `n` can be 0, check first. The table 
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
-- **用错“没算过”的标记 The wrong "not computed" marker:** `int[]` 默认是 0，如果 0 是合法答案，`memo[i] != 0` 就判断不出来，结果是 0 的状态每次都重算。[[Climbing Stairs|70]] 的答案至少是 1，所以用 0 没问题；一般情况用 `Arrays.fill(memo, -1)` 或 `Integer[]` → `int[]` defaults to 0, so if 0 is a valid answer, `memo[i] != 0` can't tell and those states are recomputed every time. 70's answers are at least 1, so 0 works there; in general use `Arrays.fill(memo, -1)` or `Integer[]`.
+- **用错“没算过”的标记 The wrong "not computed" marker:** `int[]` 默认是 0，如果 0 是合法答案，`memo[i] != 0` 就判断不出来；一般用 `Arrays.fill(memo, -1)` 或 `Integer[]`（[[Climbing Stairs|70]] 的答案至少是 1，用 0 没问题） → `int[]` defaults to 0, so if 0 is a valid answer `memo[i] != 0` can't tell; in general use `Arrays.fill(memo, -1)` or `Integer[]` (70's answers are at least 1, so 0 works there).
 - **算了但没存 Computing without storing:** 只 `return` 不写 `memo[i]`，答案对，但时间还是指数级 → returning without writing `memo[i]` gives the right answer in exponential time.
-- **数组越界 Going out of bounds:** 要用下标 `n` 就要 `new int[n + 1]`；`n` 很小时，给 `dp[2]` 赋值也可能越界（见 [[Climbing Stairs|70]]） → using index `n` needs `new int[n + 1]`, and at small `n` even assigning `dp[2]` can go out of bounds (see [[Climbing Stairs|70]]).
+- **数组越界 Going out of bounds:** 要用下标 `n` 就要 `new int[n + 1]`；上面的模板假设 `n >= 1`，`n` 可能是 0 时先判断，否则 `dp[1]` 越界、滚动写法错误返回 `BASE_1`（见 [[Climbing Stairs|70]]） → using index `n` needs `new int[n + 1]`; the templates above assume `n >= 1`, so check `n == 0` first or `dp[1]` goes out of bounds and the rolling version wrongly returns `BASE_1` (see [[Climbing Stairs|70]]).
 - **整数溢出 Integer overflow:** 方案数增长很快，[[Climbing Stairs|70]] 的 `f(46)` 就超过了 `int` 上限。注意题目的约束，或者用 `long`、按题目要求取模 → counts grow fast, and 70's `f(46)` already exceeds the `int` limit. Watch the constraints, or use `long` or the modulus the problem asks for.
 - **压缩空间时覆盖了还要用的值 Overwriting a value still needed:** 滚动更新要注意顺序，先算出 `next`，再移动 `prev` 和 `curr` → with rolling variables, compute `next` first, then shift `prev` and `curr`.
 - **递归太深 Recursing too deep:** 记忆化也要占调用栈，状态很多时可能 `StackOverflowError`，这时改成填表（见[[递归 Recursion|递归 Recursion]]） → memoization still uses the call stack, so many states can overflow it; switch to a table.

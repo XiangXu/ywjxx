@@ -48,7 +48,6 @@ Replace every element of `arr` with the greatest element among the elements to i
 - **思路 Idea:** 对每个 `i`，扫描 `i+1..n-1` 找最大值。
   For each `i`, scan `i+1..n-1` for the maximum.
 - ⏱️ Time: O(n²) · 🗄️ Space: O(1)（原地覆盖时要从左往右，因为右边的值还要用 overwrite left to right, since the values to the right are still needed）
-- 问题：右边的最大值被重复计算了很多次。 The same suffix maxima are recomputed over and over.
 
 ## 4. 🚀 最优解 Optimal Solution
 
@@ -123,19 +122,7 @@ class Solution {
 
 ## 7. ❓ 复习题 Review Questions
 
-**Q1.** 为什么要从右往左遍历？ Why traverse right to left?
-
-> [!success]- 答案 Answer
-> 每个位置的答案只依赖右边的元素。从右往左走，右边的最大值可以随着遍历一步步更新，每个位置 O(1) 就能得到答案；从左往右则每次都要重新扫描右边。
-> Each answer depends only on elements to the right. Going right to left, the right-side max is updated as you go, so each position costs O(1). Left to right, you'd have to rescan the right side every time.
-
-**Q2.** 循环体里三行的顺序能换吗？ Can you reorder the three lines in the loop?
-
-> [!success]- 答案 Answer
-> 不能。必须先存 `temp`（否则原值被覆盖后丢失），再写 `arr[i] = rightMax`（此时 `rightMax` 只包含右边的元素），最后才 `rightMax = Math.max(rightMax, temp)`。如果先更新 `rightMax`，答案会错误地包含元素自己。
-> No. Save `temp` first (or the original value is lost), then write `arr[i] = rightMax` (while `rightMax` still covers only the right side), then update `rightMax`. Updating `rightMax` first makes each answer wrongly include the element itself.
-
-**Q3.** `rightMax` 的初始值为什么可以是 `-1`？如果题目允许负数呢？ Why does `rightMax` start at `-1`, and what if negative values were allowed?
+**Q1.** `rightMax` 的初始值为什么可以是 `-1`？如果题目允许负数呢？ Why does `rightMax` start at `-1`, and what if negative values were allowed?
 
 > [!success]- 答案 Answer
 > 最后一个元素的答案就是 `-1`，而所有值都 `>= 1`，所以 `-1` 不会在后面的比较中胜出。如果允许 `-5` 这样的负数，`Math.max(-1, -5)` 会得到 `-1`，结果就错了。这时可以单独处理最后一个元素：`arr[n-1] = -1`，再把 `rightMax` 初始化为原来的 `arr[n-1]`。

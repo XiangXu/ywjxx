@@ -66,16 +66,6 @@ class Solution {
 - ⏱️ Time: O(n): 循环 `n` 次，每次写两个位置 `n` iterations, two writes each
 - 🗄️ Space: 输出数组 O(n)，除此之外 O(1) 额外空间 The output array is O(n); O(1) extra beyond it
 
-> [!example] 走一遍 Trace: `nums = [1,2,1]`, `n = 3`
->
-> | i | nums[i] | 写入 Writes | result |
-> | --- | --- | --- | --- |
-> | 0 | 1 | `result[0]`, `result[3]` | `[1,0,0,1,0,0]` |
-> | 1 | 2 | `result[1]`, `result[4]` | `[1,2,0,1,2,0]` |
-> | 2 | 1 | `result[2]`, `result[5]` | `[1,2,1,1,2,1]` |
->
-> Java 新建的 `int[]` 默认全是 0，所以没写到的位置显示为 0。 A new `int[]` in Java starts as all zeros, which is why unwritten slots show 0.
-
 > [!note] 其他写法 Alternatives
 > **取模 Modulo:** 一个循环遍历输出数组 One loop over the output
 > ```java
@@ -122,13 +112,7 @@ class Solution {
 > 题目要求返回的输出数组一般不算在额外空间里。除了 `result`，代码只用了循环变量 `i`。如果把输出也算上，就是 O(n)。
 > The required output array usually isn't counted as extra space. Apart from `result`, the code only uses the loop variable `i`. Counting the output, it's O(n).
 
-**Q2.** 用一个循环、只写一行赋值，怎么写？ How would you write it with one loop and a single assignment?
-
-> [!success]- 答案 Answer
-> 遍历输出数组，`ans[j] = nums[j % n]`，`j` 从 `0` 到 `2n - 1`。
-> Loop over the output: `ans[j] = nums[j % n]` for `j` from `0` to `2n - 1`.
-
-**Q3.** 这个“复制一份接在后面”的技巧在哪类题里有用？ Where is the "append a copy" trick useful?
+**Q2.** 这个“复制一份接在后面”的技巧在哪类题里有用？ Where is the "append a copy" trick useful?
 
 > [!success]- 答案 Answer
 > 环形数组的题，比如 503. Next Greater Element II：从每个位置往后看一整圈。实际写代码时通常不真的复制，而是遍历 `2n` 次并用 `i % n` 取值，省掉复制数组的 O(n) 额外空间（单调栈本身仍是 O(n)）。

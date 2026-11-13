@@ -23,12 +23,12 @@ created: 2026-10-17
   A computer that handles requests from other computers. Developers deploy code to it.
 - 💾 **存储 Storage:** 应用数据通常放在**外部**数据库或云存储里，通过网络访问，这样所有服务器都能共享，某台服务器挂了数据也还在。
   App data usually lives in an **external** database or cloud storage, reached over the network, so every server can share it and it survives a server failure.
-- 🌐 **客户端 Client:** 用户这一侧，通常是浏览器：发送请求，并渲染返回的 HTML/CSS/JavaScript 页面。
-  The user's side, usually a web browser that sends requests and renders the HTML/CSS/JavaScript it gets back.
+- 🌐 **客户端 Client:** 用户这一侧，通常是浏览器：发送请求，并渲染返回的 HTML/CSS/JavaScript 页面。用户多了，一台服务器的 CPU、内存、磁盘或网络就会成为**瓶颈**（见 [[Computer Architecture|计算机架构 Computer Architecture]]）。
+  The user's side, usually a web browser that sends requests and renders the HTML/CSS/JavaScript it gets back. With many users, one server's CPU, RAM, disk, or network becomes a **bottleneck** (see [[Computer Architecture|计算机架构 Computer Architecture]]).
 - 📈 **扩展 Scaling:** **垂直** = 换一台更大的机器；**水平** = 在**负载均衡器**后面加更多机器。
   **Vertical** = a bigger machine; **horizontal** = more machines behind a **load balancer**.
-- 🔌 **外部 API External APIs:** 服务器会调用其他服务，比如用 Stripe 处理支付。
-  Servers call other services, such as Stripe for payments.
+- 🔌 **外部 API External APIs:** 服务器会调用其他服务，比如用 Stripe 处理支付。对外部服务来说，你的服务器就是客户端。
+  Servers call other services, such as Stripe for payments. To the external service, your server is the client.
 - 🔍 **可观测性 Observability:** **日志**告诉你*发生了什么*，**指标**告诉你*系统状态如何*，**告警**告诉你*什么时候该看*。
   **Logs** say *what happened*, **metrics** say *how the system is doing*, **alerts** tell you *when to look*.
 
@@ -69,18 +69,7 @@ flowchart LR
     Dev -.->|views dashboards| Metrics
 ```
 
-> [!tip] 怎么看这张图 Reading the diagram
-> **用户**通常只和入口（负载均衡器）打交道。**开发者**把代码部署到服务器，并查看日志、指标和告警。所有组件都通过**网络**相连。
-> **Users** usually talk only to the front door (the load balancer). **Developers** deploy code to the servers and look at logs, metrics, and alerts. Everything is connected over a **network**.
-
-## 3. 两个视角 Two Perspectives
-
-- 🧑‍💻 **开发者 Developer:** 把代码**部署**到服务器（处理请求的计算机，也可以指那个程序）。数据只放在某台服务器的本地磁盘上，就没法共享、挂了还会丢，所以通常通过网络访问**外部存储**。
-  Deploys code to a **server** (a computer, or program, that handles requests). Data kept only on one server's own disk can't be shared and is lost if that server fails, so servers usually use **external storage** over the network.
-- 👤 **用户 User:** 通过**浏览器**（客户端）发请求，服务器返回 HTML、CSS 和 JavaScript。用户多了，一台服务器的 CPU、内存、磁盘或网络就会成为**瓶颈**（见 [[Computer Architecture|计算机架构 Computer Architecture]]），必须**扩展**。
-  Sends requests through a **browser** (the client); the server returns HTML, CSS, and JavaScript. With many users, one server's CPU, RAM, disk, or network becomes a **bottleneck** (see [[Computer Architecture|计算机架构 Computer Architecture]]), so we must **scale**.
-
-## 4. 📈 扩展服务器 Scaling the Server
+## 3. 📈 扩展服务器 Scaling the Server
 
 | | ⬆️ 垂直扩展 Vertical scaling | ➡️ 水平扩展 Horizontal scaling |
 | --- | --- | --- |
@@ -88,26 +77,26 @@ flowchart LR
 | 上限 Limit | 有硬上限：任何机器最终都会到顶 Hard ceiling: every machine maxes out eventually | 上限高得多：继续加服务器（但数据库等共享部分可能成为新瓶颈） Much higher: keep adding servers (though shared parts like the database can become the new bottleneck) |
 | 硬件 Hardware | 昂贵的高端机器 Expensive high-end machines | 便宜的**通用硬件**（标准、廉价） Cheap **commodity hardware** (standard, inexpensive) |
 | 服务器挂了 If a server dies | 如果这是唯一的服务器，整个应用就挂了（单点故障） The whole app is down if this is your only server (single point of failure) | 流量转到其余服务器 Traffic moves to the remaining servers |
-| 工程成本 Engineering effort | 低：代码不用改 Low: the code doesn't change | 高：需要负载均衡器，服务器之间要协调 High: needs a load balancer, and servers must coordinate |
+| 工程成本 Engineering effort | 低：代码不用改 Low: the code doesn't change | 高：需要负载均衡器，服务器要**无状态**并保持数据一致 High: needs a load balancer, and servers must be **stateless** and keep data consistent |
 | 适合 Best for | 简单应用、早期阶段 Simple apps, early stages | 流量很大的大型系统 Large systems with lots of traffic |
 
 > [!important] 经验法则 Rule of thumb
-> 大型系统更倾向**水平**扩展：能力更强，容错也更好。但对简单应用来说，**垂直**扩展往往就够了，而且简单得多。
-> Large systems prefer **horizontal** scaling: it's more powerful and more fault-tolerant. But **vertical** scaling is often enough for simple apps, and much easier.
+> 大型系统更倾向**水平**扩展：能力更强，容错也更好。但对简单应用来说，**垂直**扩展往往就够了，而且简单得多。选**能用的最简单架构**。
+> Large systems prefer **horizontal** scaling: it's more powerful and more fault-tolerant. But **vertical** scaling is often enough for simple apps, and much easier. Pick the **simplest architecture that works**.
 
-> [!example] 真实案例：Prime Video 的迁移 Real-world example: Amazon Prime Video (2023)
-> Prime Video 的**一个监控服务**（不是整个 Prime Video）从分布式的 serverless 设计改回了**单体应用**，基础设施成本降低了约 90%。单体仍可水平扩展；省下的是小组件之间昂贵的网络调用和数据传输。要学的是“选能用的最简单架构”，而不是“单体胜过微服务”。
-> **One Prime Video monitoring service** (not Prime Video as a whole) moved from a distributed serverless design to a **monolith** and cut its infrastructure cost by about 90%. The monolith could still scale out; the savings came from dropping costly network calls and data transfers between small components. The lesson is "pick the simplest architecture that works", not "monoliths beat microservices".
+> [!example] 真实案例：Prime Video（2023） Real-world example: Amazon Prime Video (2023)
+> Prime Video 的**一个监控服务**（不是整个 Prime Video）从分布式的 serverless 设计改回了**单体应用**，基础设施成本降低了约 90%。单体仍可水平扩展；省下的是小组件之间昂贵的网络调用和数据传输。教训是“选最简单的”，而不是“单体胜过微服务”。
+> **One Prime Video monitoring service** (not Prime Video as a whole) moved from a distributed serverless design to a **monolith** and cut its infrastructure cost by about 90%. The monolith could still scale out; the savings came from dropping costly network calls and data transfers between small components. The lesson is "pick the simplest", not "monoliths beat microservices".
 
-### 4.1 ⚖️ 负载均衡器 Load balancer
+### 3.1 ⚖️ 负载均衡器 Load balancer
 
-有很多台服务器时，需要有东西决定**哪个请求交给哪台服务器**。这就是**负载均衡器**：它把进来的请求分散到一组服务器上。
-With many servers, something has to decide **which server gets which request**. That's the **load balancer**: it spreads incoming requests across a group of servers.
+有很多台服务器时，**负载均衡器**决定**哪个请求交给哪台服务器**，把进来的请求分散到一组服务器上。
+With many servers, the **load balancer** decides **which server gets which request** and spreads incoming requests across the group.
 
 - 它防止任何一台服务器过载，并且不再把流量发给挂掉的服务器（靠健康检查）。
   It keeps any one server from being overloaded and stops sending traffic to servers that are down (via health checks).
-- 常见策略：**轮询**（轮流分配）、**最少连接**（发给最闲的服务器）。
-  Common strategies: **round robin** (take turns), **least connections** (send to the least busy server).
+- 常见策略：**轮询**（轮流分配）、**最少连接**（发给最闲的服务器）、**加权**（故意给更大的服务器更多流量）。“均匀”取决于你衡量什么。
+  Common strategies: **round robin** (take turns), **least connections** (send to the least busy server), **weighted** (deliberately send more traffic to bigger servers). "Even" depends on what you measure.
 - 负载均衡器本身也可能成为单点故障，所以生产环境通常会部署不止一个。
   The load balancer could itself become a single point of failure, so production setups usually run more than one.
 
@@ -115,12 +104,7 @@ With many servers, something has to decide **which server gets which request**. 
 > 任何请求都可能落到任何一台服务器上，所以服务器应该是**无状态的**：会话这类共享数据要放在数据库或共享缓存里，而不是某台服务器的内存里。
 > Any request can land on any server, so servers should be **stateless**: keep shared data such as sessions in the database or a shared cache, not in one server's memory.
 
-### 4.2 🔌 外部 API External APIs
-
-服务器不是孤立存在的。它们经常通过 API 调用**其他公司的服务**。比如 [neetcode.io](https://neetcode.io) 用 **Stripe** 处理支付。对外部服务来说，你的服务器就是客户端。
-Servers don't live in isolation. They often call **other companies' services** through APIs. For example, [neetcode.io](https://neetcode.io) uses **Stripe** for payments. To the external service, your server is the client.
-
-## 5. 🔍 日志、指标和告警 Logging, Metrics, and Alerts
+## 4. 🔍 日志、指标和告警 Logging, Metrics, and Alerts
 
 | | 📜 日志 Logs | 📊 指标 Metrics | 🚨 告警 Alerts |
 | --- | --- | --- | --- |
@@ -129,21 +113,14 @@ Servers don't live in isolation. They often call **other companies' services** t
 | 存在哪 Where | 最好写到**外部**日志服务：服务器崩溃或磁盘损坏时，本地日志可能正好丢失 Best sent to an **external** logging service: if the server crashes or its disk dies, local logs may be lost exactly when you need them | 从整个环境的多个来源收集 Collected from many sources across the environment | 以推送通知发给开发者 Sent as a push notification to developers |
 | 适合 Good for | 排查某一次具体故障 Debugging a specific failure | 发现瓶颈和趋势 Spotting bottlenecks and trends | 不用整天盯着仪表盘 Not having to watch dashboards all day |
 
-## 6. 🌐 接下来 What's Next
+## 5. ⚠️ 对课程原文的澄清 Clarifications to the Lesson Text
 
-这些组件可能运行在**不同的计算机**上，要通过**网络**通信。它们怎么通信、遵循哪些**协议**，是课程接下来的内容。
-All these parts may run on **different computers** and talk over a **network**. How they communicate, and which **protocols** they follow, comes next in the course.
+- **“负载均衡器会*均匀*分配请求” "A load balancer will *evenly* distribute requests":** 它按某种策略*分散*请求；轮询让请求数大致相同，最少连接按当前负载分配，加权策略则有意不均匀（见 3.1）。
+  It *spreads* requests by a strategy; round robin gives each server roughly equal request counts, least connections follows current load, and weighted strategies are deliberately uneven (see 3.1).
+- **“Prime Video 从微服务迁移到了单体” "Amazon Prime Video migrated from microservices to a monolith":** 只是**一个监控服务**，而且是从 serverless 设计迁出的（见第 3 节）。
+  It was **one monitoring service**, and it moved away from a serverless design (see section 3).
 
-## 7. ⚠️ 对课程原文的澄清 Clarifications to the Lesson Text
-
-- **“负载均衡器会*均匀*分配请求” "A load balancer will *evenly* distribute requests":** 它按某种策略*分散*请求，“均匀”取决于你衡量什么。轮询让每台服务器得到大致相同数量的请求；最少连接偏向当前最闲的服务器；加权策略会故意给更大的服务器更多流量。
-  It *spreads* requests by a strategy, and "even" depends on what you measure. Round robin gives each server a roughly equal number of requests. Least connections favors whichever server is least busy right now. Weighted strategies deliberately send more traffic to bigger servers.
-- **“Prime Video 从微服务迁移到了单体” "Amazon Prime Video migrated from microservices to a monolith":** 只是**一个监控服务**，而且是从 serverless 设计迁出的（见第 4 节）。
-  It was **one monitoring service**, and it moved away from a serverless design (see section 4).
-- **水平扩展不是免费的 Horizontal scaling isn't free:** 课程提到了额外的工程成本。其中最大的部分通常是让服务器**无状态**，并保持它们之间的数据一致。
-  The lesson mentions the extra engineering effort. The biggest part is usually making servers **stateless** and keeping data consistent across them.
-
-## 8. 🧩 复习题 Review Questions
+## 6. 🧩 复习题 Review Questions
 
 **Q1.** 垂直扩展和水平扩展有什么区别？ What is the difference between vertical and horizontal scaling?
 
@@ -157,28 +134,20 @@ All these parts may run on **different computers** and talk over a **network**. 
 > 上限高得多（继续加服务器），用便宜的通用硬件，而且某台服务器挂了流量会转到其他服务器。代价是更多的工程成本。简单或早期的应用则往往垂直扩展就够了。
 > Its ceiling is much higher (keep adding servers), it uses cheap commodity hardware, and it survives a server failure because traffic moves to the others. The trade-off is more engineering effort; simple or early-stage apps are often fine scaling vertically.
 
-**Q3.** 负载均衡器做什么？ What does a load balancer do?
-
-> [!success]- 答案 Answer
-> 它决定每个进来的请求由哪台服务器处理，把负载分散到一组服务器上，并跳过已经挂掉的服务器。
-> It decides which server handles each incoming request, spreading load across a group of servers and skipping servers that are down.
-
-**Q4.** 日志和指标有什么区别？为什么还要告警？ What is the difference between logs and metrics, and why add alerts?
+**Q3.** 日志和指标有什么区别？为什么还要告警？ What is the difference between logs and metrics, and why add alerts?
 
 > [!success]- 答案 Answer
 > 日志记录单个事件（发生了什么、错误、崩溃前的经过）；指标是随时间变化的数值（CPU、内存、成功率），显示系统状态和瓶颈。没人能整天盯着仪表盘，所以告警在指标越过规则（如“成功率低于 95%”）时发推送通知。
 > Logs record individual events (what happened, errors, what led up to a crash); metrics are numbers over time (CPU, RAM, success rate) that show how the system is doing and where the bottlenecks are. Nobody can watch dashboards all day, so an alert sends a push notification when a metric breaks a rule (e.g. "success rate below 95%").
 
-**Q5.** 水平扩展时，为什么服务器应该是无状态的？ Why should servers be stateless when scaling horizontally?
+**Q4.** 水平扩展时，为什么服务器应该是无状态的？ Why should servers be stateless when scaling horizontally?
 
 > [!success]- 答案 Answer
 > 负载均衡器可能把每个请求发给任何一台服务器。如果会话数据存在某台服务器的内存里，下一个请求可能落到没有这份数据的服务器上。共享状态应该放在数据库或共享缓存里。
 > The load balancer can send each request to any server. If session data lived in one server's memory, the next request might hit a server that doesn't have it. Shared state belongs in a database or shared cache.
 
-## 9. 🔗 相关 Related
+## 7. 🔗 相关 Related
 
 - ⬅️ 上一篇 Previous: [[Computer Architecture|计算机架构 Computer Architecture]]
 - [[📌 系统设计总览|系统设计总览 System Design Overview]]
 - ➡️ 下一篇 Next: [[Design Requirements|设计需求 Design Requirements]]
-- 即将学习：网络和协议
-  Coming up: networking and protocols

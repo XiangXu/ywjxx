@@ -47,7 +47,6 @@ Given a binary array `nums`, return the maximum number of consecutive `1`s.
 - **思路 Idea:** 从每个下标 `i` 出发，向右数连续的 1，取最大值。
   From every index `i`, count 1s to the right until a `0`, and keep the maximum.
 - ⏱️ Time: O(n²) · 🗄️ Space: O(1)
-- 问题：同一段 1 被重复数了很多次。 Each run gets recounted from every start inside it.
 
 ## 4. 🚀 最优解 Optimal Solution
 
@@ -85,10 +84,6 @@ class Solution {
 > | 1 | 2 | 2 |
 > | 1 | 3 | **3** |
 
-> [!tip] 为什么在 `num == 1` 时更新 `max`？ Why update `max` inside the `1` branch?
-> 只在遇到 `0` 时更新的话，以 1 结尾的最后一段不会被比较，要在循环后补一次（见 Q2）。每次 `count++` 后立刻更新就没有这个问题。
-> If you only update on a `0`, a final run of `1`s is never compared and needs an extra `Math.max` after the loop (see Q2). Updating right after `count++` avoids that.
-
 > [!note] 另一种写法 Alternative: 只在段结束时比较 Compare only when a run ends
 > ```java
 > for (int num : nums) {
@@ -103,7 +98,7 @@ class Solution {
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
 
 - [x] 全是 0 All zeros (`[0,0]`): 返回 0，`max` 初始值 0 正好 → returns 0
-- [x] 全是 1 或以 1 结尾 All ones or ending in 1s (`[1,1,1]`): 最后一段可能就是答案，见上面的提示 → the last run may be the answer; see the tip above
+- [x] 全是 1 或以 1 结尾 All ones or ending in 1s (`[1,1,1]`): 最后一段可能就是答案，循环后也要比较（见 Q1） → the last run may be the answer, so it must be compared too (see Q1)
 
 ## 6. 🔁 进阶 Follow-ups
 
@@ -120,19 +115,13 @@ class Solution {
 
 ## 7. ❓ 复习题 Review Questions
 
-**Q1.** 为什么空间复杂度是 O(1)？ Why is the space O(1)?
-
-> [!success]- 答案 Answer
-> 只用了 `max` 和 `count` 两个变量，和输入长度无关。
-> Only two integers are stored, regardless of the input size.
-
-**Q2.** 把 `max = Math.max(max, count)` 移到 `else` 分支里会出什么错？ What breaks if you move the `Math.max` into the `else` branch?
+**Q1.** 把 `max = Math.max(max, count)` 移到 `else` 分支里会出什么错？ What breaks if you move the `Math.max` into the `else` branch?
 
 > [!success]- 答案 Answer
 > 数组以 1 结尾时，最后一段不会被比较；若它恰好最长就会出错，例如 `[1,1,0,1,1,1]` 会返回 2 而不是 3。需要在 `return` 前再做一次 `Math.max(max, count)`。
 > The final run is never compared when the array ends with 1s, so the answer is wrong whenever that run is the longest: `[1,1,0,1,1,1]` returns 2 instead of 3. You'd need one more `Math.max(max, count)` before returning.
 
-**Q3.** 如果允许把最多一个 0 变成 1，思路怎么改？ How would you change the approach if you may flip at most one `0`?
+**Q2.** 如果允许把最多一个 0 变成 1，思路怎么改？ How would you change the approach if you may flip at most one `0`?
 
 > [!success]- 答案 Answer
 > 用滑动窗口：右指针一直扩展，记录窗口里 0 的个数；超过 1 个时移动左指针直到只剩 1 个 0。答案是窗口的最大长度 `right - left + 1`。仍然是 O(n) 时间、O(1) 空间。

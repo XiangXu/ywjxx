@@ -46,8 +46,8 @@ Sort a list of `(int key, String value)` pairs by `key` with insertion sort, and
 
 ## 3. 🐢 暴力解 Brute Force
 
-这题的要求就是写插入排序，所以没有“更暴力”的版本。如果直接调用 `Collections.sort`，结果虽然也对，但拿不到每一步的状态，也没练到算法。
-The task is to write insertion sort itself, so there is no cruder version. Calling `Collections.sort` would sort correctly but can't give the per-step states, and it skips the practice.
+题目要求的就是插入排序本身，没有更暴力的版本；`Collections.sort` 拿不到每一步的状态。
+The task is insertion sort itself, so there is no cruder version; `Collections.sort` can't give the per-step states.
 
 ## 4. 🚀 最优解 Optimal Solution
 
@@ -86,22 +86,6 @@ public class Solution {
 > | 2 | `3 > 2` ✓ → `3 > 2` ✓ | `bird` 和 `cat` 依次让位 bird then cat both move right | `[(2,dog),(3,cat),(3,bird)]` |
 
 > [!note] 其他写法 Alternatives
-> **`j` 从 `i` 开始 Start `j` at `i`:** 和上面完全等价，只是把下标换了个角度 equivalent, just a different index viewpoint
-> ```java
-> for (int i = 0; i < pairs.size(); i++) {
->     int j = i;
->     while (j > 0 && pairs.get(j).key < pairs.get(j - 1).key) {
->         Pair temp = pairs.get(j);
->         pairs.set(j, pairs.get(j - 1));
->         pairs.set(j - 1, temp);
->         j--;
->     }
->     result.add(new ArrayList<>(pairs));
-> }
-> ```
-> 条件同样是“左边的 key 严格大于右边”，所以交换和结果都一样。
-> The condition is the same, "the left key is strictly greater than the right", so the swaps and result are identical.
->
 > **移位 Shift:** 先把 `pairs.get(i)` 存到临时变量，把更大的元素逐个右移一格，最后放进空位，每步只写一次。
 > Save `pairs.get(i)` in a temp, shift each larger element one slot right, then drop the temp into the gap: one write per step instead of a three-assignment swap.
 
@@ -129,13 +113,7 @@ public class Solution {
 > 相同 key 的两个元素也会被交换，原来靠前的跑到了后面。比如 `(3,cat),(3,bird)` 会变成 `(3,bird),(3,cat)`。
 > Equal-key elements would also be swapped, so the one that came first ends up behind. For example, `(3,cat),(3,bird)` would become `(3,bird),(3,cat)`.
 
-**Q2.** 不写 `new ArrayList<>(pairs)`，直接 `result.add(pairs)` 会怎样？ What happens with `result.add(pairs)` instead of the copy?
-
-> [!success]- 答案 Answer
-> `result` 里的每一项都是同一个对象，最后全部显示排序完成后的状态。
-> Every entry in `result` is the same object, so they all show the final sorted state.
-
-**Q3.** 插入排序什么时候快，什么时候慢？ When is insertion sort fast, and when is it slow?
+**Q2.** 插入排序什么时候快，什么时候慢？ When is insertion sort fast, and when is it slow?
 
 > [!success]- 答案 Answer
 > 输入已经有序或接近有序时接近 O(n)，因为内层循环几乎不执行；输入逆序时是 O(n²)。

@@ -35,37 +35,10 @@ created: 2026-10-31
 - 🚪 **默认端口 Default ports:** HTTP 默认 80，HTTPS 默认 443，所以 URL 里通常不写端口；用非标准端口（如 8080）时必须写上。
   HTTP defaults to 80 and HTTPS to 443, so URLs usually leave the port out. A non-standard port (like 8080) must be written.
 
-## 2. 📖 什么是 DNS What DNS Is
+## 2. 📖 DNS 查询 DNS Lookups
 
-我们手机里存联系人，就不用背几百个电话号码。DNS 也一样：在浏览器里输入 `google.com`，DNS 把它翻译成一个 IP 地址（比如 `142.251.211.238`），计算机才知道该把请求发到哪里。
-We keep contacts in our phones so we don't have to memorize hundreds of numbers. DNS works the same way: when you type `google.com` into a browser, DNS translates it into an IP address (such as `142.251.211.238`), so your computer knows where to send the request.
-
-> [!note] 一个名字，多个地址 One name, many addresses
-> 大网站的域名通常对应**很多**个 IP，而且会随地区和时间变化。DNS 可以按地区或负载返回不同的地址，所以 DNS 也常被当作简单的负载均衡和流量调度手段。
-> A big site's name usually maps to **many** IPs, and they change by region and over time. DNS can return different addresses by region or load, so it's often used as simple load balancing and traffic steering.
-
-### 2.1 🌲 域名的层级 The naming hierarchy
-
-域名从右往左读，越往右层级越高。最右边其实还有一个看不见的**根**（`.`）：
-Domain names are read right to left, and the further right, the higher the level. At the far right there's an invisible **root** (`.`):
-
-```text
-                     .            根 root
-                     │
-        ┌────────────┼────────────┐
-       com          io           org        顶级域 TLD
-        │            │
-     google       neetcode                  二级域 second-level domain
-        │
-     domains                                子域名 subdomain
-
-  domains.google.com.   ← 完整写法，最后的点就是根 fully qualified, the final dot is the root
-```
-
-### 2.2 🔎 一次 DNS 查询怎么走 How a lookup works
-
-课程原文没讲查询过程，但面试常问。浏览器要找 `domains.google.com` 时：
-The lesson skips how a lookup actually happens, but interviews ask about it often. When the browser needs `domains.google.com`:
+域名从右往左读，越往右层级越高：根（`.`，通常不写）→ 顶级域 `com` → 二级域 `google` → 子域名 `domains`。没有任何一台服务器存着所有域名，每一层只负责自己那一段，既能分摊负载，又能各自管理。
+Domain names are read right to left, and the further right, the higher the level: the root (`.`, usually left out) → the TLD `com` → the second-level domain `google` → the subdomain `domains`. No single server holds every name; each level only answers for its own part, which spreads the load and lets each part be managed separately.
 
 ```text
  浏览器 Browser
@@ -88,25 +61,22 @@ The lesson skips how a lookup actually happens, but interviews ask about it ofte
   Your computer asks the resolver once and the resolver does the whole walk (a recursive query). When the resolver asks the root, TLD, and authoritative servers, each one only says "ask this server next" (iterative queries).
 - **传输协议 Transport:** DNS 查询默认走 **UDP 53 端口**，响应太大时改用 TCP。见 [[TCP and UDP|TCP 与 UDP 协议 TCP and UDP]]。
   DNS lookups use **UDP port 53** by default and fall back to TCP when a response is too large. See [[TCP and UDP|TCP 与 UDP 协议 TCP and UDP]].
-- **为什么分层 Why a hierarchy:** 没有任何一台服务器存着所有域名。每一层只负责自己那一段，既能分摊负载，又能各自管理。
-  No single server holds every name. Each level only answers for its own part, which spreads the load and lets each part be managed separately.
+
+> [!note] 一个名字，多个地址 One name, many addresses
+> 大网站的域名通常对应**很多**个 IP，而且会随地区和时间变化。DNS 可以按地区或负载返回不同的地址，所以 DNS 也常被当作简单的负载均衡和流量调度手段。
+> A big site's name usually maps to **many** IPs, and they change by region and over time. DNS can return different addresses by region or load, so it's often used as simple load balancing and traffic steering.
 
 ## 3. 🏬 ICANN、注册局和注册商 ICANN, Registries, and Registrars
 
-谁决定 `google.com` 属于谁？为什么别人不能随便占用它？可以把它想成在商场里开店：
-Who decides that `google.com` belongs to Google, and why can't someone else just claim it? Think of opening a store in a shopping mall:
+| 角色 Role | 做什么 What it does | 例子 Example |
+| --- | --- | --- |
+| ICANN | 制定规则、协调全局，认证注册商 Sets the rules, coordinates globally, accredits registrars | 全球唯一 The one global body |
+| 注册局 Registry | 运营一个顶级域，维护它下面所有域名的数据库 Runs one TLD and keeps the database of every name under it | Verisign 运营 `.com` Verisign runs `.com` |
+| 注册商 Registrar | 帮你查询、注册和续费域名 Helps you search, register, and renew names | GoDaddy, Namecheap, Cloudflare |
+| 注册人 Registrant | 注册了域名的你，可以设置它的 DNS 记录 You, the name's holder, free to set its DNS records | 你 You |
 
-| 角色 Role | 商场类比 Mall analogy | 做什么 What it does | 例子 Example |
-| --- | --- | --- | --- |
-| ICANN | 商场管理公司 Mall management | 制定规则、协调全局，认证注册商 Sets the rules, coordinates globally, accredits registrars | 全球唯一 The one global body |
-| 注册局 Registry | 某一层楼的总承租方 The company running one floor | 运营一个顶级域，维护它下面所有域名的数据库 Runs one TLD and keeps the database of every name under it | Verisign 运营 `.com` Verisign runs `.com` |
-| 注册商 Registrar | 租赁中介 Leasing agent | 帮你查询、注册和续费域名 Helps you search, register, and renew names | GoDaddy, Namecheap, Cloudflare |
-| 注册人 Registrant | 租户 The tenant | 注册了域名的你，可以设置它的 DNS 记录 You, the name's holder, free to set its DNS records | 你 You |
-
-- **先到先得 First come, first served:** 一个域名在注册局的数据库里只能有一个注册人。`google.com` 已经被注册并持续续费，所以别人注册不了。
-  A name can have only one registrant in the registry's database. `google.com` is registered and kept renewed, so nobody else can take it.
-- **是租不是买 Rent, not buy:** 注册一个域名其实是按期（通常按年）租用。到期不续费也不会立刻释放，要先经过宽限期和赎回期，之后别人才能再注册。
-  Registering a domain is really renting it for a term (usually yearly). If you don't renew, it isn't released at once: it goes through a grace period and a redemption period first, and only then can someone else register it.
+- **是租不是买 Rent, not buy:** 一个域名只能有一个注册人，而且是按期（通常按年）租用。到期不续费也不会立刻释放，要先经过宽限期和赎回期，之后别人才能再注册。
+  A name can have only one registrant, and you really rent it for a term (usually yearly). If you don't renew, it isn't released at once: it goes through a grace period and a redemption period first, and only then can someone else register it.
 
 ## 4. 📇 DNS 记录 DNS Records
 
@@ -124,8 +94,8 @@ After registering a domain, you add records for it (and its subdomains) at your 
 
 ### 4.1 🗄️ TTL 和缓存 TTL and caching
 
-每条记录都带一个 **TTL**（生存时间，单位秒），告诉解析器和客户端这个答案可以缓存多久。缓存期间再访问同一个网站，就不用重新查询。
-Every record carries a **TTL** (time to live, in seconds) that tells resolvers and clients how long they may cache the answer. Until it expires, visiting the same site again needs no new lookup.
+每条记录都带一个 **TTL**（生存时间，单位秒），告诉解析器和客户端这个答案可以缓存多久。
+Every record carries a **TTL** (time to live, in seconds) that tells resolvers and clients how long they may cache the answer.
 
 > [!important] 先调低 TTL 再迁移 Lower the TTL before moving
 > TTL 是一把双刃剑：长 TTL 查询少、速度快，但改了 IP 以后，旧地址会在各地缓存里留到过期为止。迁移服务器之前，通常先把 TTL 调低（比如 60 秒），至少等一个旧 TTL 的时间，让旧缓存过期后再切换。
@@ -137,8 +107,8 @@ Every record carries a **TTL** (time to live, in seconds) that tells resolvers a
 
 ## 5. 🔗 URL 的结构 Anatomy of a URL
 
-**URL**（统一资源定位符）告诉浏览器“用什么方式、去哪台机器、拿什么东西”。把课程的例子补全一下：
-A **URL** (Uniform Resource Locator) tells the browser how to fetch what, from which machine. Here is the lesson's example with every part filled in:
+**URL**（统一资源定位符）告诉浏览器“用什么方式、去哪台机器、拿什么东西”：
+A **URL** (Uniform Resource Locator) tells the browser how to fetch what, from which machine:
 
 ```text
   https://domains.google.com:443/get-started?ref=nav#faq
@@ -153,57 +123,20 @@ A **URL** (Uniform Resource Locator) tells the browser how to fetch what, from w
     └─ scheme 协议
 ```
 
-- **主机 Host:** `domains.google.com`，也就是 DNS 要解析的名字。
-  `domains.google.com`, the name DNS resolves.
-- **注册域名 Registered domain:** `google.com`，等于二级域加顶级域，是你在注册商那里注册的部分。
-  `google.com`, the second-level domain plus the TLD, which is the part you register at a registrar.
-
-### 5.1 🧭 协议 Scheme
-
-URL 开头的 `https://` 叫**协议**或 **scheme**，告诉客户端用哪种协议访问资源。网页上 HTTPS 已经是主流。
-The `https://` at the start is the **scheme**, which says which protocol to use to reach the resource. On the web, HTTPS is now the norm.
-
-| 协议 Scheme | 用途 Used for | 例子 Example |
-| --- | --- | --- |
-| `https://` | 加密的网页和 API Encrypted web pages and APIs | `https://neetcode.io` |
-| `http://` | 未加密的网页，多见于本地开发 Unencrypted pages, mostly local development | `http://localhost:8080` |
-| `ftp://` | 在服务器之间传文件 Transferring files between machines | `ftp://ftp.example.com/pub/file.txt` |
-| `ssh://` | 安全的远程登录，Git 也用它（`:22` 是默认端口） Secure remote login, also used by Git (`:22` is the default port) | `ssh://username@example.com:22` |
-
-### 5.2 🏷️ 域名 Domain
-
-`domains.google.com` 分成三部分：
-`domains.google.com` has three parts:
-
 | 部分 Part | 本例 Here | 说明 What it means |
 | --- | --- | --- |
+| 协议 Scheme | `https://` | 用哪种协议访问资源；网页上 HTTPS 已是主流，`http://` 多见于本地开发 Which protocol to use; HTTPS is the norm on the web, and `http://` is mostly local development |
 | 子域名 Subdomain | `domains` | 网站里一个独立的分区，可以指向完全不同的服务器 A separate section of the site, which can point to a completely different server |
-| 二级域 Second-level domain | `google` | 网站的核心身份，加上顶级域就是注册域名 `google.com` The site's core identity; with the TLD it forms the registered domain `google.com` |
+| 二级域 Second-level domain | `google` | 网站的核心身份，加上顶级域就是你在注册商那里注册的**注册域名** `google.com` The site's core identity; with the TLD it forms the **registered domain** `google.com`, the part you register at a registrar |
 | 顶级域 Top-level domain | `.com` | 层级最高的部分（根之下） The highest level (just below the root) |
-
-- **子域名不是路径 Subdomain vs path:** `domains.google.com` 和 `google.com/domains` 完全不同。子域名是 DNS 里的另一个名字，可以有自己的记录和服务器；路径只是同一台主机上的不同位置。
-  `domains.google.com` and `google.com/domains` are completely different. A subdomain is another name in DNS, with its own records and servers; a path is just a location on the same host.
-- **拥有注册域名 Owning the registered domain:** 注册了 `google.com`，就能自由创建任意多个子域名（`mail.`、`docs.`……）和路径，不需要再找注册商。
-  Once you register `google.com`, you can create as many subdomains (`mail.`, `docs.`, …) and paths as you like, without going back to the registrar.
-- **顶级域的种类 Kinds of TLDs:** 通用顶级域如 `.com`、`.org`、`.dev`；国家和地区顶级域如 `.uk`、`.cn`，`.io`（英属印度洋领地）也是。
-  Generic TLDs like `.com`, `.org`, and `.dev`; country-code TLDs like `.uk` and `.cn`, and also `.io` (British Indian Ocean Territory).
-
-### 5.3 🛣️ 路径、查询和片段 Path, query, and fragment
-
-| 部分 Part | 本例 Here | 说明 What it means |
-| --- | --- | --- |
+| 端口 Port | `:443` | 通常省略，因为协议有默认端口（HTTP **80**，HTTPS **443**）；非标准端口必须写，如 `http://localhost:8080` Usually left out because each scheme has a default (**80** for HTTP, **443** for HTTPS); a non-standard port must be written, as in `http://localhost:8080` |
 | 路径 Path | `/get-started` | 用 `/` 分隔，指向网站里的某个页面或资源 Separated by `/`, it points to a page or resource on the site |
 | 查询 Query | `?ref=nav` | 以 `?` 开头的 `key=value` 参数，用 `&` 连接 `key=value` parameters after `?`, joined by `&` |
 | 片段 Fragment | `#faq` | 页面内的位置，**不会**发给服务器，由浏览器自己处理 A spot inside the page, **not** sent to the server; the browser handles it |
 
-### 5.4 🚪 端口 Port
-
-URL 里的端口通常省略，因为协议有默认端口（见 [[Networking Basics|网络基础 Networking Basics]]）：HTTP 是 **80**，HTTPS 是 **443**。非标准端口必须写出来，比如本地开发服务器 `http://localhost:8080`。
-A URL usually leaves the port out because each scheme has a default (see [[Networking Basics|网络基础 Networking Basics]]): **80** for HTTP and **443** for HTTPS. A non-standard port has to be written, as with a local dev server at `http://localhost:8080`.
-
-> [!tip] Java 类比 Java analogy
-> `java.net.URI` 能把 URL 拆开：`URI.create("https://domains.google.com/get-started")` 的 `getScheme()` 是 `"https"`，`getHost()` 是 `"domains.google.com"`，`getPath()` 是 `"/get-started"`。没写端口时 `getPort()` 返回 `-1`，表示“用协议的默认端口”。
-> `java.net.URI` splits a URL into parts: for `URI.create("https://domains.google.com/get-started")`, `getScheme()` is `"https"`, `getHost()` is `"domains.google.com"`, and `getPath()` is `"/get-started"`. With no port written, `getPort()` returns `-1`, meaning "use the scheme's default".
+> [!note] 子域名不是路径 Subdomain vs path
+> `domains.google.com` 和 `google.com/domains` 完全不同。子域名是 DNS 里的另一个名字，可以有自己的记录和服务器；路径只是同一台主机上的不同位置。注册了 `google.com`，就能自由创建任意多个子域名和路径。
+> `domains.google.com` and `google.com/domains` are completely different. A subdomain is another name in DNS, with its own records and servers; a path is just a location on the same host. Once you register `google.com`, you can create as many subdomains and paths as you like.
 
 ## 6. 🗺️ 把一切串起来 Putting It Together
 
@@ -225,26 +158,12 @@ When a browser opens `https://neetcode.io/practice`:
 
 - **“ICANN 管理域名的运营” "ICANN manages the operation of domain names":** ICANN 是**协调者**：制定政策、协调根区（通过 IANA 职能）并认证注册商。每个顶级域由各自的**注册局**运营，课程漏掉了这一层。
   ICANN is a **coordinator**: it sets policy, coordinates the root zone (through the IANA function), and accredits registrars. Each TLD is run by its own **registry**, a layer the lesson skips.
-- **“注册后就拥有了域名” "We gain ownership of the domain":** 更准确地说是按期**租用**，不续费就会失去。
-  More precisely, you **rent** it for a term and lose it if you don't renew.
-- **注册商的例子 The registrar examples:** Google Domains 的业务已在 2023 年卖给 Squarespace；HostGator 主要是主机商。
-  Google Domains' business was sold to Squarespace in 2023, and HostGator is mainly a hosting company.
 - **“DNS 服务器把请求路由到服务器” "The DNS server routes your request to the server":** DNS 只负责**返回 IP 地址**，不转发请求。拿到 IP 后，客户端直接连服务器，请求由路由器沿 IP 路由送达。
   DNS only **returns the IP address**; it doesn't forward the request. Once the client has the IP, it connects to the server directly, and routers deliver the packets by IP.
 - **“服务器 IP 是静态的才会缓存” "Your computer caches the IP if the server's IP is static":** 是否缓存、缓存多久由记录的 **TTL** 决定，与 IP 是否静态无关。浏览器、操作系统和解析器都会缓存。
   Whether and how long an answer is cached depends on the record's **TTL**, not on whether the IP is static. The browser, the OS, and the resolver all cache.
-- **“服务器是有公网 IP 和域名的计算机” "A server is a computer with a public IP and a domain name":** 服务器只是响应请求的程序或机器，很多只有私网 IP（比如在负载均衡器后面），也没有域名。
-  A server is just a program or machine that responds to requests; many have only private IPs (behind a load balancer, say) and no domain name.
-- **“.com 表示商业网站” "`.com` signifies commercial websites":** 历史上是，但现在任何人都能注册（`.gov`、`.edu` 这类受限顶级域除外）。
-  Historically, but anyone can register one today (restricted TLDs like `.gov` and `.edu` aside).
-- **“主域名 google.com” "The primary domain google.com":** 常用叫法是**注册域名**或**裸域名**（apex）。对 `bbc.co.uk`，注册域名是整个 `bbc.co.uk`，因为 `co.uk` 是公共后缀。
+- **“把 google.com 称为主域名” "The primary domain google.com":** 常用叫法是**注册域名**或**裸域名**（apex）。对 `bbc.co.uk`，注册域名是整个 `bbc.co.uk`，因为 `co.uk` 是公共后缀。
   The usual terms are **registered domain** or **apex domain**. For `bbc.co.uk`, the registered domain is all of `bbc.co.uk`, because `co.uk` is a public suffix.
-- **协议和 FTP Schemes and FTP:** scheme 不一定是网络协议（如 `mailto:`、`file:`）。主流浏览器在 2021 年前后移除了 FTP 支持，现在多用 SFTP 或 HTTPS 传文件。
-  A scheme isn't always a network protocol (e.g. `mailto:`, `file:`). Major browsers dropped FTP support around 2021, and files usually move over SFTP or HTTPS today.
-- **“localhost 在 8080 端口监听” "Our localhost is listening on port 8080":** 监听的是本机上的某个**进程**，`localhost` 只是本机的名字（`127.0.0.1` 或 `::1`），通常由 hosts 文件解析。
-  What listens is a **process** on your machine; `localhost` is just the machine's own name (`127.0.0.1` or `::1`), usually resolved from the hosts file.
-- **URL 的组成 URL parts:** 课程漏了**查询字符串**和**片段**，已在 5.3 节补上。
-  The lesson leaves out the **query string** and the **fragment**; section 5.3 adds them.
 
 ## 8. 🧩 复习题 Review Questions
 
@@ -254,25 +173,19 @@ When a browser opens `https://neetcode.io/practice`:
 > 先查浏览器和操作系统缓存，都没有就问递归解析器。解析器缓存也没有的话，依次问根服务器（得到 `.com` 服务器）、`.com` 顶级域服务器（得到 `example.com` 的权威服务器）和权威服务器（得到 A 或 CNAME 记录），然后按 TTL 缓存结果并返回。实际中解析器通常已缓存了 `.com` 服务器，可以跳过根服务器。
 > The browser and OS caches are checked first, then the recursive resolver. If the resolver has no cached answer, it asks a root server (which points to the `.com` servers), a `.com` TLD server (which points to `example.com`'s authoritative servers), and the authoritative server (which returns the A or CNAME record). It caches the answer for its TTL and returns it. In practice a resolver usually has the `.com` servers cached and skips the root.
 
-**Q2.** ICANN、注册局和注册商分别负责什么？ What do ICANN, a registry, and a registrar each do?
-
-> [!success]- 答案 Answer
-> ICANN 制定规则、协调全局并认证注册商；注册局运营一个顶级域，维护它下面所有域名的数据库；注册商面向用户，帮你注册和续费域名，并把信息提交给注册局。
-> ICANN sets the rules, coordinates globally, and accredits registrars. A registry runs one TLD and keeps the database of every name under it. A registrar serves customers, registering and renewing names and passing the details to the registry.
-
-**Q3.** 你要把网站迁到一台 IP 不同的新服务器，DNS 方面该怎么做才能少出问题？ You're moving a site to a new server with a different IP. What should you do with DNS to avoid trouble?
+**Q2.** 你要把网站迁到一台 IP 不同的新服务器，DNS 方面该怎么做才能少出问题？ You're moving a site to a new server with a different IP. What should you do with DNS to avoid trouble?
 
 > [!success]- 答案 Answer
 > 提前把 A 记录的 TTL 调低（比如从一天调到 60 秒），并至少等一个旧 TTL 的时间，让各处缓存里的旧值过期，再改 IP。切换期间新旧服务器都保持可用，因为有些客户端还会用缓存里的旧地址。稳定后再把 TTL 调回去。
 > Lower the A record's TTL well ahead (say, from a day to 60 seconds), then wait at least one old TTL so caches holding the old value expire, and only then change the IP. Keep both servers up during the switch, since some clients will still use the cached old address. Raise the TTL again once things settle.
 
-**Q4.** `blog.example.com` 和 `example.com/blog` 有什么区别？ How do `blog.example.com` and `example.com/blog` differ?
+**Q3.** `blog.example.com` 和 `example.com/blog` 有什么区别？ How do `blog.example.com` and `example.com/blog` differ?
 
 > [!success]- 答案 Answer
 > `blog.example.com` 是子域名，是 DNS 里一个独立的名字，可以有自己的记录，指向完全不同的服务器。`example.com/blog` 是同一个主机上的路径，DNS 只解析 `example.com`，`/blog` 由那台服务器自己处理。
 > `blog.example.com` is a subdomain, a separate name in DNS that can have its own records and point to a completely different server. `example.com/blog` is a path on the same host: DNS resolves only `example.com`, and that server handles `/blog` itself.
 
-**Q5.** URL 里的 `#faq` 会发给服务器吗？ Is the `#faq` in a URL sent to the server?
+**Q4.** URL 里的 `#faq` 会发给服务器吗？ Is the `#faq` in a URL sent to the server?
 
 > [!success]- 答案 Answer
 > 不会。片段只在浏览器里使用，用来跳到页面里的某个位置，或者给单页应用做客户端路由。查询字符串 `?ref=nav` 则会发给服务器。

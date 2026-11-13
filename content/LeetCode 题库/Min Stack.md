@@ -64,20 +64,8 @@ Design a stack that supports the following, **each in O(1) time**:
 
 ## 3. 🐢 暴力解 Brute Force
 
-只用一个栈，`getMin()` 时遍历整个栈找最小值。
-One stack; `getMin()` scans every element.
-
-```java
-// stack 是 Stack<Integer> stack is a Stack<Integer>
-public int getMin() {
-    int min = Integer.MAX_VALUE;
-    for (int x : stack) min = Math.min(min, x);
-    return min;
-}
-```
-
-- ⏱️ Time: `push` / `pop` / `top` O(1)，`getMin` O(n)，不满足题目要求 Doesn't meet the O(1) requirement: `getMin` is O(n), while `push`, `pop` and `top` are O(1)
-- 🗄️ Space: O(n)
+只用一个栈，`getMin()` 时遍历整个栈，是 O(n)，不满足要求。
+One stack; `getMin()` scans every element in O(n), which misses the O(1) requirement.
 
 ## 4. 🚀 最优解 Optimal Solution
 
@@ -128,8 +116,6 @@ class MinStack {
 > | `push(2)` | `[5, 3, 7, 2]` | `[5, 3, 3, 2]` | 2 |
 > | `pop()` | `[5, 3, 7]` | `[5, 3, 3]` | 3 |
 > | `pop()` | `[5, 3]` | `[5, 3]` | 3 |
->
-> 弹出 2 之后，最小值“自动”回到 3，因为 3 一直存在下一层。 After popping 2, the minimum falls back to 3 by itself, because 3 was stored on the level below all along.
 
 > [!note] 其他写法 Alternatives
 > **一个栈存数对 One stack of pairs:** 每层存 `{val, minSoFar}`，两个栈合成一个，不会出现“两个栈不同步”的 bug
@@ -161,8 +147,6 @@ class MinStack {
 >     }
 > }
 > ```
-> 三种都是每个操作 O(1)。我的写法和数对写法最不容易写错；省空间版要小心 `<=` 和 `Integer` 比较。
-> All three are O(1) per operation. My version and the pairs version are the hardest to get wrong; the space-saving one needs care with `<=` and `Integer` comparison.
 
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
 
@@ -204,12 +188,6 @@ class MinStack {
 > [!success]- 答案 Answer
 > 有重复最小值时（如 push 1、push 1），用 `<` 只会在 `minStack` 记一次 1。第一次 pop 就把它弹掉，但栈里还剩一个 1，`getMin()` 就错了。用 `<=` 每个重复的最小值都记一次。
 > With duplicate minimums (push 1, push 1), `<` records 1 only once. The first pop removes it while a 1 remains in the stack, so `getMin()` is wrong. `<=` records each duplicate.
-
-**Q4.** `stack.pop() == minStack.peek()` 有什么问题？ What's wrong with `stack.pop() == minStack.peek()`?
-
-> [!success]- 答案 Answer
-> 两边都是 `Integer`，`==` 比较的是引用。`Integer` 默认只缓存 -128 到 127，范围内碰巧相等，超出范围即使值相同通常也返回 `false`（除非两边恰好是同一个对象）。要用 `.equals()` 或先拆箱成 `int`。
-> Both sides are `Integer`, so `==` compares references. `Integer` caches only -128..127 by default, so it works by accident in that range and usually returns `false` for equal values outside it (unless both sides are the same object). Use `.equals()` or unbox to `int`.
 
 ## 8. 🔗 相关题目 Related
 

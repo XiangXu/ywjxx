@@ -55,12 +55,8 @@ The brute force is often "for each element, scan the others again": O(n²). The 
 
 ### 3.1 运行状态 Running state
 
-一边走一边更新 `count`，遇到打断条件就重置；每次更新后立刻和 `max` 比较。
-Update `count` as you go, reset it when the run breaks, and compare with `max` right after each update.
-
-> [!tip] 在哪里更新答案？ Where to update the answer
-> 在 `count++` 之后立刻 `max = Math.max(max, count)`，就不用担心“最后一段没被比较”。如果只在段结束时比较，循环结束后要**再补一次**。（[[Max Consecutive Ones|485]] 的坑）
-> Update `max` right after `count++` and the last run can't be missed. If you only compare when a run ends, you need **one more comparison** after the loop (the 485 trap).
+一边走一边更新 `count`，遇到打断条件就重置；`count++` 之后立刻 `max = Math.max(max, count)`，最后一段就不会漏（只在段结束时比较的话，循环后要再补一次，[[Max Consecutive Ones|485]] 的坑）。
+Update `count` as you go and reset it when the run breaks; do `max = Math.max(max, count)` right after `count++` so the last run can't be missed (if you only compare when a run ends, you need one more comparison after the loop, the 485 trap).
 
 ### 3.2 反向遍历：后缀信息 Reverse scan: suffix information
 
@@ -79,21 +75,13 @@ rightMax:  18    6    6    6    1   -1     （每个位置“右边”的最大�
 
 ### 3.3 下标映射与取模 Index mapping and modulo
 
-输出的每个位置都能用公式算出来源时，直接按公式填：`ans[j] = nums[j % n]`。`i % n` 也是环形数组的标准写法：遍历 `2n` 次就相当于绕了两圈，不用真的复制数组。
-When every output slot's source follows a formula, just fill by formula: `ans[j] = nums[j % n]`. `i % n` is also how circular arrays are indexed: looping `2n` times walks two laps without copying anything.
+输出的每个位置都能用公式算出来源时，直接按公式填：`ans[j] = nums[j % n]`（[[Concatenation of Array|1929]]）。`i % n` 把 `n, n+1, …` 映射回 `0, 1, …`，也是环形数组的标准写法：遍历 `2n` 次就相当于绕了两圈，不用真的复制数组。
+When every output slot's source follows a formula, just fill by formula: `ans[j] = nums[j % n]` (1929). `i % n` maps `n, n+1, …` back to `0, 1, …`, which is also how circular arrays are indexed: looping `2n` times walks two laps without copying anything.
 
 ## 4. 💻 模板代码 Code Template
 
-```java
-// 通用骨架 General shape
-State state = initial;                     // 例 e.g. count = 0, rightMax = -1
-for (/* 选方向 pick a direction */) {
-    // ① 用 state 更新答案：state 不含当前元素时放在 ② 之前，含当前元素时放在 ② 之后
-    //    use state to update the answer: before ② if state excludes the current element, after ② if it includes it
-    // ② 把当前元素并入 state
-    //    fold the current element into state
-}
-```
+每一步两件事：**用状态更新答案**和**把当前元素并入状态**；状态不含当前元素时先用再更新，含当前元素时先更新再用。
+Each step does two things: **update the answer from the state** and **fold the current element into the state**; use first when the state excludes the current element, fold first when it includes it.
 
 **后缀最值 Suffix max**（1299）:
 
@@ -147,12 +135,6 @@ for (int x : nums) {
 > [!success]- 答案 Answer
 > 看状态是否应包含当前元素。1299 要的是“**严格**在右边”的最大值，不能含自己，所以先用后更新。485 的当前这段连续 1 **包含**当前元素，所以先 `count++` 再和 `max` 比。
 > It depends on whether the state should include the current element. 1299 wants the max **strictly** to the right, excluding itself: use, then update. 485's current run **includes** the current element: `count++` first, then compare with `max`.
-
-**Q3.** 为什么 `i % n` 能处理环形数组？ Why does `i % n` handle circular arrays?
-
-> [!success]- 答案 Answer
-> `i % n` 把 `n, n+1, …` 映射回 `0, 1, …`，所以下标走过末尾会自动绕回开头。让 `i` 从 `0` 走到 `2n - 1`，每个位置都能“往后看一整圈”，效果等同于把数组复制一份接在后面（1929），但不占额外空间。
-> `i % n` maps `n, n+1, …` back to `0, 1, …`, so walking past the end wraps to the start. Looping `i` from `0` to `2n - 1` lets every position look a full lap ahead, the same as appending a copy (1929) without the extra space.
 
 ## 8. 🧩 经典题 Practice Problems
 

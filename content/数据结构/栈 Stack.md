@@ -26,18 +26,6 @@ publish: true
 
 ### 1.1 后进先出 LIFO
 
-像一摞盘子：最后放上去的最先被拿走，中间和底部的元素在上面的被拿走之前都碰不到。
-Like a pile of plates: the last one put on is the first one taken off, and nothing below the top can be reached until everything above it is gone.
-
-```
-push 1, push 2, push 3          pop() → 3          peek() → 2
-
-   │ 3 │ ← top                    │   │
-   │ 2 │                          │ 2 │ ← top           │ 2 │ ← top（不删除 not removed）
-   │ 1 │                          │ 1 │                 │ 1 │
-   └───┘                          └───┘                 └───┘
-```
-
 | 操作 Operation | 作用 What it does |
 | --- | --- |
 | `push(x)` | 放到栈顶 Put `x` on top |
@@ -67,8 +55,8 @@ A stack only touches one end, so an **array** is the natural fit: with the top a
 > | 存 `null` Storing `null` | 可以 Allowed | ❌ 会抛空指针异常 Throws `NullPointerException` |
 > | 遍历顺序 Iteration order | 栈底 → 栈顶 bottom → top | 栈顶 → 栈底 top → bottom |
 >
-> 把 `Stack` 换成 `ArrayDeque` 通常只要改声明那一行，但要注意上表的空栈行为和遍历顺序（`ArrayDeque` 把 `push` 放在头部，所以从栈顶遍历到栈底）。`Deque` 的完整方法对照见 [[队列 Queue|队列 Queue]] 1.4 节。
-> Swapping `Stack` for `ArrayDeque` is usually a one-line change, but mind the empty-stack behavior and iteration order above (`ArrayDeque` pushes at its head, so it iterates top to bottom). For all the `Deque` methods, see section 1.4 of [[队列 Queue|Queue]].
+> `Deque` 的完整方法对照见 [[队列 Queue|队列 Queue]] 1.4 节。
+> For all the `Deque` methods, see section 1.4 of [[队列 Queue|Queue]].
 
 ## 2. 🧠 什么时候用 When to Use
 
@@ -88,14 +76,6 @@ A stack only touches one end, so an **array** is the natural fit: with the top a
 
 嵌套结构里，**最后打开的必须最先关闭**。栈顶永远是“最近一个还没处理完的”，所以新来的元素只需要和栈顶比较。
 In nested structures, **the last one opened must close first**. The top is always the most recent unfinished item, so each new element only needs to compare with the top.
-
-```
-s = "([])"                 栈 stack（底 → 顶 bottom → top）
-'('  push ')'             )
-'['  push ']'             )  ]
-']'  pop ']'，相等 match ✓  )
-')'  pop ')'，相等 match ✓  （空 empty）→ valid ✅
-```
 
 ### 3.2 辅助栈：给每一层存一份快照 Auxiliary stack: a snapshot per level
 
@@ -136,7 +116,7 @@ return brackets.isEmpty();       // 别忘了：剩下没配对的也算错 left
 
 | 操作 Operation | ⏱️ Time | 🗄️ Space |
 | --- | --- | --- |
-| `push` | O(1)（数组实现扩容时 O(n)，均摊 O(1) amortized with resizing） | O(1) |
+| `push` | 均摊 O(1)，扩容的那一次是 O(n) Amortized O(1); O(n) for the push that resizes | O(1) |
 | `pop` / `peek` / `isEmpty` | O(1) | O(1) |
 | 查找任意元素 Search for a value | O(n) | O(1) |
 | 整个栈 The whole stack | | O(n) |
@@ -149,7 +129,7 @@ Stack algorithms are commonly **O(n) time**: each element is pushed once and pop
 - **空栈 pop / peek Popping an empty stack:** 会抛异常，或者 `peek()` 返回 `null` 再拆箱成 `int` 抛 NPE（见 1.3 的表）；先判 `isEmpty()` → it throws, or `peek()` returns `null` and unboxing it into an `int` throws an NPE (see the table in 1.3); check `isEmpty()` first.
 - **忘了最后检查栈是否为空 Forgetting the final emptiness check:** 配对题里，循环结束后栈里还有东西也是无效的，如 `"(("` → leftovers mean unmatched openers, see [[Valid Parentheses|20]].
 - **`Integer` 用 `==` 比较 Comparing `Integer`s with `==`:** 两个 `Integer` 比较的是引用，默认只有 -128 到 127 有缓存，超出范围通常就错。用 `.equals()` 或先拆箱成 `int` → only -128..127 is cached by default; use `.equals()` or unbox first, see [[Min Stack|155]].
-- **`ArrayDeque` 不能存 `null`** `ArrayDeque` rejects `null`: 需要“空”标记时用别的值 → use a sentinel value instead.
+- **`ArrayDeque` 不能存空值 `ArrayDeque` rejects `null`:** 需要“空”标记时用别的值 → use a sentinel value instead.
 
 ## 7. ❓ 复习题 Review Questions
 
@@ -180,7 +160,7 @@ Stack algorithms are commonly **O(n) time**: each element is pushed once and pop
 | ✅ [[Min Stack\|155. 最小栈 Min Stack]] | 辅助栈 auxiliary stack | Medium |
 | ✅ [[Number of Students Unable to Eat Lunch\|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]] | 三明治只从栈顶拿，下标 `i` 就是栈顶 sandwiches come off the top only; index `i` is the top | Easy |
 | 844. Backspace String Compare | `#` 删除前一个字符 `#` deletes the previous char | Easy |
-| [[Design Browser History\|1472. 设计浏览器历史记录 Design Browser History]] | 两个栈做后退和前进（其他写法） back and forward with two stacks (an alternative) | Medium |
+| ✅ [[Design Browser History\|1472. 设计浏览器历史记录 Design Browser History]] | 两个栈做后退和前进（其他写法） back and forward with two stacks (an alternative) | Medium |
 | 232. Implement Queue using Stacks | 两个栈实现队列 a queue from two stacks | Easy |
 | ✅ [[Implement Stack using Queues\|225. 用队列实现栈 Implement Stack using Queues]] | 反过来，用一个队列搭出栈 the reverse: a stack built on one queue | Easy |
 | 150. Evaluate Reverse Polish Notation | 数字压栈，运算符弹两个 push numbers, pop two on an operator | Medium |

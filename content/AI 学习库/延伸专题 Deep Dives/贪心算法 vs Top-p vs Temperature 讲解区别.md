@@ -69,9 +69,8 @@ $$
 | 咖啡 Coffee | ≈ 7.41% | 20% | ≈ 27.95% |
 | 果汁 Juice | ≈ 1.85% | 10% | ≈ 19.76% |
 
-> [!note] 计算说明 How these were computed
-> 例如 T = 0.5 时：$0.7^2 : 0.2^2 : 0.1^2 = 0.49 : 0.04 : 0.01$，归一化后得到 90.74% / 7.41% / 1.85%。假设只有这三个候选词。
-> For example at T = 0.5: $0.7^2 : 0.2^2 : 0.1^2 = 0.49 : 0.04 : 0.01$, which normalizes to 90.74% / 7.41% / 1.85%. This assumes only these three candidates.
+假设只有这三个候选词；T = 0.5 那一列就是 $0.7^2 : 0.2^2 : 0.1^2$ 归一化的结果。
+This assumes only these three candidates; the T = 0.5 column is $0.7^2 : 0.2^2 : 0.1^2$ renormalized.
 
 注意**低温 ≠ 贪心解码**：T = 0.5 时通常仍在采样，咖啡仍可能被选中；贪心解码则一定选奶茶。
 Note that **low temperature ≠ greedy decoding**: at T = 0.5 the model is usually still sampling, so coffee can still be picked; greedy decoding always picks milk tea.
@@ -125,10 +124,6 @@ $$
 - **容易重复、死板 Repetitive and stiff:** 确定性强，但每次都走同一条最可能的路径。
   Deterministic, but it always takes the same most-likely path.
 
-> [!tip] 记忆方法 How to remember it
-> 贪心解码就像考试时每题都选自己最有把握的选项，从不随机猜。
-> Greedy decoding is like picking your most confident answer on every exam question, never guessing at random.
-
 ## 5. Top-k vs Top-p
 
 - **Top-k：** 按**数量**筛选，固定保留概率最高的 K 个候选。
@@ -136,19 +131,8 @@ $$
 - **Top-p：** 按**累计概率**筛选，候选数量随分布变化。
   Filters by **cumulative probability**: the count varies with the distribution.
 
-三个候选词看不出区别，把例子扩展成五个（奶茶 40%、咖啡 30%、果汁 15%、牛奶 10%、可乐 5%），设 `top_k = 3`、`top_p = 0.8`：
-Three candidates can't show the difference, so extend the example to five (milk tea 40%, coffee 30%, juice 15%, milk 10%, cola 5%) with `top_k = 3` and `top_p = 0.8`:
-
-| 候选词 Candidate | 概率 Probability | 累计概率 Cumulative | Top-k = 3 | Top-p = 0.8 |
-| --- | --- | --- | --- | --- |
-| 奶茶 Milk tea | 40% | 40% | 是 Yes | 是 Yes |
-| 咖啡 Coffee | 30% | 70% | 是 Yes | 是 Yes |
-| 果汁 Juice | 15% | 85% | 是 Yes | 是 Yes（首次达到 80% first reaches 80%） |
-| 牛奶 Milk | 10% | 95% | 否 No | 否 No |
-| 可乐 Cola | 5% | 100% | 否 No | 否 No |
-
-这里两种方法恰好都保留三个词，归一化后都是奶茶 ≈ 47.06%、咖啡 ≈ 35.29%、果汁 ≈ 17.65%（例如 40 ÷ 85）。区别要在分布变化时才看得出来：
-Here both happen to keep three tokens, renormalized to milk tea ≈ 47.06%, coffee ≈ 35.29%, juice ≈ 17.65% (e.g. 40 ÷ 85). The difference shows only when the distribution changes:
+区别在分布变化时才看得出来。五个候选词，设 `top_k = 3`、`top_p = 0.8`：
+The difference shows when the distribution changes. Five candidates, with `top_k = 3` and `top_p = 0.8`:
 
 | 分布 Distribution | 概率 Probabilities | Top-k = 3 保留 Kept | Top-p = 0.8 保留 Kept |
 | --- | --- | --- | --- |
@@ -171,13 +155,10 @@ Top-k keeps a fixed number of candidates; top-p adapts the size of the candidate
 A common pipeline: reshape with temperature → filter with top-k or top-p → renormalize and sample. Greedy decoding is a different selection strategy that usually needs none of these parameters. Systems differ in how they order and combine them.
 
 > [!warning] 实践中的 Claude API 注意事项 In practice: the Claude API
-> 最新 Claude 模型（Opus 5.5 等）**不再接受** `temperature` / `top_p` / `top_k`，发送会返回 **400 错误**（Sonnet 5.5 只接受默认值）。实际开发中用 **prompt** 和 **`effort` 参数**（`output_config.effort`）引导输出。面试仍会问这些概念。详见 [[LLM 基础 - Lesson 1|第 1 课 Lesson 1]]。
-> The latest Claude models (Opus 5.5 and others) **no longer accept** `temperature` / `top_p` / `top_k`; sending them returns a **400 error** (Sonnet 5.5 accepts only the defaults). In practice, steer the output with the **prompt** and the **`effort` parameter** (`output_config.effort`). Interviews still ask about these concepts. See [[LLM 基础 - Lesson 1|第 1 课 Lesson 1]].
+> 最新 Claude 模型**不再接受** `temperature` / `top_p` / `top_k`（返回 400），改用 prompt 和 `output_config.effort` 引导输出；面试仍会问这些概念。详见 [[LLM 基础 - Lesson 1|第 1 课 Lesson 1]]。
+> The latest Claude models **no longer accept** `temperature` / `top_p` / `top_k` (400 error); steer with the prompt and `output_config.effort` instead. Interviews still ask about these concepts. See [[LLM 基础 - Lesson 1|第 1 课 Lesson 1]].
 
 ## 7. 为什么 Temperature = 0 仍不能保证完全可重复？ Why Temperature = 0 Still Isn't Fully Reproducible
-
-这是面试中最值得深入理解的部分。
-This is the part most worth understanding deeply for interviews.
 
 1. **温度为 0 通常即贪心 T = 0 usually means greedy decoding:** 不再随机采样，每一步选分数最高的 Token。只要分数完全一致且没有并列，相同上下文就会选相同 Token。但整个计算系统并不绝对确定。
    No more random sampling; each step picks the highest-scoring token. As long as the scores are identical and there's no tie, the same context yields the same token. But the computation itself isn't fully deterministic.
@@ -204,11 +185,6 @@ Temperature 为零通常对应贪心解码，但并不能保证完全可重复�
 Temperature controls how sharp or flat the token probability distribution is. Top-p filters candidate tokens by cumulative probability (top-k keeps a fixed top K instead). Greedy decoding always selects the highest-probability token at each step instead of sampling randomly.
 
 Temperature zero typically corresponds to greedy decoding, but it does not guarantee perfect reproducibility because GPU floating-point computations, parallel execution and batching can introduce small numerical differences. If two tokens have very similar scores, the selected token may change, and autoregressive generation can amplify that difference.
-
-> [!quote] 一句话总结 One-sentence summary
-> Temperature 控制概率分布，Top-p 控制候选范围，贪心解码选择最高概率的 Token，而 Temperature 为零并不能保证完全可重复，因为 GPU 计算仍可能存在非确定性。
->
-> Temperature controls the shape of the distribution, top-p controls the candidate set, greedy decoding selects the highest-probability token, and temperature zero does not guarantee perfect reproducibility because GPU computation can still be non-deterministic.
 
 ## 9. 🔗 相关笔记 Related Notes
 

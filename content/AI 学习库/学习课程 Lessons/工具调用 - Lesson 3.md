@@ -80,139 +80,58 @@ Different questions need different lookups.
 
 ## 4. 💻 代码 Code
 
-`family_assistant.py` 是一个最小的家庭助手示例。
-`family_assistant.py` is a minimal family assistant.
+最小的 agent loop：工具清单 → 问模型 → 它要调工具就执行 → 把结果发回 → 再问，直到它直接回答。
+The minimal agent loop: tool list → ask the model → run any tool it wants → send the result back → ask again, until it answers directly.
 
 ```python
-"""最小的 tool calling 示例：家庭助手。
-A minimal tool calling example: a family assistant.
-
-运行 Run:
-    pip install anthropic
-    export ANTHROPIC_API_KEY=your-api-key
-    python family_assistant.py "What should I wear for school pickup tomorrow?"
-"""
-
-import json
-import sys
-
-import anthropic
-
-client = anthropic.Anthropic()
-
-# ① 工具清单：告诉模型"你能让我做什么"。模型靠 name、description 和 input_schema 来判断。
-#    Tool list: tells the model "what you can ask me to do". It decides using name, description and input_schema.
-TOOLS = [
-    {
-        "name": "get_weather",
-        "description": "Get the weather at a given time (temperature, whether it will rain)",
-        "input_schema": {
-            "type": "object",
-            "properties": {"time": {"type": "string", "description": "e.g. 'tomorrow 15:00'"}},
-            "required": ["time"],
-        },
+# 工具定义：模型靠 name、description 和 input_schema 判断调什么、传什么。
+# Tool definition: the model picks a tool and its arguments from name, description and input_schema.
+TOOLS = [{
+    "name": "get_weather",
+    "description": "Get the weather at a given time (temperature, whether it will rain)",
+    "input_schema": {
+        "type": "object",
+        "properties": {"time": {"type": "string", "description": "e.g. 'tomorrow 15:00'"}},
+        "required": ["time"],
     },
-    {
-        "name": "get_calendar",
-        "description": "Get the schedule for a given day",
-        "input_schema": {
-            "type": "object",
-            "properties": {"date": {"type": "string", "description": "e.g. 'tomorrow'"}},
-            "required": ["date"],
-        },
-    },
-]
+}]
+FUNCTIONS = {"get_weather": get_weather}  # 真正干活的函数 The functions that do the real work
 
 
-# ② 真正干活的函数。这里用假数据，实际可以换成调 Open-Meteo、Google Calendar。
-#    The functions that do the real work. They use fake data here; swap in calls to Open-Meteo or Google Calendar.
-def get_weather(time):
-    return {"time": time, "temperature": 9, "rain": "light rain"}
-
-
-def get_calendar(date):
-    return {"date": date, "events": [{"time": "15:00", "title": "school pickup"}]}
-
-
-FUNCTIONS = {"get_weather": get_weather, "get_calendar": get_calendar}
-
-
-# ③ 循环：问模型 → 它要调工具就执行 → 把结果给它 → 再问，直到它直接回答。
-#    The loop: ask the model → run any tool it wants → give it the result → ask again, until it answers directly.
 def ask(question):
     messages = [{"role": "user", "content": question}]
-
-    for _ in range(5):  # 最多 5 轮，防止停不下来 At most 5 rounds, so it can't run forever
+    for _ in range(5):  # 上限，防止停不下来 A cap, so it can't run forever
         response = client.messages.create(
-            model="claude-sonnet-5-5",
-            max_tokens=1024,
-            tools=TOOLS,
-            messages=messages,
+            model="claude-sonnet-5-5", max_tokens=1024, tools=TOOLS, messages=messages
         )
         messages.append({"role": "assistant", "content": response.content})
-
         if response.stop_reason != "tool_use":
-            return response.content[-1].text  # 模型决定不再查了，这就是最终回答 The model is done looking things up; this is the final answer
+            return response.content[-1].text  # 最终回答 The final answer
 
         results = []
         for block in response.content:
             if block.type == "tool_use":
-                print(f"🔧 Model wants to call {block.name}({block.input})")
                 output = FUNCTIONS[block.name](**block.input)
-                results.append({
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": json.dumps(output, ensure_ascii=False),
-                })
-        messages.append({"role": "user", "content": results})
-
+                results.append({"type": "tool_result", "tool_use_id": block.id,
+                                "content": json.dumps(output, ensure_ascii=False)})
+        messages.append({"role": "user", "content": results})  # 结果以 user 消息发回 Results go back as a user message
     return "Too many lookups, stopped."
-
-
-if __name__ == "__main__":
-    print(ask(sys.argv[1] if len(sys.argv) > 1 else "What should I wear for school pickup tomorrow?"))
 ```
 
-> [!example] 一次可能的运行 One possible run
-> 下面是问“明天接孩子要穿什么？”时可能的过程。模型每次的选择可能不同。
-> Here is what might happen for "What should I wear for school pickup tomorrow?". The model's choices can vary.
->
-> | 轮次 Round | 模型 Model | 你的代码 Your code |
-> | --- | --- | --- |
-> | 1 | 调用 `get_calendar` Calls `get_calendar` | 返回 15:00 接孩子 Returns 15:00 school pickup |
-> | 2 | 调用 `get_weather` Calls `get_weather` | 返回 9°C，小雨 Returns 9°C, light rain |
-> | 3 | 直接回答穿什么 Answers what to wear | 显示回答 Shows the answer |
-
-## 5. 🏠 我的每日简报 My Daily Brief
-
-**决定 Decision:** 这次不改代码。我的简报每天查的东西都一样（天气、穿衣、按关键词排新闻），现在的规则方案就够用；工具调用适合事先不知道要查什么的场景。
-No code changes this time. My brief looks up the same things every day (weather, clothing, news ranked by keyword), so the rule-based approach is enough; tool calling suits cases where you don't know in advance what to look up.
-
-## 6. 🔍 对课程原文的补充与更正 Clarifications to the Lesson Text
+## 5. 🔍 对课程原文的补充与更正 Clarifications to the Lesson Text
 
 - **服务端工具例外 Server tools are the exception:** 原文说模型从不执行任何东西。你定义的工具由你的代码执行；网页搜索这类服务端工具在 Anthropic 一侧执行，不经过你的代码。
   The source says the model never runs anything. Tools you define run in your code; server tools such as web search run on Anthropic's side, without going through your code.
 - **日期要告诉模型 The model needs the date:** 问“几号”时模型不调用工具，但它本身不知道今天的日期，要在 prompt 里告诉它，或者提供一个查日期的工具。
   For "What's the date?" the model calls no tools, but it doesn't know today's date by itself; put the date in the prompt or provide a tool that returns it.
-- **模型也看参数定义 It reads the schema too:** 原注释说模型只看 `name` 和 `description`，其实它也看 `input_schema`，所以才知道该传什么参数（代码注释已改正）。
-  The original comment said the model only looks at `name` and `description`; it also reads `input_schema`, which is how it knows what arguments to pass (the code comment is fixed).
 - **权限由你的代码检查 Your code checks permissions:** 模型生成了订单号，不代表这个订单属于当前用户。用户身份要从登录会话里取。
   A model producing an order ID doesn't mean that order belongs to the current user. Take the user's identity from the login session.
 - **不是智能体 MCP isn't an agent:** 原文把 MCP 和 Agent 列在一起。MCP 是连接 AI 应用和外部工具、数据的开放标准，Agent 可以通过它使用工具。
   The source lists MCP alongside agents. MCP is an open standard for connecting AI applications to external tools and data, and agents can use tools through it.
-- **代码省略了错误处理 The code skips error handling:** 工具不存在或执行失败时程序会崩溃，生产代码要捕获异常，用 `is_error` 把错误还给模型（见下）。另外，任何不是 `tool_use` 的停止原因都被当成最终回答，包括被 `max_tokens` 截断；这时最后一块不一定是文本，最后一行也可能报错。Sonnet 5.5 默认开启自适应思考，思考也计入 `max_tokens`，所以 1024 偏紧。
-  If a tool doesn't exist or fails, the program crashes; production code should catch the exception and return the error with `is_error` (below). Also, any stop reason other than `tool_use` is treated as the final answer, including a `max_tokens` cut-off; then the last block may not be text and the last line can crash. Sonnet 5.5 thinks adaptively by default and thinking counts toward `max_tokens`, so 1024 is tight.
+- **代码省略了错误处理 The code skips error handling:** 工具失败时要捕获异常，用 `is_error: true` 的 `tool_result` 把错误还给模型，而不是崩溃；并且要单独处理 `max_tokens` 截断，别把它当成最终回答。Sonnet 5.5 默认自适应思考，思考也计入 `max_tokens`，所以 1024 偏紧。
+  Catch tool exceptions and return the error to the model as a `tool_result` with `is_error: true` instead of crashing, and handle a `max_tokens` cut-off separately rather than treating it as the final answer. Sonnet 5.5 thinks adaptively by default and thinking counts toward `max_tokens`, so 1024 is tight.
 
-```python
-try:
-    tool = FUNCTIONS[block.name]
-    content = json.dumps(tool(**block.input), ensure_ascii=False)
-    results.append({"type": "tool_result", "tool_use_id": block.id, "content": content})
-except Exception as e:
-    results.append({"type": "tool_result", "tool_use_id": block.id, "is_error": True, "content": str(e)})
-```
-
-## 7. ❓ 复习题 Review Questions
+## 6. ❓ 复习题 Review Questions
 
 **Q1.** 谁决定调用哪个工具？谁真正执行？ Who decides which tool to call, and who actually runs it?
 

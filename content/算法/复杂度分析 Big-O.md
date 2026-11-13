@@ -66,9 +66,6 @@ publish: true
 | n ≈ 10⁸ | 最多 O(n) At most O(n) |
 | n ≥ 10⁹ | O(log n) / O(1) |
 
-例：[[Concatenation of Array|1929]] 的 `n ≤ 1000`，连 O(n²) 都能过；但输出就有 2n 个元素，O(n) 已经是下界。
-E.g. 1929 has `n ≤ 1000`, so even O(n²) would pass; but the output alone has 2n elements, so O(n) is already the floor.
-
 ## 3. ⚙️ 原理 How It Works
 
 ### 3.1 怎么数时间 Counting time
@@ -76,8 +73,8 @@ E.g. 1929 has `n ≤ 1000`, so even O(n²) would pass; but the output alone has 
 1. **顺序执行相加 Sequential blocks add:** O(n) + O(n) = O(n)（先遍历一遍再遍历一遍 one loop after another）
 2. **嵌套循环相乘 Nested loops multiply:** O(n) × O(n) = O(n²)（外层 n 次 × 内层 n 次 n outer × n inner iterations）
 3. **每次减半 Halving each step:** `while (n > 1) n /= 2;` 的复杂度是 O(log n)。 `while (n > 1) n /= 2;` is O(log n).
-4. **看总工作量，不只是循环层数 Count total work, not loop depth:** 双指针有两个指针，但各自最多走 n 步，总共 O(n)。栈也一样：[[Valid Parentheses|20]] 里每个字符最多 push 一次、pop 一次；单调栈的 `for` 里套着 `while (...) pop()`，但每个元素只 push 一次，所有 pop 加起来不超过 n，整个循环均摊 O(n)（见 [[栈 Stack|栈 Stack]]）。
-   Two pointers may look like two loops, but each pointer moves at most n steps, O(n) in total. Stacks work the same way: in 20 each char is pushed once and popped at most once; a monotonic stack's `while (...) pop()` inside a `for` is still O(n) overall, because each element is pushed only once, so total pops are at most n (see [[栈 Stack|Stack]]).
+4. **看总工作量，不只是循环层数 Count total work, not loop depth:** 双指针各自最多走 n 步，总共 O(n)；单调栈的 `for` 里套着 `while (...) pop()`，但每个元素只 push 一次，所有 pop 加起来不超过 n，整体仍是 O(n)（见 [[栈 Stack|栈 Stack]]）。
+   Two pointers each move at most n steps, O(n) in total; a monotonic stack's `while (...) pop()` inside a `for` is still O(n) overall, because each element is pushed once, so total pops are at most n (see [[栈 Stack|Stack]]).
 5. **库函数也有成本 Library calls have costs:** `list.contains(x)` 是 O(n)，`list.add(0, x)` 是 O(n)，`str + str` 在循环里会变成 O(n²)
    `list.contains(x)` is O(n), `list.add(0, x)` is O(n), and string `+` inside a loop can become O(n²).
 
@@ -89,8 +86,8 @@ E.g. 1929 has `n ≤ 1000`, so even O(n²) would pass; but the output alone has 
   1929 must return a length-2n array, yet it's usually called O(1) extra space. Best to state both.
 - **递归栈也算 The recursion stack counts:** 递归深度 d 就是 O(d) 空间，即使没有 `new` 任何东西（见[[递归 Recursion|递归 Recursion]]）。[[Reverse Linked List|206]] 的递归版是 O(n)，迭代版是 O(1)。
   Recursion depth d costs O(d) space even if you never call `new` (see [[递归 Recursion|Recursion]]). 206's recursive version is O(n) and its iterative version O(1).
-- **用空间换时间 Trading space for time:** [[Min Stack|155]] 多一个辅助栈，额外空间从 O(1) 变成 O(n)，换来 `getMin` 从 O(n) 降到 O(1)。反例：[[Valid Parentheses|20]] 的栈和暴力解空间都是 O(n)，时间从 O(n²) 降到 O(n) 靠的是更好的算法，不是多花空间。
-  155 adds an auxiliary stack, going from O(1) to O(n) extra space, to bring `getMin` from O(n) to O(1). A counter-example: in 20 the stack and the brute force both use O(n) space; the drop from O(n²) to O(n) time comes from a better algorithm, not extra space.
+- **用空间换时间 Trading space for time:** [[Min Stack|155]] 多一个辅助栈，额外空间 O(1) → O(n)，换来 `getMin` O(n) → O(1)。但 [[Valid Parentheses|20]] 从 O(n²) 降到 O(n) 靠的是更好的算法，空间没变。
+  155 adds an auxiliary stack, O(1) → O(n) extra space, to bring `getMin` from O(n) to O(1). But 20's drop from O(n²) to O(n) comes from a better algorithm, with no extra space.
 
 ### 3.3 均摊分析 Amortized analysis
 
@@ -129,12 +126,6 @@ while (lo <= hi) {
     if (nums[mid] < target) lo = mid + 1; else hi = mid - 1;
 }
 return -1;                            // 没找到 not found
-
-// O(n) time 而不是 O(n²)：两个指针总共走 n 步 two pointers take n steps combined
-int left = 0, right = n - 1;
-while (left < right) {
-    if (shouldMoveLeft()) left++; else right--;   // 每步只动一个 each step moves one
-}
 ```
 
 ## 5. ⏱️ 复杂度 Complexity
@@ -149,7 +140,7 @@ while (left < right) {
 | [[Concatenation of Array\|1929]] | O(n) | O(1)（输出 O(n) output） | 输出不计入 output not counted |
 | [[Design Dynamic Array\|Dynamic Array]] `pushback` | 均摊 O(1) Amortized O(1) | — | 翻倍扩容 doubling |
 | [[Baseball Game\|682]] | O(n) | O(n) | 栈，每个操作 O(1) stack, O(1) per operation |
-| [[Valid Parentheses\|20]] | O(n) | O(n) | 栈；暴力解反复删配对是 O(n²) stack; the repeated-deletion brute force is O(n²) |
+| [[Valid Parentheses\|20]] | O(n) | O(n) | 栈；暴力解反复删配对是 O(n²) Stack; the repeated-deletion brute force is O(n²) |
 | [[Min Stack\|155]] | 每个操作 O(1) Per operation: O(1) | O(n) | 辅助栈，用空间换时间 auxiliary stack, space for time |
 | [[Reverse Linked List\|206]] | O(n) | 迭代 O(1) / 递归 O(n) Iterative O(1) / recursive O(n) | 递归栈要算进去 count the recursion stack |
 | [[Design Singly Linked List\|设计单链表 Design Singly Linked List]] | 头插 / 尾插 O(1)，`get` / `remove` O(i) Head / tail insert O(1), `get` / `remove` O(i) | O(n) | 一个 `tail` 引用让尾插变 O(1) one `tail` reference makes appends O(1) |
@@ -196,19 +187,21 @@ while (left < right) {
 
 ## 8. 🧩 经典题 Practice Problems
 
-- 本题库全部题目都可以用来练习报复杂度，见第 5 节表格 → Every problem so far works for practicing this; see the table in section 5.
-- [[Design Dynamic Array|Design Dynamic Array]]: 均摊分析的标准例子 the textbook amortized example
-- ✅ [[Min Stack|155. 最小栈 Min Stack]]: 用空间换时间的标准例子 the textbook space-for-time example
+每道题都要练报复杂度，汇总见第 5 节；下面是各类分析的代表题。
+Every problem is practice for stating complexity (see the table in section 5); these are the representative ones.
+
+- [[Design Dynamic Array|Design Dynamic Array]]: 均摊分析 amortized analysis
+- ✅ [[Min Stack|155. 最小栈 Min Stack]]: 用空间换时间 space for time
 - ✅ [[Valid Parentheses|20. 有效的括号 Valid Parentheses]]: 暴力 O(n²) → 栈 O(n)，每个元素最多进出一次 brute force O(n²) → stack O(n), each element in and out at most once
-- ✅ [[Reverse Linked List|206. 反转链表 Reverse Linked List]]: 同一题迭代 O(1)、递归 O(n) 空间，递归栈要算进去 iterative O(1) vs recursive O(n) space; count the recursion stack
-- ✅ [[Design Singly Linked List|设计单链表 Design Singly Linked List]]: 一个 `tail` 引用换来 O(1) 尾插；和动态数组对比各操作的代价 one `tail` reference buys O(1) appends; compare each operation's cost with a dynamic array
-- ✅ [[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]]: 两个输入要用 n、m 两个变量；递归栈占 O(n + m) 空间 Two inputs need two variables; the recursion stack takes O(n + m) space
-- ✅ [[Design Linked List|707. 设计链表 Design Linked List]]: 多一个引用换原地删除；从近的一端走是 O(min(i, n − i))，最坏仍是 O(n) An extra reference buys in-place deletion; walking from the closer end is O(min(i, n − i)) but still O(n) in the worst case
-- ✅ [[Design Browser History|1472. 设计浏览器历史记录 Design Browser History]]: 同一个接口，链表 O(steps) 对比数组 O(1)；被剪掉的节点交给 GC，通常不算进操作的时间 The same interface: linked list O(steps) vs array O(1); cut-off nodes are left to the GC rather than deleted one by one, and GC time is usually not charged to the operation
-- ✅ [[Number of Students Unable to Eat Lunch|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]]: 队列模拟最坏 O(n²)，看出顺序无关后计数 O(n)、O(1) 空间 Queue simulation is O(n²) in the worst case; counting is O(n) time and O(1) space once you see order doesn't matter
-- ✅ [[Implement Stack using Queues|225. 用队列实现栈 Implement Stack using Queues]]: 通常有一个操作要付 O(n)，按调用频率决定由压入还是弹出来付；每次都重新转全部元素，所以不能均摊，和 232 的均摊 O(1) 对比 One operation usually pays O(n), so pick `push` or `pop` by which is called more; every push rotates all elements again, so it doesn't amortize, unlike 232's amortized O(1)
-- ✅ [[Insertion Sort|插入排序题 Insertion Sort (NeetCode)]]: 最好 O(n)、最坏 O(n²)，运行时间随逆序对数变化，所以几乎有序时很快 Best O(n), worst O(n²); the time follows the number of inversions, so it's fast on nearly sorted input
-- ✅ [[Climbing Stairs|70. 爬楼梯 Climbing Stairs]]: 同一个公式四种写法，时间从 O(2ⁿ) 到 O(n)，空间从 O(n) 到 O(1) Four versions of one recurrence, from O(2ⁿ) to O(n) time and from O(n) to O(1) space
+- ✅ [[Reverse Linked List|206. 反转链表 Reverse Linked List]]: 迭代 O(1) / 递归 O(n) 空间 Iterative O(1) / recursive O(n) space
+- ✅ [[Design Singly Linked List|设计单链表 Design Singly Linked List]]: 一个 `tail` 引用换 O(1) 尾插 One `tail` reference buys O(1) appends
+- ✅ [[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]]: 两个输入用 n、m 两个变量 Two inputs need two variables
+- ✅ [[Design Linked List|707. 设计链表 Design Linked List]]: 从近的一端走是 O(min(i, n − i))，最坏仍是 O(n) Walking from the closer end is O(min(i, n − i)), still O(n) in the worst case
+- ✅ [[Design Browser History|1472. 设计浏览器历史记录 Design Browser History]]: 链表 O(steps) 对比数组 O(1) Linked list O(steps) vs array O(1)
+- ✅ [[Number of Students Unable to Eat Lunch|1700. 无法吃午餐的学生数量 Number of Students Unable to Eat Lunch]]: 模拟 O(n²) → 计数 O(n) Simulation O(n²) → counting O(n)
+- ✅ [[Implement Stack using Queues|225. 用队列实现栈 Implement Stack using Queues]]: 每次压入都转全部元素，O(n) 不能均摊 Every push rotates everything, so O(n) doesn't amortize
+- ✅ [[Insertion Sort|插入排序题 Insertion Sort (NeetCode)]]: 最好 O(n)、最坏 O(n²) Best O(n), worst O(n²)
+- ✅ [[Climbing Stairs|70. 爬楼梯 Climbing Stairs]]: 时间 O(2ⁿ) → O(n)，空间 O(n) → O(1) Time O(2ⁿ) → O(n), space O(n) → O(1)
 - 704. Binary Search: O(log n) 的标准例子 the textbook O(log n) example
 
 ## 9. 🔗 相关 Related

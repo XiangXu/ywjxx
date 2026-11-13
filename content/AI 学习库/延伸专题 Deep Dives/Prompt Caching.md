@@ -31,10 +31,6 @@ Every API call is stateless, so the client resends the full prompt (system, tool
 > Prompt caching 缓存的是 **prompt 前缀的计算结果**，不是模型的回答。命中的前提是：前缀**逐字节完全一致**。
 > Prompt caching stores **the computed result of the prompt prefix**, not the model's answer. A hit requires the prefix to be **identical byte for byte**.
 
-> [!example] 类比 Analogy
-> 像奶茶店的小本子：会员信息记一次，以后只说“老样子”。也像 HTTP 缓存，只是“缓存键”是前缀的字节，改一个字节就不命中。
-> Like a bubble tea shop's notebook: your membership info is written down once, and after that you just say "the usual". Or like an HTTP cache, except the "cache key" is the bytes of the prefix, so changing one byte means a miss.
-
 ## 2. 唯一的核心规则：前缀匹配 The One Core Rule: Prefix Match
 
 > [!important] 核心规则 Core rule
@@ -83,21 +79,8 @@ Adding `cache_control` to a content block marks a **cache breakpoint**: everythi
 - **自动缓存 Automatic caching:** 在请求顶层加 `cache_control`，断点会自动放在最后一个可缓存块上，并随对话增长前移。多轮对话用它最省事。
   Put `cache_control` at the top level of the request and the breakpoint goes on the last cacheable block automatically, moving forward as the conversation grows. It's the easiest option for multi-turn chats.
 
-**Java SDK:** `.system(String)` 无法携带 cache control，要用 `.systemOfTextBlockParams(...)`；验证命中看 `response.usage().cacheReadInputTokens()`。
-`.system(String)` can't carry cache control, so use `.systemOfTextBlockParams(...)`; check for a hit with `response.usage().cacheReadInputTokens()`.
-
-```java
-import com.anthropic.models.messages.TextBlockParam;
-import com.anthropic.models.messages.CacheControlEphemeral;
-
-.systemOfTextBlockParams(List.of(
-    TextBlockParam.builder()
-        .text(longSystemPrompt)
-        .cacheControl(CacheControlEphemeral.builder()
-            .ttl(CacheControlEphemeral.Ttl.TTL_1H)  // 可选；默认 5 分钟 optional; default 5 minutes
-            .build())
-        .build()))
-```
+**Java SDK:** `.system(String)` 无法携带 cache control，要用 `.systemOfTextBlockParams(...)` 加 `CacheControlEphemeral`；验证命中看 `response.usage().cacheReadInputTokens()`。
+`.system(String)` can't carry cache control, so use `.systemOfTextBlockParams(...)` with a `CacheControlEphemeral`; check for a hit with `response.usage().cacheReadInputTokens()`.
 
 ## 4. 价格与回本点 Economics
 
@@ -129,7 +112,7 @@ The support bot from [[LLM 基础 - Lesson 1|第 1 课 Lesson 1]]: Sonnet 5.5, 1
 输入成本从 \$400 降到约 \$130，总成本降低约 **39%**（流量持续时缓存很少过期，写入成本可以忽略）。缓存**不影响输出成本**，剩下的大头（\$300）只能靠缩短回复来降。
 Input cost falls from \$400 to about \$130, cutting the total by about **39%** (with steady traffic the cache rarely expires, so write costs are negligible). Caching **doesn't touch output cost**, so the biggest remaining item (\$300) only drops with shorter replies.
 
-## 5. 如何选择 TTL Choosing a TTL
+## 5. 如何选择缓存时长 Choosing a TTL
 
 缓存每被读取一次，计时器就**免费刷新**（计时从请求开始算，生成时间也计入）。所以关键看“共享同一前缀的两次请求之间的间隔”：
 Each cache read **refreshes the timer for free** (the timer runs from the start of the request, so generation time counts). So what matters is the gap between two requests sharing the same prefix:
@@ -144,7 +127,7 @@ Each cache read **refreshes the timer for free** (the timer runs from the start 
 
 | 场景 Scenario | 断点放哪里 Where the breakpoint goes |
 | --- | --- |
-| 大段共享 system prompt Large shared system prompt | 最后一个 system 块上；tools 在 system 之前渲染，所以一个断点就把 **tools + system** 一起缓存 On the last system block; tools render before system, so one breakpoint caches **tools + system** together |
+| 大段共享的系统提示词 Large shared system prompt | 最后一个 system 块上；tools 在 system 之前渲染，所以一个断点就把 **tools + system** 一起缓存 On the last system block; tools render before system, so one breakpoint caches **tools + system** together |
 | 多轮对话 Multi-turn conversation | 最新一轮的最后一个内容块上（或直接用顶层自动缓存）；命中量随对话增长 On the last block of the latest turn (or just use top-level automatic caching); hits grow with the conversation |
 | 共享前缀 + 变化的问题 Shared prefix + changing question | **共享部分的末尾**，不要放在整个 prompt 的末尾，否则每次都写一个新缓存却从来读不到 **At the end of the shared part**, not the end of the whole prompt, or every request writes a new entry that's never read |
 | 每次开头都不同 A different start every time | **不要缓存**：没有可复用的前缀，只会白付写入溢价 **Don't cache**: with no reusable prefix you only pay the write premium |
@@ -209,11 +192,6 @@ Move dynamic content after the last breakpoint, keep serialization deterministic
 Prompt caching 缓存 prompt 前缀的处理结果，之后开头字节完全相同的请求可以直接复用。缓存读取约为普通输入价格的十分之一，并且跳过 prefill，所以同时降低成本和首 Token 延迟。因为是前缀匹配，要按稳定程度排列 prompt：工具 → system prompt → 对话，时间戳和每次请求的数据放最后。5 分钟缓存的写入价是 1.25 倍，第二次请求就回本。最后要用 `cache_read_input_tokens` 验证，因为缓存失效是静默的。
 
 Prompt caching stores the processed prefix of a prompt so that later requests starting with the exact same bytes can reuse it. Cache reads cost about a tenth of the normal input price and skip prefill, so they cut both cost and time to first token. Because it's a prefix match, you order the prompt from most stable to most volatile: tools, then the system prompt, then the conversation, with timestamps and per-request data at the end. A five-minute cache write costs 1.25 times the input price, so it pays off from the second request. Finally, verify it with the `cache_read_input_tokens` field, because a broken cache fails silently.
-
-> [!quote] 一句话总结 One-sentence summary
-> 稳定内容放前面，在共享前缀末尾打断点，保持这些字节不变，并用 `cache_read_input_tokens` 确认真的命中了缓存。
->
-> Put stable content first, mark the end of the shared prefix with `cache_control`, keep those bytes identical, and check `cache_read_input_tokens` to confirm you're actually hitting the cache.
 
 ## 11. 🔗 相关笔记 Related Notes
 

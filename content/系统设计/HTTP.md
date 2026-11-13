@@ -45,11 +45,8 @@ created: 2026-11-13
 
 - **角色是相对的 Roles are relative:** 浏览器请求 `google.com` 时，Google 的服务器可能又去请求第三方服务，这时它就是客户端。纯 P2P 网络里的每个节点同时是客户端和服务器。
   When a browser requests `google.com`, Google's server may in turn call a third-party service, and then it is the client. In a pure P2P network, every node is both client and server.
-- **调用方与被调用方 Caller and callee:** 客户端叫“调用方”，服务器叫“被调用方”。
-  The client is the "caller" and the server is the "callee".
-
-**RPC（远程过程调用）** 让程序调用另一台机器上的函数。在 YouTube 搜索 NeetCode 时，`listVideos('neetcode')` 看似在浏览器里执行，其实代码在 YouTube 的服务器上，浏览器在后台通过网络调用它。
-**RPC (remote procedure call)** lets a program run a function on another machine. When we search for NeetCode on YouTube, `listVideos('neetcode')` looks like it runs in the browser, but the code lives on YouTube's servers and the browser calls it over the network behind the scenes.
+- **RPC（远程过程调用） RPC (remote procedure call):** 让程序调用另一台机器上的函数。在 YouTube 搜索时，`listVideos('neetcode')` 看似在浏览器里执行，其实代码在 YouTube 的服务器上，浏览器通过网络调用它。
+  Lets a program run a function on another machine. When searching on YouTube, `listVideos('neetcode')` looks like it runs in the browser, but the code lives on YouTube's servers and the browser calls it over the network.
 
 > [!tip] Java 类比 Java analogy
 > RPC 好比调用一个接口方法，实现却在远程：Java RMI 和 gRPC 的客户端存根（stub）都是这个思路。区别在于远程调用会失败、会变慢，所以要处理超时和重试。
@@ -59,9 +56,6 @@ created: 2026-11-13
 
 IP 负责把数据包送到目的地（不保证顺序），TCP 保证按序可靠送达，HTTP 再在它之上定义“数据怎么格式化、服务器和浏览器怎么响应”。见 [[Networking Basics|网络基础 Networking Basics]] 和 [[TCP and UDP|TCP 与 UDP 协议 TCP and UDP]]。
 IP delivers packets to the destination (with no ordering guarantee), TCP makes delivery reliable and in order, and HTTP, on top, defines how data is formatted and how servers and browsers respond. See [[Networking Basics|网络基础 Networking Basics]] and [[TCP and UDP|TCP 与 UDP 协议 TCP and UDP]].
-
-一个请求和响应长这样：
-A request and its response look like this:
 
 ```http
 GET /results?search_query=neetcode HTTP/1.1
@@ -84,10 +78,6 @@ Set-Cookie: session=abc123; Secure; HttpOnly
 | 响应头 Response headers | 关于响应的信息：`Content-Type`、`Cache-Control`（缓存策略）、`Set-Cookie` Information about the response: `Content-Type`, `Cache-Control` (caching rules), `Set-Cookie` |
 | 正文 Body | POST 和 PUT 携带要发送的数据（载荷），GET 通常没有 POST and PUT carry the data to send (the payload); GET usually has none |
 
-> [!tip] 用开发者工具观察 Watch it in the developer tools
-> 在浏览器里右键选“检查”，打开 Network 标签页，就能看到每个请求的名称、状态码、类型、大小和耗时。右键表头勾选 Protocol 一列，`h3` 表示在用 HTTP/3。
-> In the browser, right-click and choose Inspect, then open the Network tab to see each request's name, status, type, size, and time. Right-click the header row and enable the Protocol column; `h3` means HTTP/3.
-
 ## 4. 🔧 HTTP 方法 HTTP Methods
 
 | 方法 Method | 作用 Purpose | 幂等 Idempotent | 正文 Body |
@@ -95,6 +85,7 @@ Set-Cookie: session=abc123; Secure; HttpOnly
 | GET | 读取资源 Retrieve a resource | ✅ | 无 No |
 | POST | 提交数据，通常用来创建资源 Submit data, usually to create a resource | ❌ | 有 Yes |
 | PUT | 用提供的数据整体替换资源 Replace a resource with the data provided | ✅ | 有 Yes |
+| PATCH | 只修改资源的部分字段 Change only some fields of a resource | 不一定 Not necessarily | 有 Yes |
 | DELETE | 删除资源 Delete a resource | ✅ | 通常无 Usually no |
 
 **幂等 Idempotent** 的意思是：同一个请求重复发送多次，对服务器状态的影响和发送一次一样。
@@ -126,8 +117,8 @@ Status codes tell the client how the request went, grouped by the first digit:
 
 ## 6. 🔒 HTTPS、TLS 与 HSTS 安全传输 HTTPS, TLS, and HSTS
 
-- **问题 The problem:** 普通 HTTP 是明文，就像装在透明盒子里的钱，网络路径上的任何人都能看到和修改，这就是**中间人攻击（MITM）**。
-  Plain HTTP is clear text, like money in a transparent box: anyone along the path can read and change it. That is a **man-in-the-middle (MITM) attack**.
+- **问题 The problem:** 普通 HTTP 是明文，网络路径上的任何人都能看到和修改，这就是**中间人攻击（MITM）**。
+  Plain HTTP is clear text: anyone along the path can read and change it. That is a **man-in-the-middle (MITM) attack**.
 - **解决办法 The fix:** **TLS** 提供加密、完整性校验和服务器身份认证。HTTPS 就是在 TLS 之上运行的 HTTP。**SSL** 是 TLS 的前身，已经过时，只是名字还常被混用。
   **TLS** provides encryption, integrity checks, and server authentication. HTTPS is HTTP running over TLS. **SSL** is TLS's outdated predecessor, though the name is still used loosely.
 - **HSTS:** 服务器通过 `Strict-Transport-Security` 响应头告诉浏览器“以后只用 HTTPS”，浏览器会自动把之后的 `http://` 请求升级成 `https://`。这是输入 `http://youtube.com` 会直接跳到 HTTPS 的原因之一。
@@ -145,12 +136,8 @@ Status codes tell the client how the request went, grouped by the first digit:
   401 means **unauthenticated** (not logged in or bad credentials). If you are logged in but not allowed, the right code is **403 Forbidden**.
 - **“201 通常在 POST 或 PUT 之后” "201 comes after POST or PUT":** 创建成功时才返回 201，PUT 只是更新已有资源时，返回 200 或 204 更合适。
   201 is for a successful creation. When a PUT merely updates an existing resource, 200 or 204 fits better.
-- **“HTTP 建立在 TCP 之上” "HTTP is built on TCP":** 对 HTTP/1.1 和 HTTP/2 成立。HTTP/3 使用基于 UDP 的 QUIC，见 [[TCP and UDP|TCP 与 UDP 协议 TCP and UDP]]。
-  True for HTTP/1.1 and HTTP/2. HTTP/3 uses QUIC over UDP; see [[TCP and UDP|TCP 与 UDP 协议 TCP and UDP]].
 - **“HSTS 保证所有请求都升级” "HSTS upgrades every request":** 浏览器必须先通过 HTTPS 收到一次 HSTS 头才会生效，第一次访问仍可能走明文。浏览器内置的 HSTS 预加载列表可以补上这个缺口。
   The browser must first receive the HSTS header over HTTPS, so the very first visit can still go out in clear text. The browsers' built-in HSTS preload list closes that gap.
-- **“GET 没有正文” "GET has no body":** 规范没有禁止，但 GET 带正文没有定义好的语义，很多服务器和代理会忽略或拒绝，所以实际中不要这么做。
-  The spec doesn't forbid it, but a GET body has no defined meaning and many servers and proxies ignore or reject it, so don't do it in practice.
 
 ## 8. 🧩 复习题 Review Questions
 

@@ -60,14 +60,6 @@ You may only use standard queue operations: add to the back, peek and remove fro
 - **套路 Pattern:** 用一种结构实现另一种（设计题），选好“哪个操作付 O(n)”。
   Build one structure from another (a design problem), and choose which operation pays O(n).
 
-```
-push(3) 之前 before:  front → [2, 1] ← back    （栈顶是 2 the top is 2）
-
-offer(3):             front → [2, 1, 3]
-转一格 rotate 1:       front → [1, 3, 2]
-转两格 rotate 2:       front → [3, 2, 1]        ← 3 到了队头，就是栈顶 3 is at the front: the new top
-```
-
 ## 3. 🐢 暴力解 Brute Force
 
 - 思路 Idea: 两个队列，`push` 直接放进 `q1`。`pop` 时把 `q1` 前面的 `n - 1` 个元素挪到 `q2`，剩下的最后一个就是栈顶，取出后交换 `q1` 和 `q2`。
@@ -113,8 +105,8 @@ class MyStack {
 - ⏱️ Time: `push` 要转 `n - 1` 次，是 O(n)，其余操作都是常数时间 `push` rotates `n - 1` times, O(n); `pop` / `top` / `empty` are O(1)
 - 🗄️ Space: O(n)，只有一个队列 just one queue
 
-**不变量 Invariant:** 每次 `push` 结束时，队列从头到尾 = 栈从顶到底。加入 `x` 后它在最后，把前面 `n - 1` 个旧元素各转一次，`x` 就到了队头，旧元素保持原顺序跟在后面。`pop` 删除队头不会破坏它，所以 `pop` 和 `top` 不用做任何调整。
-After every `push`, the queue front to back equals the stack top to bottom. After adding `x` it's last; rotating each of the `n - 1` old elements once brings `x` to the front, with the old elements behind it in their original order. `pop` removes the front without breaking that, so `pop` and `top` need no extra work.
+**不变量 Invariant:** 队列从头到尾 = 栈从顶到底，`pop` 删除队头不会破坏它。
+The queue front to back equals the stack top to bottom, and `pop` removing the front keeps it that way.
 
 > [!example] 走一遍 Trace: `push(1)`, `push(2)`, `push(3)`, `pop()`, `top()`
 >
@@ -178,8 +170,8 @@ class MyStack {
 - 🗄️ Space: O(n)
 
 > [!warning] 能通过，但不合题意 It passes, but breaks the rules
-> `push` / `pop` 是 `Deque` 的栈方法，不是队列的标准操作，等于没有“用队列实现”。面试时通常会被要求改回只用 `offer` / `poll` / `peek` 的写法（解法一）。它的价值在于：**实际写代码要栈时，就这么写**，Java 文档推荐用 `Deque` 而不是老的 `Stack` 类。`push` 放在头部配 `pop` 是栈，`offer` 放在尾部配 `poll` 是队列，对照表见 [[队列 Queue|队列 Queue]] 1.4 节。
-> `push` / `pop` are `Deque`'s stack methods, not standard queue operations, so this doesn't really build a stack from a queue. An interviewer will usually ask for the `offer` / `poll` / `peek` version (solution 1). Its real value: **this is how you write a stack in everyday Java**, since the Java docs recommend `Deque` over the legacy `Stack` class. `push` adds at the front and pairs with `pop` for a stack; `offer` adds at the back and pairs with `poll` for a queue; see section 1.4 of [[队列 Queue|队列 Queue]].
+> `push` / `pop` 是 `Deque` 的栈方法，不是队列操作，面试时通常会被要求改回解法一。但**实际写代码要栈时，就这么写**：Java 文档推荐 `Deque` 而不是老的 `Stack` 类（见 [[队列 Queue|队列 Queue]]）。
+> `push` / `pop` are `Deque`'s stack methods, not queue operations, so an interviewer will usually ask for solution 1. But **this is how you write a stack in everyday Java**: the Java docs recommend `Deque` over the legacy `Stack` class (see [[队列 Queue|队列 Queue]]).
 
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
 
@@ -193,7 +185,7 @@ class MyStack {
 | 题目 Problem | 和本题的关系 Connection |
 | --- | --- |
 | 232. 用栈实现队列 Implement Queue using Stacks | 反过来：两个栈拼一个队列，均摊 O(1) the reverse: two stacks make a queue, amortized O(1) · Easy |
-| [[Min Stack\|155. 最小栈 Min Stack]] | 也是设计一个栈，多支持一个 `getMin` also designing a stack, plus `getMin` · Medium |
+| [[Min Stack\|155. 最小栈 Min Stack]] | 也是设计一个栈，多支持一个 `getMin` Also designing a stack, plus `getMin` · Medium |
 | 622. 设计循环队列 Design Circular Queue | 用环形数组实现队列本身 build the queue itself on a circular array · Medium |
 
 ## 7. ❓ 复习题 Review Questions
@@ -215,12 +207,6 @@ class MyStack {
 > [!success]- 答案 Answer
 > 两个栈的写法里，每个元素一生只会从输入栈倒到输出栈**一次**，总成本 O(n)。这里每次 `push` 都要把**所有**旧元素再转一遍，同一个元素会被转很多次，`n` 次 `push` 总共约 `n²/2` 次转圈，摊下来每次还是 O(n)。
 > With two stacks, each element moves from the input stack to the output stack **once** in its lifetime, O(n) total. Here every `push` rotates **all** old elements again, so the same element is rotated many times: about `n²/2` rotations for `n` pushes, which is still O(n) per push on average.
-
-**Q4.** 为什么字段声明成 `Queue<Integer>` 而不是 `ArrayDeque<Integer>`？ Why declare the field as `Queue<Integer>` rather than `ArrayDeque<Integer>`?
-
-> [!success]- 答案 Answer
-> `ArrayDeque` 同时实现了 `Deque`，有 `push`、`pop`、`pollLast` 这些方法，直接调用就绕过了题目的限制。声明成 `Queue` 接口，编译器只允许 `offer` / `poll` / `peek` 这些队列操作，也是“面向接口编程”的好习惯。
-> `ArrayDeque` also implements `Deque`, with `push`, `pop` and `pollLast`, which would sidestep the rules. Declaring the `Queue` interface means the compiler only allows queue operations like `offer` / `poll` / `peek`, and it's good "program to the interface" practice too.
 
 ## 8. 🔗 相关题目 Related
 

@@ -46,29 +46,13 @@ You're climbing a staircase with `n` steps. Each time you can climb 1 or 2 steps
 - **套路 Pattern:** 递推公式加重复子问题，就是[[动态规划 Dynamic Programming|动态规划]]。
   A recurrence plus repeated subproblems means [[动态规划 Dynamic Programming|dynamic programming]].
 
-```
-到第 5 级的走法 Ways to reach stair 5
-
-  到第 4 级的每种走法，再迈 1 级 every way to stair 4, then a 1-step   f(4) = 5
-+ 到第 3 级的每种走法，再迈 2 级 every way to stair 3, then a 2-step   f(3) = 3
-= f(5) = 8
-```
-
 答案序列是 `1, 2, 3, 5, 8, 13, …`，也就是错开一位的斐波那契数列：`f(n)` 等于 `F(n + 1)`（`F(1) = F(2) = 1`）。
 The answers run `1, 2, 3, 5, 8, 13, …`, the Fibonacci numbers shifted by one: `f(n)` equals `F(n + 1)` (with `F(1) = F(2) = 1`).
 
 ## 3. 🐢 暴力解 Brute Force
 
-- 思路 Idea: 直接照公式递归，不做任何记录。
+- 思路 Idea: 直接照公式递归 `return climbStairs(n - 1) + climbStairs(n - 2)`，不做任何记录。
   Apply the recurrence directly, remembering nothing.
-
-```java
-public int climbStairs(int n) {
-    if (n <= 2) return n;
-    return climbStairs(n - 1) + climbStairs(n - 2);
-}
-```
-
 - ⏱️ **复杂度 Complexity:** 时间约为 1.618 的 `n` 次方，通常写成上界 O(2ⁿ)；空间 O(n)，是调用栈的深度。`n = 45` 时约 23 亿次调用，可能超时。
   Time is about 1.618 to the power `n`, usually written as the upper bound O(2ⁿ); space is O(n) for the call stack. At `n = 45` that's about 2.3 billion calls, which can time out.
 
@@ -98,11 +82,8 @@ class Solution {
 }
 ```
 
-- ⏱️ Time: 每个 `k` 只完整算一次，所以是 O(n) Each `k` is fully computed once, so O(n)
+- ⏱️ Time: 每个 `k` 只完整算一次，共 `2n - 3` 次调用，所以是 O(n) Each `k` is fully computed once, `2n - 3` calls in total (`n >= 2`), so O(n)
 - 🗄️ Space: 数组和调用栈各占 O(n) Both the array and the call stack take O(n)
-
-**为什么是 O(n) Why O(n):** `3` 到 `n` 每个数只有第一次需要真正计算，每次计算发起两个子调用，其他调用都在常数时间内返回。`n >= 2` 时一共 `2n - 3` 次调用（`n = 5` 是 7 次，`n = 45` 是 87 次），而不加缓存时 `n = 45` 要约 23 亿次。
-Each value from `3` to `n` does real work only the first time, making two child calls, and every other call returns in constant time. For `n >= 2` that's `2n - 3` calls in total (7 for `n = 5`, 87 for `n = 45`), against about 2.3 billion at `n = 45` without the cache.
 
 **为什么 `0` 能表示没算过 Why `0` can mean "not computed":** Java 的 `int[]` 默认全是 0，而本题的答案至少是 1，所以 0 不会和真实答案混淆。如果答案本身可能是 0（比如 91 解码方法），就用 `-1` 或 `Integer[]` 的 `null` 当标记。
 A Java `int[]` starts as all zeros, and every answer here is at least 1, so 0 can't be mistaken for a real answer. If an answer can itself be 0 (as in 91 Decode Ways), use `-1` or a `null` in an `Integer[]` as the marker.
@@ -152,9 +133,6 @@ A Java `int[]` starts as all zeros, and every answer here is at least 1, so 0 ca
 >     return curr;
 > }
 > ```
->
-> **方法名 Method name:** `calculator` 是名词，读起来像一个类。方法名通常用动词或它返回的东西，比如 `countWays`，这样调用处也更好读。
-> `calculator` is a noun and reads like a class. Method names are usually verbs or what they return, such as `countWays`, which also reads better at the call site.
 
 | 写法 Approach | ⏱️ Time | 🗄️ Space | 说明 Notes |
 | --- | --- | --- | --- |
@@ -193,13 +171,7 @@ A Java `int[]` starts as all zeros, and every answer here is at least 1, so 0 ca
 > 不同的子问题只有 `n` 个左右，指数级的调用都是在重复计算它们。有了缓存，每个子问题只完整算一次，之后的调用在常数时间内返回，总共约 `2n` 次调用。
 > There are only about `n` distinct subproblems; the exponential call count is all repeated work on them. With the cache each one is fully computed once and later calls return in constant time, for about `2n` calls in total.
 
-**Q3.** 这个解法的空间由哪两部分组成？ Which two things make up this solution's space?
-
-> [!success]- 答案 Answer
-> 数组 `cache` 是 O(n)，调用栈最深约 `n` 层也是 O(n)。即使去掉数组、只留递归，调用栈的 O(n) 也还在（见[[递归 Recursion|递归]]）。
-> The `cache` array is O(n), and the call stack, about `n` frames deep, is O(n) too. Even without the array, the recursion's O(n) stack remains (see [[递归 Recursion|Recursion]]).
-
-**Q4.** 怎么把空间降到 O(1)？ How do you get the space down to O(1)?
+**Q3.** 怎么把空间降到 O(1)？ How do you get the space down to O(1)?
 
 > [!success]- 答案 Answer
 > 改成自底向上，避免调用栈。再注意到每一步只用到前两个值，用两个变量滚动更新，就不需要整张表。

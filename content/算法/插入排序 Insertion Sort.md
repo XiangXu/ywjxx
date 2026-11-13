@@ -21,10 +21,8 @@ publish: true
 
 - 数组分两段：`[0, i)` 已排好序，`[i, n)` 还没处理。
   The array has two zones: `[0, i)` is sorted, `[i, n)` is unprocessed.
-- 每一轮取出 `a[i]`，和左边的比，比它大的就往右让位，直到找到位置。
-  Each round takes `a[i]` and compares it leftward; bigger elements make room until it finds its slot.
-- 一共做 n - 1 轮，第 0 个元素自己就是有序的。
-  There are n - 1 rounds; the first element is already sorted by itself.
+- 每一轮取出 `a[i]`，和左边的比，比它大的就往右让位，直到找到位置；一共 n - 1 轮。
+  Each round takes `a[i]` and compares it leftward; bigger elements make room until it finds its slot. There are n - 1 rounds.
 
 ![Insertion sort flowchart](/assets/insertion-sort-flow-light.svg)
 ![Insertion sort flowchart](/assets/insertion-sort-flow-dark.svg)
@@ -41,15 +39,8 @@ publish: true
 
 ## 3. ⚙️ 原理 How It Works
 
-示例：`[5, 2, 4, 1]`，`|` 左边是有序段。
-Example: `[5, 2, 4, 1]`; the left of `|` is the sorted part.
-
-| 轮 Round | 取出 Pick | 过程 What happens | 结果 Array after |
-| --- | --- | --- | --- |
-| 开始 Start | - | `5` 自己有序 `5` alone is sorted | `[5 \| 2, 4, 1]` |
-| `i = 1` | `2` | 比 `5` 小，交换一次 smaller than `5`, one swap | `[2, 5 \| 4, 1]` |
-| `i = 2` | `4` | 比 `5` 小交换，比 `2` 大停下 swap past `5`, stop at `2` | `[2, 4, 5 \| 1]` |
-| `i = 3` | `1` | 一路交换到最左 swap all the way to the front | `[1, 2, 4, 5 \|]` |
+循环不变量：第 `i` 轮开始时 `[0, i)` 有序。取出 `a[i]`，比它大的元素依次右移一格，把它放进空位，`[0, i + 1)` 就有序了；`i = n` 时整个数组有序。例：`[5, 2, 4, 1]` → `[2, 5 | 4, 1]` → `[2, 4, 5 | 1]` → `[1, 2, 4, 5]`。
+Loop invariant: at the start of round `i`, `[0, i)` is sorted. Take `a[i]`, shift each larger element right by one, drop it into the gap, and `[0, i + 1)` is sorted; when `i = n` the whole array is. E.g. `[5, 2, 4, 1]` → `[2, 5 | 4, 1]` → `[2, 4, 5 | 1]` → `[1, 2, 4, 5]`.
 
 ## 4. 💻 模板代码 Code Template
 
@@ -84,14 +75,6 @@ static void insertionSortShift(int[] a) {
     }
 }
 ```
-
-> [!note] 两种写法 Two versions
-> 交换版每一步 3 次赋值，挪动版每一步 1 次，最后再放一次 `key`，所以挪动版稍快，结果相同。
-> The swap version does 3 assignments per step; the shift version does 1, plus a final write of `key`, so it's a bit faster with the same result.
-
-> [!tip] 要记录每一轮的状态？ Need the state after each round?
-> 在外层循环的末尾复制一份数组（或键值对列表）即可，见 [[Insertion Sort|插入排序题 Insertion Sort (NeetCode)]]。
-> Snapshot the array (or the list of pairs) at the end of each outer iteration; see [[Insertion Sort|插入排序题 Insertion Sort (NeetCode)]].
 
 ## 5. ⏱️ 复杂度 Complexity
 
@@ -131,13 +114,7 @@ static void insertionSortShift(int[] a) {
 > `<=` 让新元素遇到相等的元素时还会继续往左换，于是它跑到了原本在它前面的相等元素的前面，相对顺序被颠倒。
 > With `<=` the new element keeps swapping past equal elements, so it ends up before an equal element that originally came first, and their order flips.
 
-**Q3.** 为什么外层循环不变量是“`[0, i)` 有序”？ Why is "`[0, i)` is sorted" the loop invariant?
-
-> [!success]- 答案 Answer
-> 开始时 `[0, 1)` 只有一个元素，自然有序。每一轮把 `a[i]` 插到正确位置后，`[0, i + 1)` 仍然有序。循环结束时 `i = n`，整个数组有序。
-> At the start `[0, 1)` has one element, so it's sorted. Each round inserts `a[i]` into its place, so `[0, i + 1)` stays sorted. When the loop ends, the whole array is sorted.
-
-**Q4.** 数据“几乎有序”时为什么快？ Why is it fast on nearly sorted data?
+**Q3.** 数据“几乎有序”时为什么快？ Why is it fast on nearly sorted data?
 
 > [!success]- 答案 Answer
 > 总挪动次数等于逆序对数。几乎有序时逆序对很少，所以接近 O(n)。

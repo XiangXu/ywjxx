@@ -167,23 +167,11 @@ class Solution {
 > `C` 会删掉得分，之后的 `+` 和 `D` 要跳过被删的得分去找“前一个有效得分”。栈把被删的直接弹掉，有效的前一个得分永远在栈顶，O(1) 就能拿到。
 > `C` removes scores, so later `+` and `D` would need to skip cancelled ones. A stack pops them for real, so the previous valid score is always on top, reachable in O(1).
 
-**Q2.** 处理 `+` 时，为什么要先 `pop` 再 `push` 回去？ Why pop and then push back for `+`?
-
-> [!success]- 答案 Answer
-> `Stack` 只能看栈顶，要读第二个元素必须先把栈顶拿出来。但 `+` 不会删除旧得分，所以读完要把栈顶放回去，再压入新得分。用 `int[]` 实现的话可以直接读 `stack[top - 2]`，不用弹出。
-> A `Stack` only exposes the top, so you pop it to see the second one. `+` doesn't remove anything, so the top goes back before the new score is pushed. With an `int[]` you can read `stack[top - 2]` directly.
-
-**Q3.** Java 里为什么更推荐 `ArrayDeque` 而不是 `Stack`？ Why prefer `ArrayDeque` over `Stack` in Java?
+**Q2.** Java 里为什么更推荐 `ArrayDeque` 而不是 `Stack`？ Why prefer `ArrayDeque` over `Stack` in Java?
 
 > [!success]- 答案 Answer
 > `Stack` 是 JDK 1.0 的老类，继承自 `Vector`，每个方法都加了 `synchronized`，单线程下有多余的开销；而且它暴露了 `get(i)`、`add(i, x)` 等列表方法，能破坏栈的语义。`ArrayDeque` 没有同步开销，官方文档也推荐用 `Deque` 做栈。
 > `Stack` is a JDK 1.0 class that extends `Vector`, so every method is `synchronized` (wasted overhead single-threaded), and it exposes list methods like `get(i)` and `add(i, x)` that break stack discipline. `ArrayDeque` has no locking, and the Javadoc itself recommends `Deque` for stacks.
-
-**Q4.** `["5","-2","4","C","D","9","+","+"]` 的栈最后是什么？ What's the final stack for the second example?
-
-> [!success]- 答案 Answer
-> `[5, -2, -4, 9, 5, 14]`，和为 27。`C` 删掉 4，`D` 得 -4，第一个 `+` 是 -4 + 9 = 5，第二个 `+` 是 9 + 5 = 14。
-> `[5, -2, -4, 9, 5, 14]`, sum 27. `C` removes 4, `D` gives -4, the first `+` is -4 + 9 = 5, the second is 9 + 5 = 14.
 
 ## 8. 🔗 相关题目 Related
 
