@@ -168,6 +168,7 @@ Status codes tell the client how the request went, grouped by the first digit:
 ## 9. 🔗 相关 Related
 
 - ⬅️ 上一篇 Previous: [[DNS and URLs|域名系统与 URL 基础 DNS and URLs]]
+- ➡️ 下一篇 Next: [[WebSocket|网络套接字协议 WebSocket]]
 - [[TCP and UDP|TCP 与 UDP 协议 TCP and UDP]]
 - [[Networking Basics|网络基础 Networking Basics]]
 - [[📌 系统设计总览|系统设计总览 System Design Overview]]
