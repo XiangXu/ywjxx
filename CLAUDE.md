@@ -80,6 +80,12 @@ Every UI change must keep that look:
 Xiang usually pastes lesson text (from a course or a chat) and asks for a note. Don't
 paste it in verbatim. Rewrite it into a structured study note:
 
+- **Summarize, for interview prep.** The notes exist to prepare Xiang for software
+  engineer interviews. Condense the source: keep what an interviewer is likely to ask
+  (core concepts, trade-offs, complexity, common pitfalls, key numbers) and drop
+  walkthrough narration, repeated explanations and trivia. Shorter is better; a note
+  should be quick to review the night before an interview.
+
 - **File:** `content/<topic>/<Title>.md`, named in English or Chinese to match the
   folder. Add it to that folder's `📌 … 总览` overview note (one line: emoji, link,
   short summary). Link the previous note's "Related" section to it.
