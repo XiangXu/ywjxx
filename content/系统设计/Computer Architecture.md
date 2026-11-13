@@ -54,7 +54,7 @@ The disk is the computer's primary **persistent** storage: data survives whether
 | | 机械硬盘 HDD (hard disk drive) | 固态硬盘 SSD (solid-state drive) |
 | --- | --- | --- |
 | 原理 How it works | 机械式：旋转的盘片 + 读写磁头 Mechanical: spinning platters + a read/write head | 电子闪存芯片，没有活动部件（和内存不同，断电不丢数据） Electronic flash memory chips, no moving parts (unlike RAM, keeps data without power) |
-| 速度 Speed | 较慢（约 10 ms） Slower (~10 ms) | 快得多（约 100 µs） Much faster (~100 µs) |
+| 速度 Speed | 较慢（约 10 毫秒） Slower (~10 ms) | 快得多（约 100 µs） Much faster (~100 µs) |
 | 成本 Cost | 每 GB 更便宜 Cheaper per GB | 更贵，但已是常见默认选择 Costs more, but now the common default |
 
 ### 3.2 ⚡ 内存 RAM (Random Access Memory)

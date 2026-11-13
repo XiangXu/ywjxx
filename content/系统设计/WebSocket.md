@@ -90,7 +90,7 @@ Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
 
 | 协议 Protocol | 传输层 Transport | 方向 Direction | 典型用途 Typical use |
 | --- | --- | --- | --- |
-| HTTP/1.1 | TCP | 请求-响应 Request-response | 网页、REST API Web pages, REST APIs |
+| HTTP/1.1 | TCP | 请求-响应 Request-response | 网页、REST API 接口 Web pages, REST APIs |
 | HTTP/2 | TCP | 请求-响应，多路复用 Request-response, multiplexed | 同上，更快 Same, but faster |
 | WebSocket | TCP | 全双工 Full duplex | 聊天、实时推送 Chat, live updates |
 | WebRTC | 主要走 UDP 协议 Mostly UDP | 点对点 Peer to peer | 音视频通话 Audio and video calls |

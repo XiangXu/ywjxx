@@ -72,7 +72,7 @@ Set-Cookie: session=abc123; Secure; HttpOnly
 
 | 部分 Part | 作用 What it does |
 | --- | --- |
-| 方法 Method | 想对资源做什么：GET、POST、PUT、DELETE What to do with the resource: GET, POST, PUT, DELETE |
+| 方法 Method | 想对资源做什么：GET、POST、PUT、DELETE 等方法 What to do with the resource: GET, POST, PUT, DELETE |
 | URL | 往哪里请求，包含路径 `/results` 和查询参数 `?search_query=neetcode`，见 [[DNS and URLs\|域名系统与 URL 基础 DNS and URLs]] Where to send it, including the path `/results` and the query `?search_query=neetcode`; see [[DNS and URLs\|域名系统与 URL 基础 DNS and URLs]] |
 | 请求头 Request headers | 附加信息，如 `Accept`（能接受的数据类型）和 `Host` Extra information, such as `Accept` (the data types the client can take) and `Host` |
 | 响应头 Response headers | 关于响应的信息：`Content-Type`、`Cache-Control`（缓存策略）、`Set-Cookie` Information about the response: `Content-Type`, `Cache-Control` (caching rules), `Set-Cookie` |

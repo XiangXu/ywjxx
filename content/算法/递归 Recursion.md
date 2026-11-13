@@ -50,7 +50,7 @@ Each call pushes a frame (parameters, locals, return address) onto the call stac
 ## 2. 🧠 什么时候用 When to Use
 
 - 🔎 题目信号 Signals in the problem:
-  - **数据结构本身是递归的** The structure is recursive: 链表 = 一个节点 + 更短的链表；树 = 根 + 两棵子树 → a list is a node plus a shorter list; a tree is a root plus two subtrees → [[Reverse Linked List|206]]、104、226
+  - **数据结构本身递归 The structure is recursive:** 链表 = 一个节点 + 更短的链表，树 = 根 + 两棵子树（[[Reverse Linked List|206]]、104、226） → a list is a node plus a shorter list, a tree is a root plus two subtrees ([[Reverse Linked List|206]], 104, 226)
   - **问题能拆成同样的小问题** The problem splits into smaller copies of itself: 分治（归并排序、快速幂） divide and conquer (merge sort, fast power)
   - **要枚举所有可能** Enumerate all possibilities: 回溯（子集、排列） backtracking (subsets, permutations)
   - **递推公式 A recurrence:** 形如 `f(n) = f(n-1) + f(n-2)`，递归加记忆化就是自顶向下的[[动态规划 Dynamic Programming|动态规划]]（[[Climbing Stairs|70]]） → like `f(n) = f(n-1) + f(n-2)`: recursion plus memoization is top-down [[动态规划 Dynamic Programming|dynamic programming]] ([[Climbing Stairs|70]])
