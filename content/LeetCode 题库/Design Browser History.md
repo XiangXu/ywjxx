@@ -61,33 +61,12 @@ The key is call 8: visiting `linkedin.com` from `facebook.com` drops `youtube.co
 - **套路 Pattern:** 设计题 + 双向链表 + 游标指针。
   A design problem with a doubly linked list and a cursor pointer.
 
-```
-visit ×3 之后 After three visits:
-
-  null ← [leetcode] ⇄ [google] ⇄ [facebook] ⇄ [youtube] → null
-                                                  ▲ curr
-
-back(1), back(1), forward(1):
-
-  null ← [leetcode] ⇄ [google] ⇄ [facebook] ⇄ [youtube] → null
-                                    ▲ curr
-
-visit("linkedin.com"):
-
-  null ← [leetcode] ⇄ [google] ⇄ [facebook] ⇄ [linkedin] → null
-                                                  ▲ curr
-                                    [youtube]  ← 没人指向它了，等 GC 回收
-                                                 unreachable now; GC reclaims it
-```
-
 ## 3. 🐢 暴力解 Brute Force
 
-- 思路 Idea: 用一个 `ArrayList<String>` 存所有页面，再用下标 `curr` 表示当前页。`visit` 时先把 `curr` 后面的元素逐个删掉，再 `add` 新网址。
-  Keep every page in an `ArrayList<String>` with an index `curr`. On `visit`, remove the elements after `curr` one by one, then `add` the new URL.
-- 后退前进直接改下标，O(1)；但 `visit` 要把前进历史逐个删掉，单次最坏 O(n)（每页最多被删一次，所以均摊下来也是 O(1)）。
-  Back and forward just move the index, O(1); but each `visit` deletes the forward history, O(n) in the worst case for one call (each page is deleted at most once, so it is amortized O(1) too).
-- 能通过，而且只要不真删、改成“覆盖 + 记录最后一个有效位置”，就是下面均摊 O(1) 的数组写法。
-  It passes, and if you overwrite instead of deleting and track the last valid index, it becomes the amortized O(1) array version below.
+- 思路 Idea: 用 `ArrayList<String>` 存页面，下标 `curr` 表示当前页。`visit` 先从末尾逐个删掉 `curr` 后面的元素，再 `add` 新网址。
+  Keep the pages in an `ArrayList<String>` with an index `curr`. On `visit`, remove the elements after `curr` from the end, then `add` the new URL.
+- 后退前进只改下标，O(1)；`visit` 单次最坏 O(n)，但每页最多被删一次，均摊 O(1)。能通过；不真删、改成覆盖，就是下面的数组写法。
+  Back and forward just move the index, O(1); one `visit` is O(n) in the worst case, but each page is deleted at most once, so it's amortized O(1). It passes; overwrite instead of deleting and you get the array version below.
 
 ## 4. 🚀 最优解 Optimal Solution
 
@@ -156,16 +135,10 @@ The first line of `visit`, `curr.next = new ListNode(url, curr, null)`, does thr
 被剪掉的那段里，第一个节点的 `prev` 还指着 `curr`，但方向是“它指向我们”，不是“我们指向它”。GC 只看从根出发能不能到达，所以整段都会被回收，不用一个个删。
 The first node of the cut-off part still has `prev` pointing at `curr`, but that's "it points at us", not "we point at it". The GC only cares what's reachable from the roots, so the whole segment is reclaimed with no node-by-node deletion.
 
-### 4.2 🧱 循环条件里的三个检查 The three checks in the loop
+### 4.2 🧱 循环条件 The loop condition
 
-| 检查 Check | 作用 Purpose |
-| --- | --- |
-| `curr.prev != null` / `curr.next != null` | 到头就停，这就是“最多走 `steps` 步” stop at the end, which is the "at most `steps`" rule |
-| `steps > 0` | 走够了就停 stop once you've taken enough steps |
-| `curr != null` | 其实永远为真，可以删掉 always true, so it can go |
-
-`curr` 一开始是主页节点，之后只会被赋成 `curr.prev`、`curr.next` 或新节点，而前两个都在确认不是 `null` 之后才赋值。所以 `curr` 永远不会是 `null`，这个检查是多余的；留着也不影响正确性，只是多读一次。
-`curr` starts as the homepage node and is only ever set to `curr.prev`, `curr.next` (each checked for `null` first) or a new node. So `curr` is never `null` and the check is redundant; keeping it is harmless, just one extra comparison.
+`curr.prev != null` / `curr.next != null` 让循环到头就停，这就是“最多走 `steps` 步”。`curr != null` 是多余的：`curr` 只会被赋成主页、新节点，或确认过非空的 `prev` / `next`，所以永远不是 `null`；留着也无害。
+`curr.prev != null` / `curr.next != null` stop the loop at the end, which is the "at most `steps`" rule. `curr != null` is redundant: `curr` is only ever the homepage, a new node, or a `prev` / `next` already checked for `null`, so it's never `null`; keeping it is harmless.
 
 > [!example] 走一遍 Trace: 题目示例 The example
 >
@@ -220,8 +193,8 @@ The first node of the cut-off part still has `prev` pointing at `curr`, but that
 > 代价是作废的旧网址还留在数组里，直到被覆盖；数组只会变长，不会变短。
 > The price: invalidated URLs stay in the array until overwritten, and the array only grows.
 >
-> **两个栈 Two stacks:** 后退栈的栈顶是当前页，前进栈存“后退时离开的页”。`visit` 压入后退栈并清空前进栈；后退时从后退栈弹出压到前进栈（保留至少一页），前进反过来。`back` / `forward` 是 O(min(steps, k))，`visit` 清空前进栈的代价可以均摊到之前 `back` 把这些页面压进前进栈的操作上（假设清空花的时间和栈大小成正比）。见 [[栈 Stack|栈 Stack]]。
-> The back stack's top is the current page; the forward stack holds pages you left by going back. `visit` pushes onto the back stack and clears the forward stack; `back` pops from the back stack onto the forward stack (keeping at least one page), and `forward` does the reverse. `back` / `forward` are O(min(steps, k)), and the cost of clearing the forward stack in `visit` amortizes against the `back` calls that pushed those pages onto it (assuming clearing costs time proportional to the stack size).
+> **两个栈 Two stacks:** 后退栈的栈顶是当前页，前进栈存后退时离开的页。`visit` 压入后退栈并清空前进栈；`back` 把页面从后退栈搬到前进栈（至少留一页），`forward` 反过来。清空的代价均摊到之前把页面压进前进栈的 `back` 上。见 [[栈 Stack|栈 Stack]]。
+> The back stack's top is the current page; the forward stack holds pages you left by going back. `visit` pushes onto the back stack and clears the forward stack; `back` moves pages from the back stack to the forward stack (keeping at least one), and `forward` does the reverse. The clearing cost amortizes against the `back` calls that pushed those pages.
 
 | 写法 Approach | `visit` | `back` / `forward` | 说明 Notes |
 | --- | --- | --- | --- |
@@ -235,8 +208,7 @@ The first node of the cut-off part still has `prev` pointing at `curr`, but that
 - [x] 前进超过结尾 Forward past the end: 停在最后一页 → stop on the last page (`forward(2)` after a `visit`)
 - [x] ⚠️ 忘了清空前进历史 Forgetting to clear forward history: 如果 `visit` 把新节点插在 `curr` 和 `curr.next` 中间，旧的前进页还在，`forward` 会走到不该存在的页面 → if `visit` inserts between `curr` and `curr.next`, the old forward pages survive and `forward` reaches pages that should be gone
 - [x] ⚠️ 新节点漏设 `prev` Missing `prev` on the new node: 写成 `new ListNode(url, null, null)` 的话，`visit` 之后就退不回去了 → with `new ListNode(url, null, null)`, you can't go back after a `visit`
-- [x] 先移动再接 Moving before linking: 只写 `curr = new ListNode(url, curr, null)` 的话，旧页的 `next` 没有更新，退回去之后前进到不了新页面；要先接 `curr.next` 再移动 `curr` → with only `curr = new ListNode(url, curr, null)`, the old page's `next` is never updated, so after going back, `forward` never reaches the new page; link `curr.next` first, then move `curr`
-- [x] 多余的 `curr != null` Redundant `curr != null`: `curr` 永远不是 `null`，可以删掉，不影响结果 → `curr` is never `null`, so this check can go without changing the result
+- [x] 先移动再接 Moving before linking: 只写 `curr = new ListNode(url, curr, null)` 的话，旧页的 `next` 没更新，退回去之后 `forward` 到不了新页面，还会走进本该清空的旧前进历史；要先接 `curr.next` 再移动 `curr` → with only `curr = new ListNode(url, curr, null)`, the old page's `next` is never updated, so after going back, `forward` can't reach the new page and walks into the old forward history that should be gone; link `curr.next` first, then move `curr`
 - [x] 数组写法的 `last` The array version's `last`: `forward` 必须用 `last` 而不是 `history.size() - 1` 当上界，否则会走进作废的旧页面 → `forward` must clamp to `last`, not `history.size() - 1`, or it walks into stale pages
 
 ## 6. 🔁 进阶 Follow-ups
@@ -256,25 +228,19 @@ The first node of the cut-off part still has `prev` pointing at `curr`, but that
 > 把 `curr.next` 覆盖成新节点。原来的前进历史只能通过 `curr.next` 到达，覆盖之后就不可达了，GC 会回收整段。
 > It overwrites `curr.next` with the new node. The old forward history was reachable only through `curr.next`, so it becomes unreachable and the GC reclaims the whole segment.
 
-**Q2.** 被剪掉的第一个节点的 `prev` 还指着 `curr`，会不会导致内存泄漏？ The first cut-off node's `prev` still points at `curr`. Is that a memory leak?
-
-> [!success]- 答案 Answer
-> 不会。GC 看的是从根（比如 `BrowserHistory` 对象）出发能不能到达。它指向我们没关系，只要我们这边没有引用指向它，它就会被回收。
-> No. The GC checks reachability from the roots (such as the `BrowserHistory` object). It pointing at us doesn't matter; as long as nothing on our side points at it, it gets collected.
-
-**Q3.** 为什么这题不需要哨兵，707 却需要？ Why does this problem need no sentinels when 707 does?
+**Q2.** 为什么这题不需要哨兵，707 却需要？ Why does this problem need no sentinels when 707 does?
 
 > [!success]- 答案 Answer
 > 这里链表永远不空，也从不删中间节点，只在当前页后面接新节点；`prev == null` 和 `next == null` 正好表示“到头了”。707 要在任意位置插入删除，哨兵才能省掉空链表和首尾的特殊情况。
 > Here the list is never empty and nothing is deleted from the middle; new nodes only go after the current page, and `prev == null` / `next == null` mean exactly "can't go further". 707 inserts and deletes anywhere, which is where sentinels remove the empty-list and first/last special cases.
 
-**Q4.** 数组写法为什么需要 `last`，而不是直接用 `history.size() - 1`？ Why does the array version need `last` instead of `history.size() - 1`?
+**Q3.** 数组写法为什么需要 `last`，而不是直接用 `history.size() - 1`？ Why does the array version need `last` instead of `history.size() - 1`?
 
 > [!success]- 答案 Answer
 > `visit` 只覆盖 `curr + 1` 这一个位置，后面的旧网址还留在数组里。`last` 记录真正有效的最后一页；用 `size() - 1` 的话，`forward` 会走到已经作废的页面。
 > `visit` overwrites only slot `curr + 1`, so older URLs remain after it. `last` marks the real last page; with `size() - 1`, `forward` would reach invalidated pages.
 
-**Q5.** 链表写法的 `back(steps)` 是 O(steps) 还是 O(1)？ Is the linked-list `back(steps)` O(steps) or O(1)?
+**Q4.** 链表写法的 `back(steps)` 是 O(steps) 还是 O(1)？ Is the linked-list `back(steps)` O(steps) or O(1)?
 
 > [!success]- 答案 Answer
 > O(min(steps, k))，`k` 是后面还能退的页数，因为链表只能一步一步走。数组写法能直接算出下标，所以是 O(1)。这题 `steps ≤ 100`，两种都很快。

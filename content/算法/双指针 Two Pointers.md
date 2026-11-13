@@ -30,8 +30,8 @@ publish: true
 | 👉👈 相向 Opposite direction | 一个从左、一个从右，往中间走直到相遇 one from each end, moving inward until they meet | 反转、回文、有序数组两数之和 reverse, palindrome, pair sum on sorted input |
 
 > [!note] 滑动窗口也是双指针 Sliding window is two pointers too
-> 滑动窗口是同向双指针的一种：两个指针围出一个区间 `[left, right]`，右边扩、左边缩。它有自己的套路，以后单独写笔记。
-> A sliding window is a same-direction variant where the two pointers bound a range `[left, right]` that grows on the right and shrinks on the left. It gets its own note later.
+> 同向双指针围出一个区间 `[left, right]`，右边扩、左边缩，以后单独写笔记。
+> Same-direction pointers bound a range `[left, right]` that grows on the right and shrinks on the left; it gets its own note later.
 
 > [!note] 两个输入各一个指针 One pointer per input
 > 还有一种：两条**有序**的数组或链表各放一个指针，每次比较两边，取较小的那个并前进。这就是归并排序的 merge 步骤，O(n + m)（[[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]]；88 则从后往前取较大的）。
@@ -130,8 +130,8 @@ return new int[] {-1, -1};
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
-- **`left < right` 还是 `left <= right`？ `left < right` or `left <= right`?** 两个指针指向同一个元素时还要不要处理？反转、两数之和用 `<`（一个元素不能和自己配对）；[[Remove Element|27]] 的相向写法里 `right` 是开区间 `nums.length`，所以 `left < right` 正好覆盖每个元素。
-  Do you still need to process the element when both pointers meet? Reverse and pair-sum use `<` (an element can't pair with itself). In 27's opposite-pointer version `right` starts at `nums.length` (exclusive), so `left < right` covers every element.
+- **`<` 还是 `<=`？ `<` or `<=`?** 看两个指针相遇时还要不要处理那个元素。反转、两数之和用 `<`（一个元素不能和自己配对）；[[Remove Element|27]] 的相向写法里 `right` 从开区间 `nums.length` 开始，所以 `left < right` 正好覆盖每个元素。
+  It depends on whether the element where they meet still needs processing. Reverse and pair-sum use `<` (an element can't pair with itself); in 27's opposite version `right` starts at `nums.length` (exclusive), so `left < right` covers every element.
 - **换过来的元素还没检查 The swapped-in element is unchecked:** 27 的相向写法用末尾元素填坑后**不能** `left++`，因为新来的值也可能等于 `val`。
   In 27's opposite version, after filling the hole from the end you must **not** `left++`: the new value might also equal `val`.
 - **相向指针依赖有序 Opposite pointers rely on order:** 两数之和的“移动哪边”的逻辑只在有序时成立。无序就用哈希表（1. Two Sum），或先排序（但会丢失原始下标）。
@@ -162,8 +162,8 @@ return new int[] {-1, -1};
 **Q4.** 在 26. Remove Duplicates from Sorted Array 里，保留条件为什么和 `nums[slow - 1]` 比，而不是和 `nums[fast - 1]` 比？ Why compare with `nums[slow - 1]` rather than `nums[fast - 1]`?
 
 > [!success]- 答案 Answer
-> `nums[slow - 1]` 是结果里最后一个保留的值，题意就是“和已保留的最后一个不同才保留”。在有序数组里两种写法结果一样（重复值相邻），但和 `slow - 1` 比更能推广到 80. Remove Duplicates II（每个值最多保留两个：和 `nums[slow - 2]` 比）。
-> `nums[slow - 1]` is the last kept value, which is exactly the rule: keep it only if it differs from the last kept one. On sorted input both work (duplicates are adjacent), but comparing against `slow - 1` generalizes to 80. Remove Duplicates II (keep at most two: compare with `nums[slow - 2]`).
+> `nums[slow - 1]` 是最后一个保留的值，题意就是“和它不同才保留”。有序数组里两种写法结果一样，但和 `slow - 1` 比能推广到 80. Remove Duplicates II（最多保留两个：和 `nums[slow - 2]` 比）。
+> `nums[slow - 1]` is the last kept value, which is exactly the rule. On sorted input both work, but comparing with `slow - 1` generalizes to 80. Remove Duplicates II (keep at most two: compare with `nums[slow - 2]`).
 
 ## 8. 🧩 经典题 Practice Problems
 

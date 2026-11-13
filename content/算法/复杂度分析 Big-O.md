@@ -36,8 +36,8 @@ publish: true
 - **不同输入用不同变量 Different inputs get different variables:** 遍历两个数组是 O(n + m) 而不是 O(n) Two arrays take O(n + m), not O(n)
 
 > [!note] O、Θ、Ω 的区别 O vs Θ vs Ω
-> 严格说 O 是上界、Ω 是下界、Θ 是“上下界都是它”（紧确界）。面试和日常说的“这个算法是 O(n)”，通常指的是 Θ(n)，即紧确的界。
-> Strictly, O is an upper bound, Ω a lower bound, and Θ both (a tight bound). When interviews say "this is O(n)", they usually mean the tight bound Θ(n).
+> 严格说 O 是上界、Ω 是下界、Θ 是紧确界。面试里说“这个算法是 O(n)”，通常指的是紧确的 Θ(n)。
+> Strictly, O is an upper bound, Ω a lower bound, and Θ a tight bound. When interviews say "this is O(n)", they usually mean the tight bound Θ(n).
 
 ### 1.2 常见复杂度 Common classes
 
@@ -59,12 +59,10 @@ publish: true
 
 | n 的范围 Size of n | 能接受的复杂度 Acceptable complexity |
 | --- | --- |
-| n ≤ 10 | O(n!) |
-| n ≤ 20 | O(2ⁿ) |
+| n ≤ 20 | O(2ⁿ)；n ≤ 10 时 O(n!) 也行 O(2ⁿ); O(n!) is fine up to n ≤ 10 |
 | n ≤ 500 | O(n³) |
 | n ≤ 5,000 | O(n²) |
-| n ≤ 10⁵ | O(n log n)；O(n²) 在 n 约 10⁴ 时就到边界了 O(n log n); O(n²) is already borderline around 10⁴ |
-| n ≤ 10⁶ | O(n log n) / O(n) |
+| n ≤ 10⁶ | O(n log n) / O(n)；O(n²) 在 n 约 10⁴ 时就到边界了 O(n log n) / O(n); O(n²) is already borderline around 10⁴ |
 | n ≈ 10⁸ | 最多 O(n) At most O(n) |
 | n ≥ 10⁹ | O(log n) / O(1) |
 
@@ -78,10 +76,8 @@ E.g. 1929 has `n ≤ 1000`, so even O(n²) would pass; but the output alone has 
 1. **顺序执行相加 Sequential blocks add:** O(n) + O(n) = O(n)（先遍历一遍再遍历一遍 one loop after another）
 2. **嵌套循环相乘 Nested loops multiply:** O(n) × O(n) = O(n²)（外层 n 次 × 内层 n 次 n outer × n inner iterations）
 3. **每次减半 Halving each step:** `while (n > 1) n /= 2;` 的复杂度是 O(log n)。 `while (n > 1) n /= 2;` is O(log n).
-4. **看总工作量，不只是循环层数 Count total work, not loop depth:** 双指针看起来有两个指针，但两个指针各自最多走 n 步，总共 O(n)。[[Remove Element|27]] 的相向写法（另一种写法）里，`while` 每步都让 `left++` 或 `right--`，所以也是 O(n)。
-   Two pointers may look like two loops, but each pointer moves at most n steps, O(n) in total. In 27's opposite-pointer alternative, every step of the `while` does `left++` or `right--`, so it's O(n).
-   栈也一样：[[Valid Parentheses|20]] 里每个字符最多 push 一次、pop 一次，所以是 O(n)；单调栈的 `for` 里套着 `while (...) pop()`，因为每个元素只 push 一次，所有 pop 加起来不超过 n，整个循环均摊下来也是 O(n)（见 [[栈 Stack|栈 Stack]]）。
-   Stacks work the same way: in 20 each char is pushed once and popped at most once, so it's O(n). A monotonic stack's `while (...) pop()` inside a `for` is O(n) for the whole loop (amortized): each element is pushed only once, so total pops across all iterations are at most n (see [[栈 Stack|Stack]]).
+4. **看总工作量，不只是循环层数 Count total work, not loop depth:** 双指针有两个指针，但各自最多走 n 步，总共 O(n)。栈也一样：[[Valid Parentheses|20]] 里每个字符最多 push 一次、pop 一次；单调栈的 `for` 里套着 `while (...) pop()`，但每个元素只 push 一次，所有 pop 加起来不超过 n，整个循环均摊 O(n)（见 [[栈 Stack|栈 Stack]]）。
+   Two pointers may look like two loops, but each pointer moves at most n steps, O(n) in total. Stacks work the same way: in 20 each char is pushed once and popped at most once; a monotonic stack's `while (...) pop()` inside a `for` is still O(n) overall, because each element is pushed only once, so total pops are at most n (see [[栈 Stack|Stack]]).
 5. **库函数也有成本 Library calls have costs:** `list.contains(x)` 是 O(n)，`list.add(0, x)` 是 O(n)，`str + str` 在循环里会变成 O(n²)
    `list.contains(x)` is O(n), `list.add(0, x)` is O(n), and string `+` inside a loop can become O(n²).
 
@@ -91,12 +87,10 @@ E.g. 1929 has `n ≤ 1000`, so even O(n²) would pass; but the output alone has 
   Memory the algorithm allocates itself (variables, scratch arrays, hash maps, the recursion stack). This is what "space complexity" usually means in interviews.
 - **输出一般不算 Output usually doesn't count:** [[Concatenation of Array|1929]] 必须返回 2n 长的数组，但通常说“O(1) 额外空间”。最好两种都说清楚。
   1929 must return a length-2n array, yet it's usually called O(1) extra space. Best to state both.
-- **原地 In place:** 直接改输入数组，只用 O(1) 额外空间（[[Remove Element|27]]、[[Replace Elements with Greatest Element on Right Side|1299]]）。
-  Modify the input directly with O(1) extra space.
-- **递归栈也算 The recursion stack counts:** 递归深度 d 就是 O(d) 空间，即使没有 `new` 任何东西（递归跑在[[栈 Stack|调用栈]]上，见[[递归 Recursion|递归 Recursion]]）。例如 [[Reverse Linked List|206]] 的递归版是 O(n)，迭代版是 O(1)。
-  Recursion depth d costs O(d) space even if you never call `new` (recursion runs on the [[栈 Stack|call stack]]). For example, 206's recursive version is O(n) and its iterative version O(1).
-- **用空间换时间 Trading space for time:** 多存一点东西，换来更快的查询。[[Min Stack|155]] 多一个辅助栈，额外空间从 O(1) 变成 O(n)，换来 `getMin` 从 O(n) 降到 O(1)。反例：[[Valid Parentheses|20]] 的栈和暴力解空间都是 O(n)，时间从 O(n²) 降到 O(n) 靠的是更好的算法，不是多花空间。说空间复杂度时要说清楚多出来的这部分。
-  Store a bit more to answer faster. 155 adds an auxiliary stack, going from O(1) to O(n) extra space, to bring `getMin` from O(n) to O(1). A counter-example: in 20 the stack and the brute force both use O(n) space; the drop from O(n²) to O(n) time comes from a better algorithm, not extra space. Say what the extra space buys you when you state the space complexity.
+- **递归栈也算 The recursion stack counts:** 递归深度 d 就是 O(d) 空间，即使没有 `new` 任何东西（见[[递归 Recursion|递归 Recursion]]）。[[Reverse Linked List|206]] 的递归版是 O(n)，迭代版是 O(1)。
+  Recursion depth d costs O(d) space even if you never call `new` (see [[递归 Recursion|Recursion]]). 206's recursive version is O(n) and its iterative version O(1).
+- **用空间换时间 Trading space for time:** [[Min Stack|155]] 多一个辅助栈，额外空间从 O(1) 变成 O(n)，换来 `getMin` 从 O(n) 降到 O(1)。反例：[[Valid Parentheses|20]] 的栈和暴力解空间都是 O(n)，时间从 O(n²) 降到 O(n) 靠的是更好的算法，不是多花空间。
+  155 adds an auxiliary stack, going from O(1) to O(n) extra space, to bring `getMin` from O(n) to O(1). A counter-example: in 20 the stack and the brute force both use O(n) space; the drop from O(n²) to O(n) time comes from a better algorithm, not extra space.
 
 ### 3.3 均摊分析 Amortized analysis
 
@@ -104,16 +98,12 @@ E.g. 1929 has `n ≤ 1000`, so even O(n²) would pass; but the output alone has 
 Some operations are **occasionally expensive but usually cheap**. Amortized analysis takes **the total cost of a whole sequence ÷ the number of operations**, and it holds for the worst-case sequence.
 
 > [!example] 动态数组的追加操作 Dynamic array push: [[Design Dynamic Array|Design Dynamic Array]]
-> 容量从 1 开始翻倍，push n 次。扩容发生在 size = 1, 2, 4, …，复制总数 `1 + 2 + 4 + … < 2n`，再加上 n 次普通写入，总共 < 3n。
-> 3n ÷ n = **均摊 O(1)**。单次最坏仍是 O(n)（刚好触发扩容的那次）。
-> Start at capacity 1, double when full, push n times. Resizes happen at size 1, 2, 4, …, copying `1 + 2 + 4 + … < 2n` elements, plus n plain writes: under 3n total. 3n ÷ n = **amortized O(1)**. A single push is still O(n) worst case (the one that resizes).
->
-> 如果每次只扩容固定格数，总复制量是 O(n²)，均摊变成 O(n)。**按比例增长**是关键。
-> Grow by a fixed number of slots and total copying is O(n²), amortized O(n). **Growing by a factor** is what matters.
+> 容量从 1 开始翻倍，push n 次。扩容发生在 size = 1, 2, 4, …，复制总数 `1 + 2 + 4 + … < 2n`，再加上 n 次普通写入，总共 < 3n，所以是**均摊 O(1)**；单次最坏仍是 O(n)（刚好触发扩容的那次）。如果每次只扩容固定格数，总复制量是 O(n²)，均摊变成 O(n)：**按比例增长**是关键。
+> Start at capacity 1, double when full, push n times. Resizes happen at size 1, 2, 4, …, copying `1 + 2 + 4 + … < 2n` elements, plus n plain writes: under 3n total, so **amortized O(1)**; a single push is still O(n) worst case (the one that resizes). Grow by a fixed number of slots instead and total copying is O(n²), amortized O(n): **growing by a factor** is what matters.
 
 > [!warning] 均摊 ≠ 平均情况 Amortized ≠ average case
-> - **平均情况 Average case:** 对**随机输入**取平均，依赖输入分布的假设。例：快速排序平均 O(n log n)，但特定输入下最坏 O(n²)；`HashMap.get` 平均 O(1)，前提是哈希分布均匀。
->   Averaged over **random inputs**; relies on an assumption about the input distribution. E.g. quicksort averages O(n log n) but is O(n²) on bad inputs; `HashMap.get` averages O(1) assuming a good hash spread.
+> - **平均情况 Average case:** 对**随机输入**取平均，依赖输入分布的假设。快速排序平均 O(n log n)，但特定输入下最坏 O(n²)；`HashMap.get` 平均 O(1)，前提是哈希分布均匀。
+>   Averaged over **random inputs**; relies on an assumption about the input distribution. Quicksort averages O(n log n) but is O(n²) on bad inputs; `HashMap.get` averages O(1) assuming a good hash spread.
 > - **均摊 Amortized:** 对**一串操作**取平均，**不靠运气**：任何 n 次 push 的总成本都是 O(n)。
 >   Averaged over **a sequence of operations**, **with no luck involved**: any n pushes cost O(n) total.
 
@@ -142,7 +132,9 @@ return -1;                            // 没找到 not found
 
 // O(n) time 而不是 O(n²)：两个指针总共走 n 步 two pointers take n steps combined
 int left = 0, right = n - 1;
-while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
+while (left < right) {
+    if (shouldMoveLeft()) left++; else right--;   // 每步只动一个 each step moves one
+}
 ```
 
 ## 5. ⏱️ 复杂度 Complexity
@@ -152,28 +144,27 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 | 题目 Problem | ⏱️ Time | 🗄️ Extra space | 要点 Key point |
 | --- | --- | --- | --- |
 | [[Max Consecutive Ones\|485]] | O(n) | O(1) | 一次遍历 one pass |
-| [[Remove Element\|27]] | O(n) | O(1) | 原地，双指针 in place |
+| [[Remove Element\|27]] | O(n) | O(1) | 原地，双指针 in place, two pointers |
 | [[Replace Elements with Greatest Element on Right Side\|1299]] | O(n) | O(1) | 原地，反向遍历 in place, reverse scan |
 | [[Concatenation of Array\|1929]] | O(n) | O(1)（输出 O(n) output） | 输出不计入 output not counted |
 | [[Design Dynamic Array\|Dynamic Array]] `pushback` | 均摊 O(1) Amortized O(1) | — | 翻倍扩容 doubling |
-| [[Baseball Game\|682]] | O(n) | O(n) | 栈，每个操作 O(1) Stack, O(1) per operation |
-| [[Valid Parentheses\|20]] | O(n) | O(n) | 栈；暴力解反复删配对是 O(n²) Stack; the repeated-deletion brute force is O(n²) |
+| [[Baseball Game\|682]] | O(n) | O(n) | 栈，每个操作 O(1) stack, O(1) per operation |
+| [[Valid Parentheses\|20]] | O(n) | O(n) | 栈；暴力解反复删配对是 O(n²) stack; the repeated-deletion brute force is O(n²) |
 | [[Min Stack\|155]] | 每个操作 O(1) Per operation: O(1) | O(n) | 辅助栈，用空间换时间 auxiliary stack, space for time |
-| [[Reverse Linked List\|206]] | O(n) | O(1) 迭代 / O(n) 递归 O(1) iterative / O(n) recursive | 递归即使不 `new` 也要 O(n) 的调用栈 Recursion costs an O(n) call stack even with no `new` |
-| [[Design Singly Linked List\|设计单链表 Design Singly Linked List]] | 头插 / 尾插 O(1)，`get` / `remove` O(i) Head / tail insert O(1), `get` / `remove` O(i) | O(n) | 多存一个 `tail` 引用，尾插从 O(n) 变 O(1) One extra `tail` reference turns O(n) appends into O(1) |
-| [[Merge Two Sorted Lists\|21]] | O(n + m) | O(1) 迭代 / O(n + m) 递归 O(1) iterative / O(n + m) recursive | 两个输入大小不同，复杂度要写两个变量 Two inputs of different sizes need two variables |
-| [[Design Linked List\|707]] | 头插 / 尾插 O(1)，按下标 O(i) Head / tail insert O(1), by index O(i) | O(n) | 每个节点多一个 `prev`，换来站在节点上就能删除；从近的一端走只把常数减半 An extra `prev` per node lets you delete in place; walking from the closer end only halves the constant |
-| [[Design Browser History\|1472]] | `visit` O(1)，`back` / `forward` O(min(steps, k)) `visit` O(1), `back` / `forward` O(min(steps, k)) | O(n) | 链表只能一步一步走；数组加下标可以一步算出位置，变成 O(1) A list moves one node at a time; an array with indices computes the position directly, making it O(1) |
-| [[Number of Students Unable to Eat Lunch\|1700]] | 模拟 O(n²) / 计数 O(n) Simulation O(n²) / counting O(n) | 模拟 O(n) / 计数 O(1) Simulation O(n) / counting O(1) | 每有一人吃上，之前最多转一整圈；顺序无关就不用模拟 Each meal can cost up to a full lap of rotations; if order doesn't matter, skip the simulation |
-| [[Climbing Stairs\|70]] | 朴素 O(2ⁿ) / 记忆化 O(n) Plain O(2ⁿ) / memoized O(n) | 记忆化 O(n) / 两个变量 O(1) Memoized O(n) / two variables O(1) | 用 O(n) 的数组把时间从指数级降到线性；调用栈也占 O(n) An O(n) array takes the time from exponential to linear; the call stack is O(n) too |
+| [[Reverse Linked List\|206]] | O(n) | 迭代 O(1) / 递归 O(n) Iterative O(1) / recursive O(n) | 递归栈要算进去 count the recursion stack |
+| [[Design Singly Linked List\|设计单链表 Design Singly Linked List]] | 头插 / 尾插 O(1)，`get` / `remove` O(i) Head / tail insert O(1), `get` / `remove` O(i) | O(n) | 一个 `tail` 引用让尾插变 O(1) one `tail` reference makes appends O(1) |
+| [[Merge Two Sorted Lists\|21]] | O(n + m) | 迭代 O(1) / 递归 O(n + m) Iterative O(1) / recursive O(n + m) | 两个输入要写两个变量 two inputs need two variables |
+| [[Design Linked List\|707]] | 头插 / 尾插 O(1)，按下标 O(i) Head / tail insert O(1), by index O(i) | O(n) | 每个节点多一个 `prev`，换来原地删除 an extra `prev` per node buys in-place deletion |
+| [[Design Browser History\|1472]] | `visit` O(1)，`back` / `forward` O(min(steps, k)) `visit` O(1), `back` / `forward` O(min(steps, k)) | O(n) | 链表逐步走，数组加下标可直接算位置 a list walks step by step; an array with an index jumps directly |
+| [[Number of Students Unable to Eat Lunch\|1700]] | 模拟 O(n²) / 计数 O(n) Simulation O(n²) / counting O(n) | 模拟 O(n) / 计数 O(1) Simulation O(n) / counting O(1) | 顺序无关就不用模拟 skip the simulation when order doesn't matter |
+| [[Climbing Stairs\|70]] | 朴素 O(2ⁿ) / 记忆化 O(n) Plain O(2ⁿ) / memoized O(n) | 记忆化 O(n) / 两个变量 O(1) Memoized O(n) / two variables O(1) | 用 O(n) 的数组把时间从指数级降到线性 an O(n) array takes the time from exponential to linear |
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
 - **把 O(2n) 写成答案 Writing O(2n):** 常数要去掉，是 O(n) → drop the constant: it's O(n).
-- **多个输入混成一个变量 Merging inputs into one n:** 两个数组长度 n 和 m，是 O(n + m) 或 O(n·m)，不能都写成 `n` → use separate variables: O(n + m) or O(n·m).
+- **多个输入混成一个变量 Merging inputs into one n:** 两个数组长度 n 和 m，是 O(n + m) 或 O(n·m) → use separate variables: O(n + m) or O(n·m).
 - **忽略库函数成本 Ignoring library costs:** 循环里的 `contains`、`indexOf`、`remove(0)`、`substring`、字符串拼接都可能是 O(n) → these can each be O(n) inside a loop.
-- **以为“一层循环”就是 O(n) Assuming one loop means O(n):** 如果循环里指针可能回退，或者循环体本身是 O(n)，就不是 → not if pointers move back or the body is itself O(n).
-- **以为“两层循环”就是 O(n²) Assuming two loops means O(n²):** 内层指针如果从不回退（滑动窗口），总共只走 n 步，是 O(n) → if the inner pointer never resets (sliding window), it's O(n) total.
+- **按循环层数判断 Judging by loop depth:** 一层循环里指针会回退或循环体是 O(n)，就不是 O(n)；两层循环里内层指针从不回退（滑动窗口），总共只走 n 步，就是 O(n) → one loop isn't O(n) if pointers move back or the body is O(n); two loops are O(n) if the inner pointer never resets (sliding window).
 - **忘了递归栈 Forgetting the recursion stack:** 递归 DFS 的空间是 O(深度) → recursive DFS costs O(depth) space.
 - **把均摊说成平均 Calling amortized "average":** 见 3.3 → see 3.3.
 
@@ -185,25 +176,19 @@ while (left < right) { /* 每步 left++ 或 right-- each step moves one */ }
 > O(n²)。n < 1000 时 `1000n` 那项更大，但 Big-O 只关心 n 足够大时的增长，所以只留 n²。这也说明 Big-O 小的算法在小输入上不一定更快。
 > O(n²). For n < 1000 the `1000n` term is bigger, but Big-O only cares about growth for large n. It also shows that a better Big-O isn't always faster on small inputs.
 
-**Q2.** 为什么说 1929 是 O(1) 额外空间，而不是 O(n)？ Why is 1929 called O(1) extra space instead of O(n)?
+**Q2.** 动态数组 push 的“均摊 O(1)”和 `HashMap.get` 的“平均 O(1)”有什么区别？ How does a dynamic array's amortized O(1) push differ from `HashMap.get`'s average O(1)?
 
 > [!success]- 答案 Answer
-> 题目要求返回的输出数组按惯例不算额外空间；除了输出，只用了一个循环变量。算上输出就是 O(n)。面试时最好两种都说。
-> By convention the required output isn't counted; besides it, there's only a loop variable. Counting the output, it's O(n). Say both in an interview.
+> 均摊是对**一串操作**的保证：任何 n 次 push 总共 O(n)，没有坏运气。平均是对**输入分布**的期望：很多 key 哈希冲突时 `get` 就会变慢（Java 8+ 的 `HashMap` 在一个桶积累到 8 个左右且表容量 ≥ 64 时把桶转成红黑树；key 可比较时最坏 O(log n)，否则仍可能退化到 O(n)）。
+> Amortized is a guarantee over **a sequence of operations**: any n pushes cost O(n) total, no bad luck possible. Average is an expectation over **the input distribution**: if many keys collide, `get` slows down (Java 8+ `HashMap` turns a bucket into a red-black tree once it reaches about 8 entries and the table has ≥ 64 buckets; with `Comparable` keys that caps the worst case at O(log n), otherwise it can still degrade to O(n)).
 
-**Q3.** 动态数组 push 的“均摊 O(1)”和 `HashMap.get` 的“平均 O(1)”有什么区别？ How does a dynamic array's amortized O(1) push differ from `HashMap.get`'s average O(1)?
-
-> [!success]- 答案 Answer
-> 均摊是对**一串操作**的保证：任何 n 次 push 总共 O(n)，没有坏运气。平均是对**输入分布**的期望：如果很多 key 哈希冲突，`get` 就会变慢（Java 8+ 的 `HashMap` 在桶长度 ≥ 8 且表容量 ≥ 64 时把桶转成红黑树；key 可比较时最坏 O(log n)，否则仍可能退化到 O(n)）。
-> Amortized is a guarantee over **a sequence of operations**: any n pushes cost O(n) total, no bad luck possible. Average is an expectation over **the input distribution**: if many keys collide, `get` slows down (Java 8+ `HashMap` turns a bucket into a red-black tree once it holds ≥ 8 entries and the table has ≥ 64 buckets; with `Comparable` keys that caps the worst case at O(log n), otherwise it can still degrade to O(n)).
-
-**Q4.** 双指针里有一个 `while` 循环，循环里有时动 `left` 有时动 `right`，为什么是 O(n) 不是 O(n²)？ Why are two pointers O(n), not O(n²)?
+**Q3.** 双指针里有一个 `while` 循环，循环里有时动 `left` 有时动 `right`，为什么是 O(n) 不是 O(n²)？ Why are two pointers O(n), not O(n²)?
 
 > [!success]- 答案 Answer
 > 每一轮都让 `left` 增加或 `right` 减少，而 `right - left` 从 n - 1 开始、每轮至少减 1、减到 0 就停，所以最多 n 轮。看的是总步数，不是“有几个指针”。
 > Each iteration increases `left` or decreases `right`. `right - left` starts at n - 1 and drops by at least 1 per iteration until it hits 0, so there are at most n iterations. Count total steps, not pointers.
 
-**Q5.** `n = 10⁵`，O(n²) 的解法大概能不能过？ With `n = 10⁵`, will an O(n²) solution pass?
+**Q4.** `n = 10⁵`，O(n²) 的解法大概能不能过？ With `n = 10⁵`, will an O(n²) solution pass?
 
 > [!success]- 答案 Answer
 > 一般不能。10⁵ 的平方是 10¹⁰ 次操作，按每秒约 10⁸ 次算要上百秒，远超常见的 1～2 秒限制。应该找 O(n log n) 或 O(n) 的解法。

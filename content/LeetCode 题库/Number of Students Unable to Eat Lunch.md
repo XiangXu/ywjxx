@@ -50,8 +50,8 @@ This repeats until **no one** in the queue wants the top sandwich. Return the nu
 
 - **关键观察 Key insight:** 学生会一直转圈，所以只要队列里**还有人**想要栈顶那种，他迟早会转到队头拿走它。谁先谁后不影响结果，因为同一种口味的学生是可以互换的。
   Students keep cycling, so as long as **someone** in the queue wants the top sandwich, they will reach the front and take it. The order doesn't change the outcome, because students with the same preference are interchangeable.
-- **什么时候卡死 When it gets stuck:** 栈顶是 `x`，但剩下的人里没有想要 `x` 的。栈不会动，后面的三明治谁也拿不到，剩下的人全都吃不上。
-  The top is `x` and nobody left wants `x`. The stack never moves again, so nobody can reach the sandwiches below, and everyone left goes hungry.
+- **什么时候卡死 When it gets stuck:** 栈顶是 `x`，但剩下的人里没有想要 `x` 的。栈不会动，剩下的人全都吃不上。
+  The top is `x` and nobody left wants `x`. The stack never moves again, so everyone left goes hungry.
 - **套路 Pattern:** 直接按题意用队列模拟；再往前想一步，就能把模拟换成计数。
   Simulate with a queue as described; one step further, the simulation collapses into counting.
 
@@ -67,10 +67,10 @@ students（队头在左 front on the left）  sandwiches（栈顶在左 top on t
 
 ## 3. 🐢 暴力解 Brute Force
 
-- 思路 Idea: 完全照题意模拟，用 `ArrayList` 当队列，转圈时 `remove(0)` 再 `add`；判断卡死的办法是每次都扫一遍剩下的学生，看有没有人想要栈顶那种。
-  Simulate literally with an `ArrayList` as the queue (`remove(0)`, then `add` to rotate), and check for "stuck" by scanning everyone left to see if anyone wants the top sandwich.
-- `remove(0)` 要把后面所有元素前移一位，是 O(n)，转圈的次数最多又有 O(n²) 次，所以最坏 O(n³)。`n ≤ 100` 也能过，但队列操作应该是 O(1) 的，这就是为什么要用真正的队列。
-  `remove(0)` shifts every remaining element, O(n), and there can be O(n²) rotations, so the worst case is O(n³). It passes with `n ≤ 100`, but queue operations should be O(1), which is why a real queue is the right tool.
+- 思路 Idea: 用 `ArrayList` 当队列，转圈时 `remove(0)` 再 `add`，每次扫一遍剩下的学生判断是否卡死。
+  Use an `ArrayList` as the queue (`remove(0)`, then `add` to rotate), and scan everyone left to check for "stuck".
+- `remove(0)` 要平移后面所有元素，是 O(n)，转圈最多 O(n²) 次，所以最坏 O(n³)。队列操作应该是 O(1)，所以要用真正的队列。
+  `remove(0)` shifts every remaining element, O(n), and there can be O(n²) rotations, so the worst case is O(n³). Queue operations should be O(1), which is why a real queue is the right tool.
 
 ## 4. 🚀 最优解 Optimal Solution
 
@@ -107,11 +107,11 @@ class Solution {
   O(n²): each time someone eats, there were at most `queue.size()` rotations before it, which adds up to quadratic (see the worst case below)
 - 🗄️ Space: O(n)，队列 for the queue
 
-**答案怎么来 Why `result` is the answer:** 循环只有两种结束方式。队列空了：最后一次是有人吃上，`result` 刚被清成 `0`，答案正好是 `0`。`result == queue.size()`：剩下的每个人都连续被跳过了一次，`result` 就等于剩下的人数。两种情况下 `result` 都等于 `queue.size()`，所以写 `return queue.size();` 也一样，而且更好懂。
-The loop ends in only two ways. The queue is empty: the last step was someone eating, so `result` was just reset to `0`, which is the answer. Or `result == queue.size()`: everyone left was skipped once in a row, so `result` equals the number left. Either way `result` equals `queue.size()`, so `return queue.size();` works too and reads more clearly.
-
-**为什么转一圈就够 Why one lap is enough:** 转圈不会改变任何人的口味，也不会改变栈顶。如果连续 `queue.size()` 个人都不要，那就是剩下的每个人都看过了这个三明治，再转多少圈都一样。
+**为什么转一圈就够 Why one lap is enough:** 转圈不改变任何人的口味，也不改变栈顶。连续 `queue.size()` 个人都不要，就是剩下的每个人都看过了这个三明治，再转也一样。
 Rotating changes neither anyone's preference nor the top sandwich. If `queue.size()` students in a row said no, everyone left has seen this sandwich, and more laps change nothing.
+
+**答案怎么来 Why `result` is the answer:** 循环只有两种结束方式：队列空了（`result` 刚清成 `0`，答案是 `0`），或者 `result == queue.size()`（剩下的人都连续被跳过）。两种情况下 `result` 都等于 `queue.size()`，所以写 `return queue.size();` 也一样，而且更好懂。
+The loop ends in only two ways: the queue is empty (`result` was just reset to `0`, the answer), or `result == queue.size()` (everyone left was skipped in a row). Either way `result` equals `queue.size()`, so `return queue.size();` works too and reads more clearly.
 
 > [!example] 走一遍 Trace: `students = [1,1,1,0,0,1]`, `sandwiches = [1,0,0,0,1,1]`
 >
@@ -151,11 +151,8 @@ class Solution {
 - ⏱️ Time: O(n)，两次遍历 two passes
 - 🗄️ Space: O(1)，只有两个计数器 just two counters
 
-**为什么可以不管顺序 Why order can be ignored:** 模拟里，栈顶三明治被拿走的条件就是“队列里还有人想要它”，被谁拿走无所谓，因为同口味的学生没有区别。所以队列只需要记住两个数：要 `0` 的几个、要 `1` 的几个。
-In the simulation, the top sandwich is taken exactly when someone in the queue wants it, and who takes it doesn't matter because students with the same preference are identical. So the queue reduces to two numbers: how many want `0` and how many want `1`.
-
-**剩余人数 What `sandwiches.length - i` means:** 前 `i` 个三明治都被吃掉了，每个对应一个吃上的学生，所以剩下 `n - i` 个学生。此时 `count[sandwiches[i]]` 是 `0`，所以这个数也等于 `count[1 - sandwiches[i]]`，剩下的人全都要另一种。
-The first `i` sandwiches were eaten, one per student, so `n - i` students are left. Since `count[sandwiches[i]]` is `0`, this also equals `count[1 - sandwiches[i]]`: everyone left wants the other kind.
+**剩余人数 What `sandwiches.length - i` means:** 前 `i` 个三明治每个对应一个吃上的学生，所以剩下 `n - i` 个学生，他们全都要另一种，这个数也等于 `count[1 - sandwiches[i]]`。
+The first `i` sandwiches were eaten, one per student, so `n - i` students are left, all wanting the other kind; it also equals `count[1 - sandwiches[i]]`.
 
 > [!example] 走一遍 Trace: 同一个例子 The same example
 >
@@ -168,31 +165,19 @@ The first `i` sandwiches were eaten, one per student, so `n - i` students are le
 > | 2 | `0` | ✅（一人 one） | `[0, 3]` |
 > | 3 | `0` | ❌ `count[0] == 0` | 返回 `6 - 3 = 3` Returns `6 - 3 = 3` |
 
-> [!note] 其他写法 Alternatives
-> **直接返回队列长度 Return the queue size:** 把 `return result;` 换成 `return queue.size();`，意思更直白，不用推理“`result` 退出时等于剩下的人数”。
-> Replace `return result;` with `return queue.size();`. It says what it means, with no need to argue that `result` happens to equal the number left.
->
-> **计数版只看另一种 Counting, reading the other kind:** 卡死时 `return count[1 - sandwiches[i]];` 也对，和 `sandwiches.length - i` 等价。也可以把两个计数器写成 `zeros`、`ones` 两个变量。
-> When stuck, `return count[1 - sandwiches[i]];` is equivalent to `sandwiches.length - i`. You can also use two variables, `zeros` and `ones`, instead of an array.
-
 | 写法 Approach | ⏱️ Time | 🗄️ Space | 说明 Notes |
 | --- | --- | --- | --- |
 | `ArrayList` 模拟 `ArrayList` simulation | O(n³) | O(n) | 队头删除要平移元素 Removing the front shifts every element |
 | 队列模拟（解法一） Queue simulation (solution 1) | O(n²) | O(n) | 照题意来，最好想 follows the statement; easiest to come up with |
 | 计数（解法二） Counting (solution 2) | O(n) | O(1) | 先想清楚顺序无关，最优 needs the "order doesn't matter" insight; optimal |
 
-**模拟的最坏情况 The simulation's worst case:** `students = [1,1,1,0,0,0]`，`sandwiches = [0,1,0,1,0,1]`。每发一个三明治，想要它的人都排在另一种人的后面，要先把另一种人全转一遍，每次最多约 `n/2` 次，总共约 `n²/4` 次转圈，所以是 O(n²)。
-`students = [1,1,1,0,0,0]`, `sandwiches = [0,1,0,1,0,1]`. For every sandwich, the students who want it stand behind all of the other kind, so the line rotates past all of those first, up to about `n/2` times per sandwich and about `n²/4` in total: O(n²).
-
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
 
 - [x] 全都吃上 Everyone eats: 模拟版队列变空就退出，计数版循环走完返回零 → the simulation exits on an empty queue; counting finishes the loop and returns `0`
-- [x] 一开始就卡死 Stuck from the start: 两种写法都返回全部人数，计数版第一步就返回 → both return `n`; counting returns at `i = 0`, the simulation after one full lap
-- [x] 只有一个学生 One student: 要么吃上，要么吃不上 → either eats (`0`) or doesn't (`1`)
+- [x] 一开始就卡死 Stuck from the start: 两种写法都返回全部人数，计数版第一步就返回，模拟版转满一圈才停 → both return `n`; counting returns at `i = 0`, the simulation after one full lap
 - [x] ⚠️ 只停在队列为空 Stopping only on an empty queue: 没有 `result < queue.size()` 的话，卡死时会无限转圈 → without `result < queue.size()`, a stuck line loops forever
 - [x] ⚠️ 有人吃上后忘了清零 Forgetting to reset the counter: `result` 记的是**连续**没吃上的人数，有人吃上必须清成 `0`，否则会提前停 → `result` counts misses **in a row**; it must go back to `0` when someone eats, or the loop stops too early
-- [x] `Integer` 和 `int` 比较 Comparing `Integer` with `int`: `queue.peek() != sandwiches[i]` 没问题，因为右边是 `int`，左边会自动拆箱；如果两边都是 `Integer`（比如两个队列的 `peek()`），`!=` 比较的是引用 → this works because the right side is an `int`, so the left unboxes; if both were `Integer` (say two queues' `peek()`), `!=` would compare references
-- [x] `i` 不会越界 `i` never goes out of bounds: 两个数组等长，每发一个三明治就少一个学生，所以队列非空时下标不会越界 → the arrays have equal length and each sandwich handed out removes one student, so `i < n` while the queue is non-empty
+- [x] `Integer` 和 `int` 比较 Comparing `Integer` with `int`: `queue.peek() != sandwiches[i]` 没问题，因为右边是 `int`，左边会自动拆箱；两边都是 `Integer` 时 `!=` 比较的是引用 → this works because the right side is an `int`, so the left unboxes; with two `Integer`s, `!=` would compare references
 
 ## 6. 🔁 进阶 Follow-ups
 
@@ -200,8 +185,6 @@ The first `i` sandwiches were eaten, one per student, so `n - i` students are le
 | --- | --- |
 | 2073. 买票需要的时间 Time Needed to Buy Tickets | 同样是排队转圈，也能不模拟、直接算 the same rotating line, also solvable by a formula instead of simulating · Easy |
 | 933. 最近的请求次数 Number of Recent Calls | 队列存时间戳，旧的从队头出 a queue of timestamps; old ones leave from the front · Easy |
-| 232. 用栈实现队列 Implement Queue using Stacks | 两个栈拼出一个队列 two stacks make a queue · Easy |
-| 622. 设计循环队列 Design Circular Queue | 自己用环形数组实现队列 build a queue on a circular array · Medium |
 | 950. 按递增顺序显示卡牌 Reveal Cards In Increasing Order | 队列模拟，“拿一张、下一张放底下” queue simulation: take one, move the next to the bottom · Medium |
 
 ## 7. ❓ 复习题 Review Questions
@@ -229,12 +212,6 @@ The first `i` sandwiches were eaten, one per student, so `n - i` students are le
 > [!success]- 答案 Answer
 > `students = [1,1,1,0,0,0]`，`sandwiches = [0,1,0,1,0,1]`：每次想要栈顶那种的人都排在另一种人的后面，要先把另一种人全转一遍（依次转 3、2、2、1、1、0 次），总共约 `n²/4` 次转圈。
 > `students = [1,1,1,0,0,0]`, `sandwiches = [0,1,0,1,0,1]`: each time, the students who want the top sandwich stand behind all of the other kind, so the line rotates past all of them first (3, 2, 2, 1, 1, 0 times), roughly `n²/4` in total.
-
-**Q5.** 为什么 Java 里用 `ArrayDeque` 当队列，而不用 `ArrayList` 的 `remove(0)`？ Why use `ArrayDeque` as the queue in Java instead of `ArrayList` with `remove(0)`?
-
-> [!success]- 答案 Answer
-> `ArrayDeque` 是环形数组，队头出队只是移动一个下标，O(1)。`ArrayList.remove(0)` 要把后面所有元素前移一位，O(n)。见 [[队列 Queue|队列 Queue]]。
-> `ArrayDeque` is a circular array, so removing from the front just moves an index: O(1). `ArrayList.remove(0)` shifts every element after it: O(n). See [[队列 Queue|队列 Queue]].
 
 ## 8. 🔗 相关题目 Related
 

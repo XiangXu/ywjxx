@@ -49,8 +49,6 @@ In optimization problems the second condition is usually called **optimal substr
 | 实现 How | 递归加缓存 recursion plus a cache | 循环填数组 a loop filling an array |
 | 计算顺序 Order | 用到哪个才算哪个 computes only what's needed | 自己安排，先小后大 you choose it, small to large |
 | 调用栈 Call stack | 与递归深度成正比 Proportional to the depth | 没有 None |
-| 优点 Strength | 直接照公式写，容易想到 follows the recurrence directly | 没有递归开销，容易压缩空间 no recursion overhead, easy to shrink the space |
-| 缺点 Weakness | 太深可能栈溢出 very deep recursion can overflow | 要想清楚填表顺序 you must work out the fill order |
 
 ## 2. 🧠 什么时候用 When to Use
 
@@ -146,11 +144,10 @@ The last two templates assume `n >= 1`; if `n` can be 0, check first. The table 
 
 - **用错“没算过”的标记 The wrong "not computed" marker:** `int[]` 默认是 0，如果 0 是合法答案，`memo[i] != 0` 就判断不出来，结果是 0 的状态每次都重算。[[Climbing Stairs|70]] 的答案至少是 1，所以用 0 没问题；一般情况用 `Arrays.fill(memo, -1)` 或 `Integer[]` → `int[]` defaults to 0, so if 0 is a valid answer, `memo[i] != 0` can't tell and those states are recomputed every time. 70's answers are at least 1, so 0 works there; in general use `Arrays.fill(memo, -1)` or `Integer[]`.
 - **算了但没存 Computing without storing:** 只 `return` 不写 `memo[i]`，答案对，但时间还是指数级 → returning without writing `memo[i]` gives the right answer in exponential time.
-- **状态定义含糊 A vague state:** 说不清 `f(i)` 是什么，递推也就写不对。先写下一句话的定义 → if you can't say what `f(i)` means, the recurrence won't come out right. Write the one-sentence definition first.
 - **数组越界 Going out of bounds:** 要用下标 `n` 就要 `new int[n + 1]`；`n` 很小时，给 `dp[2]` 赋值也可能越界（见 [[Climbing Stairs|70]]） → using index `n` needs `new int[n + 1]`, and at small `n` even assigning `dp[2]` can go out of bounds (see [[Climbing Stairs|70]]).
 - **整数溢出 Integer overflow:** 方案数增长很快，[[Climbing Stairs|70]] 的 `f(46)` 就超过了 `int` 上限。注意题目的约束，或者用 `long`、按题目要求取模 → counts grow fast, and 70's `f(46)` already exceeds the `int` limit. Watch the constraints, or use `long` or the modulus the problem asks for.
 - **压缩空间时覆盖了还要用的值 Overwriting a value still needed:** 滚动更新要注意顺序，先算出 `next`，再移动 `prev` 和 `curr` → with rolling variables, compute `next` first, then shift `prev` and `curr`.
-- **递归太深 Recursing too deep:** 记忆化也要占调用栈，状态很多时可能 `StackOverflowError`，这时改成填表（见[[递归 Recursion|递归]]） → memoization still uses the call stack, so many states can overflow it; switch to a table (see [[递归 Recursion|Recursion]]).
+- **递归太深 Recursing too deep:** 记忆化也要占调用栈，状态很多时可能 `StackOverflowError`，这时改成填表（见[[递归 Recursion|递归 Recursion]]） → memoization still uses the call stack, so many states can overflow it; switch to a table.
 
 ## 7. ❓ 复习题 Review Questions
 
@@ -160,25 +157,19 @@ The last two templates assume `n >= 1`; if `n` can be 0, check first. The table 
 > 有重复的子问题，并且大问题的答案能由子问题的答案算出来（求最值时叫最优子结构）。
 > Overlapping subproblems, and a larger answer that can be computed from smaller answers (called optimal substructure in optimization problems).
 
-**Q2.** 动态规划和分治有什么区别？ How does DP differ from divide and conquer?
-
-> [!success]- 答案 Answer
-> 都是拆成子问题。分治的子问题互不重叠（归并排序的左右两半），存下来也用不上；动态规划的子问题会重复出现，所以要存下来。
-> Both split into subproblems. Divide and conquer's don't overlap (the two halves in merge sort), so storing them gains nothing; DP's repeat, so they're worth storing.
-
-**Q3.** 自顶向下和自底向上怎么选？ How do you choose between top-down and bottom-up?
+**Q2.** 自顶向下和自底向上怎么选？ How do you choose between top-down and bottom-up?
 
 > [!success]- 答案 Answer
 > 自顶向下更容易从公式写出来，而且只算用得到的状态，适合状态稀疏或顺序不好想的题。自底向上没有调用栈开销，也更容易压缩空间。面试时可以先写容易想到的那个，再说明怎么优化。
 > Top-down follows the recurrence directly and computes only the states it needs, which suits sparse states or an awkward fill order. Bottom-up has no call stack overhead and is easier to shrink. In an interview, start with whichever comes to mind first, then explain how to optimize it.
 
-**Q4.** 怎么估算动态规划的时间复杂度？ How do you estimate a DP's time complexity?
+**Q3.** 怎么估算动态规划的时间复杂度？ How do you estimate a DP's time complexity?
 
 > [!success]- 答案 Answer
 > 状态数乘以每个状态的转移数（假设每次转移是常数时间）。例如 322 零钱兑换有 `amount` 个状态，每个状态试 `k` 种硬币，所以是 O(amount × k)。
 > The number of states times the transitions per state, assuming each transition takes constant time. For example, 322 Coin Change has `amount` states trying `k` coins each, so O(amount × k).
 
-**Q5.** 什么时候可以把一维的表压缩成几个变量？ When can a one-dimensional table shrink to a few variables?
+**Q4.** 什么时候可以把一维的表压缩成几个变量？ When can a one-dimensional table shrink to a few variables?
 
 > [!success]- 答案 Answer
 > 当 `f(i)` 只依赖固定的几个前面的状态时，比如 70 只看前两个值。如果依赖所有更小的状态，或者最后要还原出具体方案，通常就要留着表。

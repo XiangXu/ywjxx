@@ -168,12 +168,7 @@ The `https://` at the start is the **scheme**, which says which protocol to use 
 | `https://` | 加密的网页和 API Encrypted web pages and APIs | `https://neetcode.io` |
 | `http://` | 未加密的网页，多见于本地开发 Unencrypted pages, mostly local development | `http://localhost:8080` |
 | `ftp://` | 在服务器之间传文件 Transferring files between machines | `ftp://ftp.example.com/pub/file.txt` |
-| `ssh://` | 安全的远程登录，Git 也用它 Secure remote login, also used by Git | `ssh://username@example.com:22` |
-
-- **FTP 例子 The FTP example:** 用 FTP 协议连接 `ftp.example.com`，下载 `pub` 目录下的 `file.txt`。
-  Connect to `ftp.example.com` over FTP and download `file.txt` from the `pub` directory.
-- **SSH 例子 The SSH example:** 用户名是 `username`，服务器是 `example.com`，`:22` 是 SSH 的默认端口。
-  The username is `username`, the server is `example.com`, and `:22` is SSH's default port.
+| `ssh://` | 安全的远程登录，Git 也用它（`:22` 是默认端口） Secure remote login, also used by Git (`:22` is the default port) | `ssh://username@example.com:22` |
 
 ### 5.2 🏷️ 域名 Domain
 
@@ -190,8 +185,8 @@ The `https://` at the start is the **scheme**, which says which protocol to use 
   `domains.google.com` and `google.com/domains` are completely different. A subdomain is another name in DNS, with its own records and servers; a path is just a location on the same host.
 - **拥有注册域名 Owning the registered domain:** 注册了 `google.com`，就能自由创建任意多个子域名（`mail.`、`docs.`……）和路径，不需要再找注册商。
   Once you register `google.com`, you can create as many subdomains (`mail.`, `docs.`, …) and paths as you like, without going back to the registrar.
-- **顶级域的种类 Kinds of TLDs:** 通用顶级域如 `.com`、`.org`、`.dev`；国家和地区顶级域如 `.uk`、`.cn`。`.io` 本来是英属印度洋领地的国家域名，部分因为读起来像 “I/O”，很受科技公司欢迎。
-  Generic TLDs like `.com`, `.org`, and `.dev`; country-code TLDs like `.uk` and `.cn`. `.io` is actually the country code for the British Indian Ocean Territory, popular with tech companies partly because it reads like "I/O".
+- **顶级域的种类 Kinds of TLDs:** 通用顶级域如 `.com`、`.org`、`.dev`；国家和地区顶级域如 `.uk`、`.cn`，`.io`（英属印度洋领地）也是。
+  Generic TLDs like `.com`, `.org`, and `.dev`; country-code TLDs like `.uk` and `.cn`, and also `.io` (British Indian Ocean Territory).
 
 ### 5.3 🛣️ 路径、查询和片段 Path, query, and fragment
 
@@ -203,11 +198,8 @@ The `https://` at the start is the **scheme**, which says which protocol to use 
 
 ### 5.4 🚪 端口 Port
 
-前面的 [[Networking Basics|网络基础 Networking Basics]] 讲过，URL 里可以写端口，但通常省略，因为协议有默认端口：HTTP 是 **80**，HTTPS 是 **443**。输入 `https://neetcode.io`，浏览器就会连 443 端口。
-As the earlier note [[Networking Basics|网络基础 Networking Basics]] covered, a URL can include a port, but it's usually left out because each scheme has a default: **80** for HTTP and **443** for HTTPS. Type `https://neetcode.io` and the browser connects to port 443.
-
-用非标准端口时必须写出来，比如本地开发服务器 `http://localhost:8080`：本机上有一个进程在 8080 端口监听 HTTP 请求，而不是默认的 80。
-A non-standard port has to be written, as with a local dev server at `http://localhost:8080`: a process on your machine listens for HTTP requests on port 8080 instead of the default 80.
+URL 里的端口通常省略，因为协议有默认端口（见 [[Networking Basics|网络基础 Networking Basics]]）：HTTP 是 **80**，HTTPS 是 **443**。非标准端口必须写出来，比如本地开发服务器 `http://localhost:8080`。
+A URL usually leaves the port out because each scheme has a default (see [[Networking Basics|网络基础 Networking Basics]]): **80** for HTTP and **443** for HTTPS. A non-standard port has to be written, as with a local dev server at `http://localhost:8080`.
 
 > [!tip] Java 类比 Java analogy
 > `java.net.URI` 能把 URL 拆开：`URI.create("https://domains.google.com/get-started")` 的 `getScheme()` 是 `"https"`，`getHost()` 是 `"domains.google.com"`，`getPath()` 是 `"/get-started"`。没写端口时 `getPort()` 返回 `-1`，表示“用协议的默认端口”。
@@ -224,35 +216,35 @@ When a browser opens `https://neetcode.io/practice`:
    Check the caches first; on a miss, the resolver walks the root, `.io`, and authoritative servers to get the A record.
 3. 🤝 **建立连接 Connect:** 通常和这个 IP 的 443 端口做 TCP 握手和 TLS 握手（HTTP/3 则用基于 UDP 的 QUIC）。
    Usually do the TCP and TLS handshakes with port 443 at that IP (HTTP/3 uses QUIC over UDP instead).
-4. 📤 **发送请求 Send the request:** `GET /practice`，并在 `Host` 头里带上 `neetcode.io`，让同一个 IP 上的服务器知道你要哪个网站（HTTP/2 里对应 `:authority`，TLS 握手时还会通过 SNI 告诉服务器域名）。
-   `GET /practice`, with `neetcode.io` in the `Host` header so a server hosting several sites on one IP knows which one you want (in HTTP/2 it's `:authority`, and TLS also sends the name via SNI).
+4. 📤 **发送请求 Send the request:** `GET /practice`，并在 `Host` 头里带上 `neetcode.io`，让同一个 IP 上的服务器知道你要哪个网站（TLS 握手时也会通过 SNI 发送域名）。
+   `GET /practice`, with `neetcode.io` in the `Host` header so a server hosting several sites on one IP knows which one you want (TLS also sends the name via SNI).
 5. 📥 **返回响应 Respond:** 服务器返回页面，浏览器再按 `#片段` 滚动到对应位置（如果有的话）。
    The server returns the page, and the browser scrolls to the `#fragment` if there is one.
 
 ## 7. ⚠️ 对课程原文的澄清 Clarifications to the Lesson Text
 
-- **“ICANN 管理域名的运营” "ICANN manages the operation of domain names":** ICANN 是**协调者**：它制定政策、协调根区（通过 IANA 职能）并认证注册商。每个顶级域由各自的**注册局**运营（比如 Verisign 运营 `.com`），注册商再把域名卖给我们。课程只讲了 ICANN 和注册商，漏掉了中间的注册局。
-  ICANN is a **coordinator**: it sets policy, coordinates the root zone (through the IANA function), and accredits registrars. Each TLD is run by its own **registry** (Verisign runs `.com`, for example), and registrars sell names to us. The lesson covers ICANN and registrars but skips the registry in between.
-- **“注册后就拥有了域名” "We gain ownership of the domain":** 更准确地说是按期**租用**注册权，到期不续费，过了宽限期和赎回期就会失去它。
-  More precisely, you **rent** the registration for a term, and you lose it if you don't renew before the grace and redemption periods run out.
-- **注册商的例子 The registrar examples:** Google Domains 已在 2023 年卖给 Squarespace，不再存在；HostGator 主要是主机商。现在常见的注册商有 GoDaddy、Namecheap、Cloudflare Registrar 和 Squarespace Domains。
-  Google Domains was sold to Squarespace in 2023 and no longer exists, and HostGator is mainly a hosting company. Common registrars today include GoDaddy, Namecheap, Cloudflare Registrar, and Squarespace Domains.
+- **“ICANN 管理域名的运营” "ICANN manages the operation of domain names":** ICANN 是**协调者**：制定政策、协调根区（通过 IANA 职能）并认证注册商。每个顶级域由各自的**注册局**运营，课程漏掉了这一层。
+  ICANN is a **coordinator**: it sets policy, coordinates the root zone (through the IANA function), and accredits registrars. Each TLD is run by its own **registry**, a layer the lesson skips.
+- **“注册后就拥有了域名” "We gain ownership of the domain":** 更准确地说是按期**租用**，不续费就会失去。
+  More precisely, you **rent** it for a term and lose it if you don't renew.
+- **注册商的例子 The registrar examples:** Google Domains 的业务已在 2023 年卖给 Squarespace；HostGator 主要是主机商。
+  Google Domains' business was sold to Squarespace in 2023, and HostGator is mainly a hosting company.
 - **“DNS 服务器把请求路由到服务器” "The DNS server routes your request to the server":** DNS 只负责**返回 IP 地址**，不转发请求。拿到 IP 后，客户端直接连服务器，请求由路由器沿 IP 路由送达。
   DNS only **returns the IP address**; it doesn't forward the request. Once the client has the IP, it connects to the server directly, and routers deliver the packets by IP.
 - **“服务器 IP 是静态的才会缓存” "Your computer caches the IP if the server's IP is static":** 是否缓存、缓存多久由记录的 **TTL** 决定，与 IP 是否静态无关。浏览器、操作系统和解析器都会缓存。
   Whether and how long an answer is cached depends on the record's **TTL**, not on whether the IP is static. The browser, the OS, and the resolver all cache.
-- **“服务器是有公网 IP 和域名的计算机” "A server is a computer with a public IP and a domain name":** 服务器只是响应请求的程序或机器。很多服务器只有私网 IP（比如在负载均衡器或数据库后面），也不一定有域名。
-  A server is just a program or machine that responds to requests. Many servers have only private IPs (behind a load balancer, or a database, for example) and no domain name.
-- **“.com 表示商业网站” "`.com` signifies commercial websites":** 历史上是这样，但现在任何人都能注册 `.com`，顶级域基本不再代表网站类型（`.gov`、`.edu` 这类受限顶级域除外）。
-  Historically yes, but anyone can register a `.com` today, and TLDs mostly no longer say what kind of site it is (except restricted ones like `.gov` and `.edu`).
-- **“主域名 google.com” "The primary domain google.com":** 常用的叫法是**注册域名**或**裸域名**（apex）。严格说，`google` 是二级域。对 `bbc.co.uk` 这种情况，注册域名是 `bbc.co.uk`，因为 `co.uk` 整体是一个公共后缀。
-  The usual terms are **registered domain** or **apex domain**. Strictly, `google` is the second-level domain. For something like `bbc.co.uk`, the registered domain is `bbc.co.uk`, because `co.uk` as a whole is a public suffix.
-- **协议和 FTP Schemes and FTP:** scheme 不一定是网络协议（`mailto:`、`file:` 也是 scheme）。另外主流浏览器已在 2021 年前后移除了 FTP 支持，FTP 也不加密，现在多用 SFTP 或 HTTPS 传文件。
-  A scheme isn't always a network protocol (`mailto:` and `file:` are schemes too). Major browsers also dropped FTP support around 2021, and FTP is unencrypted, so files usually move over SFTP or HTTPS today.
-- **“localhost 在 8080 端口监听” "Our localhost is listening on port 8080":** 监听端口的是本机上的某个**进程**（比如开发服务器），`localhost` 只是指向本机的名字（`127.0.0.1` 或 `::1`）。完整 URL 是 `http://localhost:8080`，地址栏里能省略协议，只是因为浏览器通常帮你补成 `http://`。另外 `localhost` 一般由 hosts 文件解析，不用问 DNS 服务器。
-  What listens is a **process** on your machine (a dev server, say); `localhost` is just a name for the machine itself (`127.0.0.1` or `::1`). The full URL is `http://localhost:8080`; you can drop the scheme in the address bar only because the browser usually fills in `http://`. Also, `localhost` is normally resolved from the hosts file, not by a DNS server.
-- **URL 的组成 URL parts:** 课程漏了**查询字符串**（`?key=value`）和**片段**（`#section`），它们在 API 设计里很常见，已在 5.3 节补上。
-  The lesson leaves out the **query string** (`?key=value`) and the **fragment** (`#section`), which come up often in API design. Section 5.3 adds them.
+- **“服务器是有公网 IP 和域名的计算机” "A server is a computer with a public IP and a domain name":** 服务器只是响应请求的程序或机器，很多只有私网 IP（比如在负载均衡器后面），也没有域名。
+  A server is just a program or machine that responds to requests; many have only private IPs (behind a load balancer, say) and no domain name.
+- **“.com 表示商业网站” "`.com` signifies commercial websites":** 历史上是，但现在任何人都能注册（`.gov`、`.edu` 这类受限顶级域除外）。
+  Historically, but anyone can register one today (restricted TLDs like `.gov` and `.edu` aside).
+- **“主域名 google.com” "The primary domain google.com":** 常用叫法是**注册域名**或**裸域名**（apex）。对 `bbc.co.uk`，注册域名是整个 `bbc.co.uk`，因为 `co.uk` 是公共后缀。
+  The usual terms are **registered domain** or **apex domain**. For `bbc.co.uk`, the registered domain is all of `bbc.co.uk`, because `co.uk` is a public suffix.
+- **协议和 FTP Schemes and FTP:** scheme 不一定是网络协议（如 `mailto:`、`file:`）。主流浏览器在 2021 年前后移除了 FTP 支持，现在多用 SFTP 或 HTTPS 传文件。
+  A scheme isn't always a network protocol (e.g. `mailto:`, `file:`). Major browsers dropped FTP support around 2021, and files usually move over SFTP or HTTPS today.
+- **“localhost 在 8080 端口监听” "Our localhost is listening on port 8080":** 监听的是本机上的某个**进程**，`localhost` 只是本机的名字（`127.0.0.1` 或 `::1`），通常由 hosts 文件解析。
+  What listens is a **process** on your machine; `localhost` is just the machine's own name (`127.0.0.1` or `::1`), usually resolved from the hosts file.
+- **URL 的组成 URL parts:** 课程漏了**查询字符串**和**片段**，已在 5.3 节补上。
+  The lesson leaves out the **query string** and the **fragment**; section 5.3 adds them.
 
 ## 8. 🧩 复习题 Review Questions
 
@@ -280,13 +272,7 @@ When a browser opens `https://neetcode.io/practice`:
 > `blog.example.com` 是子域名，是 DNS 里一个独立的名字，可以有自己的记录，指向完全不同的服务器。`example.com/blog` 是同一个主机上的路径，DNS 只解析 `example.com`，`/blog` 由那台服务器自己处理。
 > `blog.example.com` is a subdomain, a separate name in DNS that can have its own records and point to a completely different server. `example.com/blog` is a path on the same host: DNS resolves only `example.com`, and that server handles `/blog` itself.
 
-**Q5.** 为什么 `https://neetcode.io` 不用写端口，`http://localhost:8080` 却要写？ Why does `https://neetcode.io` need no port while `http://localhost:8080` does?
-
-> [!success]- 答案 Answer
-> 没写端口时浏览器用协议的默认端口，HTTPS 是 443、HTTP 是 80。`neetcode.io` 正好在 443 上提供服务，而本地开发服务器监听的是 8080，不是默认端口，所以必须写出来。
-> With no port written, the browser uses the scheme's default: 443 for HTTPS and 80 for HTTP. `neetcode.io` serves on 443, but the local dev server listens on 8080, which isn't the default, so it has to be written.
-
-**Q6.** URL 里的 `#faq` 会发给服务器吗？ Is the `#faq` in a URL sent to the server?
+**Q5.** URL 里的 `#faq` 会发给服务器吗？ Is the `#faq` in a URL sent to the server?
 
 > [!success]- 答案 Answer
 > 不会。片段只在浏览器里使用，用来跳到页面里的某个位置，或者给单页应用做客户端路由。查询字符串 `?ref=nav` 则会发给服务器。

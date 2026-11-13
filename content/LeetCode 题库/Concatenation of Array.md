@@ -64,7 +64,7 @@ class Solution {
 ```
 
 - ⏱️ Time: O(n): 循环 `n` 次，每次写两个位置 `n` iterations, two writes each
-- 🗄️ Space: O(n) 用于输出数组；除输出外只用 O(1) 额外空间 O(n) for the output array; O(1) extra beyond it
+- 🗄️ Space: 输出数组 O(n)，除此之外 O(1) 额外空间 The output array is O(n); O(1) extra beyond it
 
 > [!example] 走一遍 Trace: `nums = [1,2,1]`, `n = 3`
 >
@@ -97,20 +97,15 @@ class Solution {
 
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
 
-- [x] 单个元素 Single element (`[5]` → `[5,5]`)
-- [x] 结果数组长度是 `2n`，不是 `n + 1` 或 `n` The result has length `2n`
+- [x] 结果长度 Result length: 是 `2n`，不是 `n + 1` 或 `n` → it's `2n`, not `n + 1` or `n`
 - [x] 后半部分偏移 Offset for the second half: `i + n`，不是 `i + n - 1` → `i + n`, not `i + n - 1` (off-by-one)
 - [x] 不能原地完成 Can't be done in place: Java 数组长度固定，必须新建数组 → Java arrays have a fixed length, so a new array is required
-- [x] 空数组 Empty array: 约束保证 `n >= 1`；即使 `n = 0`，代码也会返回空数组 → the constraints guarantee `n >= 1`; even with `n = 0` the code returns an empty array
 
 ## 6. 🔁 进阶 Follow-ups
 
 > [!important] 环形数组技巧 The circular-array trick
 > 把数组接在自己后面（或者用 `i % n` 假装接上了），是处理**环形数组**的常用方法：从任何位置往后走 `n` 步，都不用担心越界。
 > Appending the array to itself (or pretending to with `i % n`) is a standard way to handle **circular arrays**: from any position you can walk forward `n` steps without falling off the end.
->
-> 例 Example: 503. Next Greater Element II 在环形数组上找右边第一个更大的元素，常见写法就是让 `i` 从 `0` 走到 `2n - 1`，用 `nums[i % n]` 取值，相当于遍历了这题的输出数组，但不真的新建它。
-> 503 looks for the next greater element in a circular array. The usual solution loops `i` from `0` to `2n - 1` and reads `nums[i % n]`: it walks this problem's output without ever building it.
 
 | 题目 Problem | 和本题的关系 Connection |
 | --- | --- |

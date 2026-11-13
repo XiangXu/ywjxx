@@ -38,9 +38,8 @@ Replace every element of `arr` with the greatest element among the elements to i
 
 - **关键观察 Key insight:** 位置 `i` 的答案只取决于它**右边**的元素。从右往左走时，“右边的最大值”可以一步步累积，不用每次重新找。
   The answer at `i` depends only on what's to its **right**. Walking right to left, the right-side maximum builds up one step at a time, so you never rescan.
-- **套路 Pattern:** 反向遍历 + 后缀最大值 (reverse traversal with a running suffix max)。
-  `rightMax` 在处理 `i` 时等于 `max(arr[i+1..n-1])`，也就是后缀最大值。
-  Reverse traversal with a running suffix max: when you process `i`, `rightMax` equals `max(arr[i+1..n-1])`, the suffix maximum.
+- **套路 Pattern:** 反向遍历 + 后缀最大值：处理 `i` 时，`rightMax` 等于 `max(arr[i+1..n-1])`。
+  Reverse traversal with a running suffix max: when you process `i`, `rightMax` equals `max(arr[i+1..n-1])`.
 - **为什么初始值是 `-1`？ Why start at `-1`?** 最后一个元素右边没有东西，答案就是 `-1`。而所有 `arr[i] >= 1`，所以 `-1` 不会影响后面的 `Math.max`。
   The last element has nothing to its right, so its answer is `-1`. Since every `arr[i] >= 1`, the `-1` never wins a later `Math.max`.
 
@@ -93,11 +92,8 @@ class Solution {
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
 
 - [x] 单个元素 Single element (`[400]` → `[-1]`): 循环只跑一次，写入初始 `-1` → one iteration writes the initial `-1`
-- [x] 最后一个元素必须是 `-1` The last element must be `-1`: 由 `rightMax = -1` 的初始值保证 → guaranteed by the initial value
-- [x] 严格在右边 Strictly to the right: 不包括自己，见上面的提醒 → excludes the element itself, see the warning above
 - [x] 递减数组 Decreasing array (`[5,4,3]` → `[4,3,-1]`): 每个位置的答案就是下一个元素 → each answer is the next element
 - [x] 重复值 Duplicates (`[2,2,2]` → `[2,2,-1]`): 没问题，`Math.max` 处理相等 → fine, `Math.max` handles ties
-- [x] 溢出 Overflow: 值最大 10⁵，`int` 足够 → `int` is plenty
 
 ## 6. 🧭 别和这些题搞混 Don't Confuse With
 
@@ -144,12 +140,6 @@ class Solution {
 > [!success]- 答案 Answer
 > 最后一个元素的答案就是 `-1`，而所有值都 `>= 1`，所以 `-1` 不会在后面的比较中胜出。如果允许 `-5` 这样的负数，`Math.max(-1, -5)` 会得到 `-1`，结果就错了。这时可以单独处理最后一个元素：`arr[n-1] = -1`，再把 `rightMax` 初始化为原来的 `arr[n-1]`。
 > The last element's answer is `-1`, and every value is `>= 1`, so `-1` never wins a later comparison. If values like `-5` were allowed, `Math.max(-1, -5)` would return `-1` and the result would be wrong. Then you'd handle the last element separately: save the original `arr[n-1]` as the starting `rightMax`, and set `arr[n-1] = -1`.
-
-**Q4.** 这题和 Next Greater Element 有什么区别？ How is this different from Next Greater Element?
-
-> [!success]- 答案 Answer
-> 本题要右边**所有**元素的最大值，一个变量 O(1) 空间就够；Next Greater Element 要右边**第一个**比自己大的元素，需要单调栈，O(n) 空间。
-> This problem wants the maximum of **all** elements to the right, so one variable (O(1) space) is enough. Next Greater Element wants the **first** larger element to the right, which needs a monotonic stack (O(n) space).
 
 ## 8. 🔗 相关题目 Related
 

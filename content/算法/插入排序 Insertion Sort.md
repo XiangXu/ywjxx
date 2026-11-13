@@ -86,8 +86,8 @@ static void insertionSortShift(int[] a) {
 ```
 
 > [!note] 两种写法 Two versions
-> 交换版每一步写 2 次（3 次赋值），挪动版每一步只写 1 次，最后放一次 `key`。结果相同，挪动版稍快。
-> The swap version does a 3-assignment swap per step; the shift version does one write per step plus one final write of `key`. Same result, the shift version is a bit faster.
+> 交换版每一步 3 次赋值，挪动版每一步 1 次，最后再放一次 `key`，所以挪动版稍快，结果相同。
+> The swap version does 3 assignments per step; the shift version does 1, plus a final write of `key`, so it's a bit faster with the same result.
 
 > [!tip] 要记录每一轮的状态？ Need the state after each round?
 > 在外层循环的末尾复制一份数组（或键值对列表）即可，见 [[Insertion Sort|插入排序题 Insertion Sort (NeetCode)]]。
@@ -114,8 +114,6 @@ static void insertionSortShift(int[] a) {
   Check `j > 0` (or `j >= 0` in the shift version) before reading `a[j - 1]`; the order matters because of short-circuit evaluation.
 - **挪动版忘了放回 `key` Forgetting to place `key`:** 循环结束后必须 `a[j + 1] = key`，否则 `key` 丢失。
   After the loop you must do `a[j + 1] = key`, or the key is lost.
-- **外层从 1 开始 The outer loop starts at 1:** 从 0 开始也不会错，只是多一轮没用的。
-  Starting at 0 isn't wrong, it just wastes a round.
 - **别和选择排序搞混 Don't confuse it with selection sort:** 选择排序每轮找最小值放前面，不稳定也不自适应；插入排序是把新元素插进有序段。
   Selection sort picks the minimum each round, and is neither stable nor adaptive; insertion sort inserts the new element into the sorted part.
 

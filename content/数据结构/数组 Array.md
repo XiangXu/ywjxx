@@ -48,13 +48,12 @@ The address of element `i` is **base + i × element size**. `a[2]` is at `1000 +
 | --- | --- | --- |
 | Java | `int[]`, `String[]` | `ArrayList<E>` |
 | C++ | `int a[10]`, `std::array` | `std::vector` |
-| Python | （没有内置 none built in） | `list` |
 | 长度 Length | 创建时固定 fixed at creation | 可增长 grows as needed |
 | 末尾追加 Append | 没有空位就不行 only if there's room | 均摊 O(1) amortized |
-| 实现 How | 一块连续内存 one block | 静态数组 + size/capacity，满了翻倍复制 a static array + size/capacity, doubled and copied when full |
+| 实现 How | 一块连续内存 one block | 静态数组 + size/capacity，满了按比例扩容并复制 a static array + size/capacity, grown by a factor and copied when full |
 
-动态数组的扩容细节、为什么翻倍是均摊 O(1)，见 [[Design Dynamic Array|Design Dynamic Array]] 和 [[复杂度分析 Big-O|复杂度分析 Big-O]]。
-For how dynamic arrays grow and why doubling is amortized O(1), see [[Design Dynamic Array|Design Dynamic Array]] and [[复杂度分析 Big-O|Big-O analysis]].
+扩容倍数常见是 2，Java 的 `ArrayList` 约是 1.5 倍；扩容细节和为什么按比例扩容是均摊 O(1)，见 [[Design Dynamic Array|Design Dynamic Array]] 和 [[复杂度分析 Big-O|复杂度分析 Big-O]]。
+The factor is commonly 2 (Java's `ArrayList` uses about 1.5). For how dynamic arrays grow and why growing by a factor is amortized O(1), see [[Design Dynamic Array|Design Dynamic Array]] and [[复杂度分析 Big-O|Big-O analysis]].
 
 ## 2. 🧠 什么时候用 When to Use
 
@@ -68,7 +67,6 @@ For how dynamic arrays grow and why doubling is amortized O(1), see [[Design Dyn
 
 - 🔎 题目信号 Signals: “原地”、“O(1) 额外空间”、“返回新长度”，通常意味着要用 [[双指针 Two Pointers|双指针 Two Pointers]] 在数组内部覆盖写入。
   "In place", "O(1) extra space" and "return the new length" usually mean [[双指针 Two Pointers|two pointers]] overwriting inside the array.
-  "In place", "O(1) extra space" or "return the new length" usually means overwriting within the array using [[双指针 Two Pointers|two pointers]].
 
 ## 3. ⚙️ 原理 How It Works
 
@@ -136,7 +134,7 @@ void delete(int[] a, int size, int k) {
 | 按值查找（无序） Search by value (unsorted) | O(n) | O(n) |
 | 按值查找（有序） Search by value (sorted) | O(log n) 二分 binary search | O(log n) |
 
-🗄️ Space: O(n)。动态数组最多浪费约一半（翻倍时）的空位。 O(n); a doubling dynamic array wastes up to about half its slots.
+🗄️ **空间 Space:** O(n)；翻倍扩容的动态数组最多空着约一半的格子。 → O(n); a doubling dynamic array can leave up to about half its slots empty.
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
@@ -161,13 +159,7 @@ void delete(int[] a, int size, int k) {
 > 所有现有元素都要右移一格腾出位置，共 n 次移动。若经常需要头部操作，用 `ArrayDeque`（环形数组，头尾都是均摊 O(1)）。
 > Every existing element shifts right by one to make room: n moves. For frequent front operations, use `ArrayDeque` (a circular array with amortized O(1) at both ends).
 
-**Q3.** 中间插入时为什么要从后往前挪？ Why shift from the back when inserting?
-
-> [!success]- 答案 Answer
-> 从前往后的话，`a[k+1] = a[k]` 会先覆盖掉原来的 `a[k+1]`，后面复制的全是同一个值。从后往前，每个位置被覆盖前都已经被复制走了。
-> Front-to-back, `a[k+1] = a[k]` overwrites the old `a[k+1]` before it's moved, so every later slot gets the same value. Back-to-front, each slot is copied out before it's overwritten.
-
-**Q4.** 遍历数组和遍历链表都是 O(n)，为什么实际中数组快很多？ Both scans are O(n); why is the array much faster in practice?
+**Q3.** 遍历数组和遍历链表都是 O(n)，为什么实际中数组快很多？ Both scans are O(n); why is the array much faster in practice?
 
 > [!success]- 答案 Answer
 > 缓存局部性。数组连续，CPU 一次加载一条 cache line 就拿到多个元素，硬件还能预取；链表每个节点可能都是一次缓存未命中。Big-O 忽略了这种常数差异。
@@ -189,6 +181,6 @@ void delete(int[] a, int size, int k) {
 ## 9. 🔗 相关 Related
 
 - [[📌 数据结构总览]]
-- 数据结构 Data structures: [[栈 Stack|栈 Stack]]（用数组实现 array-backed） · [[队列 Queue|队列 Queue]]（环形数组 a circular array） · [[链表 Linked List|链表 Linked List]]（连续 vs 分散，对比见第 1、4 题 contiguous vs scattered, see Q1 and Q4）
+- 数据结构 Data structures: [[栈 Stack|栈 Stack]]（用数组实现 array-backed） · [[队列 Queue|队列 Queue]]（环形数组 a circular array） · [[链表 Linked List|链表 Linked List]]（连续 vs 分散，对比见第 1、3 题 contiguous vs scattered, see Q1 and Q3）
 - 算法 Algorithms: [[双指针 Two Pointers|双指针 Two Pointers]] · [[一次遍历 One Pass|一次遍历 One Pass]] · [[复杂度分析 Big-O|复杂度分析 Big-O]] · [[动态规划 Dynamic Programming|动态规划 Dynamic Programming]]
 - 硬件背景 Hardware background: [[Computer Architecture]]

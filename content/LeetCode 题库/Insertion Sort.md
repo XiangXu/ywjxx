@@ -73,7 +73,7 @@ public class Solution {
 }
 ```
 
-- ⏱️ Time: O(n²): 最坏（逆序）每个元素都要走到最左边；已有序时只要 O(n)
+- ⏱️ Time: O(n²): 最坏（逆序）每个元素都要走到最左边；已有序时 O(n) 就够了
   Worst case (reversed input) moves every element all the way left; already-sorted input takes only O(n)
 - 🗄️ Space: 原地排序只用 O(1) 额外空间；`n` 份快照合计 O(n²) Sorting in place needs O(1) extra; the `n` snapshots add up to O(n²)
 
@@ -99,18 +99,17 @@ public class Solution {
 >     result.add(new ArrayList<>(pairs));
 > }
 > ```
-> 这两种写法比较的都是同一对相邻元素，条件也都是“左边的 key 严格大于右边的 key”（`a > b` 等于 `b < a`），所以交换的次数和结果都一样。
-> Both versions compare the same adjacent pair with the same condition, "the left key is strictly greater than the right key" (`a > b` is `b < a`), so they do the same swaps and give the same result.
+> 条件同样是“左边的 key 严格大于右边”，所以交换和结果都一样。
+> The condition is the same, "the left key is strictly greater than the right", so the swaps and result are identical.
 >
-> **移位 Shift:** 先把 `pairs.get(i)` 存到临时变量，把更大的元素逐个右移一格，最后把它放进空位。每一步只写一次，不用每步做三次赋值，常数更小。
-> Save `pairs.get(i)` in a temp, shift each larger element one slot right, then drop the temp into the gap. One write per step instead of three assignments per swap, so the constant is smaller.
+> **移位 Shift:** 先把 `pairs.get(i)` 存到临时变量，把更大的元素逐个右移一格，最后放进空位，每步只写一次。
+> Save `pairs.get(i)` in a temp, shift each larger element one slot right, then drop the temp into the gap: one write per step instead of a three-assignment swap.
 
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
 
 - [x] 稳定性 Stability: 比较必须是严格的 `>`，不能写成 `>=`，否则相同 key 的元素会被换位 → the comparison must be strict `>`, never `>=`, or equal keys get swapped
 - [x] 快照 Snapshot: `new ArrayList<>(pairs)` 复制出一份，否则 `result` 里每一项都指向同一个列表，最后全是排好序的结果 → `new ArrayList<>(pairs)` makes a copy; without it every entry in `result` aliases the same list and all show the final sorted state
-- [x] 空输入 Empty input: `pairs.isEmpty()` 时循环不执行，返回空列表 → the loop never runs and an empty list is returned
-- [x] 只有一个元素 Single element: 返回一个快照，内层循环不进入 → returns one snapshot and the inner loop is skipped
+- [x] 空输入 Empty input: 循环不执行，返回空列表 → the loop never runs and an empty list is returned
 - [x] 先判断 `j >= 0` Check `j >= 0` first: 短路求值，避免 `pairs.get(-1)` 越界 → short-circuiting avoids `pairs.get(-1)` going out of bounds
 - [x] 会修改输入 Mutates the input: 排序是原地的，`pairs` 本身也被改了 → the sort is in place, so `pairs` itself is changed
 

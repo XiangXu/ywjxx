@@ -49,8 +49,8 @@ front → [1, 2, 3] ← back             front → [2, 3] ← back   front → [
 队列两端都要动：队尾进、队头出。普通数组在队头删除要把后面的元素全部前移，O(n)，所以要换个办法：
 A queue touches both ends: add at the back, remove at the front. A plain array has to shift everything after the front on removal, O(n), so we need something else:
 
-- **环形数组 Circular array:** 用 `head` 和 `tail` 两个下标，出队只是 `head` 往后挪一格，走到末尾就用 `% capacity` 绕回开头（和 [[Concatenation of Array|1929]] 的 `i % n` 是同一个技巧）。`ArrayDeque` 的思路就是这样（实际用下标回绕判断，而不是 `%` 运算），满了会扩容。
-  Keep two indices, `head` and `tail`. Dequeuing just moves `head` forward one slot, wrapping to the start with `% capacity` (the same trick as `i % n` in 1929). `ArrayDeque` follows the same idea (it wraps the index with a bounds check instead of `%`) and grows when full.
+- **环形数组 Circular array:** 用 `head` 和 `tail` 两个下标，出队只是 `head` 往后挪一格，走到末尾就用 `% capacity` 绕回开头（和 [[Concatenation of Array|1929]] 的 `i % n` 是同一个技巧）。`ArrayDeque` 就是这个思路，满了会扩容。
+  Keep two indices, `head` and `tail`. Dequeuing just moves `head` forward one slot, wrapping to the start with `% capacity` (the same trick as `i % n` in 1929). `ArrayDeque` works this way and grows when full.
 - **链表 Linked list:** 队头删除、队尾追加，再加一个尾指针，两端都是 O(1)（见 [[Design Singly Linked List|设计单链表 Design Singly Linked List]] 的 `tail`）。
   Remove at the head and append at the tail with a tail pointer, both O(1) (see the `tail` in Design Singly Linked List).
 
@@ -70,36 +70,12 @@ A queue touches both ends: add at the back, remove at the front. A plain array h
 | --- | --- |
 | `Queue<Integer> q = new ArrayDeque<>();` | ✅ 推荐，环形数组，通常最快 Recommended: a circular array, usually the fastest |
 | `Queue<Integer> q = new LinkedList<>();` | 也能用，但每个元素一个节点，更占内存、缓存不友好；能存 `null` Works, but one node per element means more memory and worse cache behavior; allows `null` |
-| `Deque<Integer> d = new ArrayDeque<>();` | 双端队列，两头都能进出，栈和队列都能当 A double-ended queue: both ends open, usable as a stack or a queue |
 | `PriorityQueue<Integer> pq = new PriorityQueue<>();` | ⚠️ 不是先进先出！按优先级出队，是堆 Not FIFO! It dequeues by priority; it's a heap |
 
-> [!note] 两套方法：抛异常还是返回特殊值 Two method families: throw or return a special value
-> | 操作 Operation | 抛异常 Throws | 返回特殊值 Returns a special value |
-> | --- | --- | --- |
-> | 入队 Add at back | `add(x)` | `offer(x)`（队满时失败 returns `false` if full） |
-> | 出队 Remove front | `remove()` | `poll()`（队空时得到空值 returns `null` if empty） |
-> | 看队头 Peek front | `element()` | `peek()`（队空时得到空值 returns `null` if empty） |
->
-> `ArrayDeque` 会自动扩容，`add` 和 `offer` 效果一样；区别主要在空队列时 `remove()` 抛异常，`poll()` 返回 `null`。刷题时习惯用 `offer` / `poll` / `peek` 这一套。
-> `ArrayDeque` grows automatically, so `add` and `offer` behave the same; the real difference is on an empty queue, where `remove()` throws and `poll()` returns `null`. Most solutions stick to `offer` / `poll` / `peek`.
+### 1.4 双端队列：栈和队列都能当 Deque: a stack or a queue
 
-### 1.4 双端队列的放入方向 Deque: push vs offer
-
-`Deque`（双端队列）既能当栈也能当队列。常用的 `pop` / `poll` / `peek` 都从**头部**取，区别只在放元素的位置：
-A `Deque` (double-ended queue) works as both a stack and a queue. The common `pop` / `poll` / `peek` all take from the **front**; the only difference is where you add:
-
-- **栈 Stack:** `push` 放在头部，配合 `pop` 就是后进先出。
-  `push` adds at the front; with `pop`, that's last in, first out.
-- **队列 Queue:** `offer` 放在尾部，配合 `poll` 就是先进先出。
-  `offer` adds at the back; with `poll`, that's first in, first out.
-
-| 方法 Method | 位置 Position | 等价于 Same as | 失败或为空时 On failure / empty | 首次声明 First declared in |
-| --- | --- | --- | --- | --- |
-| `push(x)` | 头部放入 Add at the front | `addFirst(x)` | 容量满时抛异常 Throws `IllegalStateException` if full | `Deque` |
-| `pop()` | 头部取出 Remove from the front | `removeFirst()` | 抛异常 Throws `NoSuchElementException` | `Deque` |
-| `offer(x)` | 尾部放入 Add at the back | `offerLast(x)` | 返回 `false` Returns `false` | `Queue`（双端队列也有 also in `Deque`） |
-| `poll()` | 头部取出 Remove from the front | `pollFirst()` | 返回 `null` Returns `null` | `Queue`（双端队列也有 also in `Deque`） |
-| `peek()` | 只看头部 Look at the front | `peekFirst()` | 返回 `null` Returns `null` | `Queue`（双端队列也有 also in `Deque`） |
+`Deque`（双端队列）的 `pop` / `poll` / `peek` 都从**头部**取，区别只在放的位置：`push` 放头部，就是栈；`offer` 放尾部，就是队列。
+A `Deque`'s `pop` / `poll` / `peek` all take from the **front**; only where you add differs: `push` adds at the front (a stack), `offer` at the back (a queue).
 
 ```
 依次放入 1、2、3 Add 1, 2, 3 in order
@@ -108,21 +84,22 @@ push:   front → [3, 2, 1]    pop()  → 3   （栈 stack）
 offer:  front → [1, 2, 3]    poll() → 1   （队列 queue）
 ```
 
+| 失败时抛异常 Throws | 失败时返回特殊值 Returns `false` / `null` | 作用 What it does |
+| --- | --- | --- |
+| `add(x)` | `offer(x)` | 尾部放入 Add at the back |
+| `push(x)` | — | 头部放入（栈） Add at the front (stack) |
+| `remove()` / `pop()` | `poll()` | 头部取出 Remove from the front |
+| `element()` | `peek()` | 只看头部 Look at the front |
+
 > [!tip] 记忆要点 Key points
 > - **栈 Stack:** 用 `push` / `pop` / `peek`，变量声明为 `Deque`；推荐 `ArrayDeque`，不用老的 `Stack` 类（见 [[栈 Stack|栈 Stack]]）。
 >   Use `push` / `pop` / `peek` with a variable declared as `Deque`; prefer `ArrayDeque` over the legacy `Stack` class.
-> - **队列 Queue:** 用 `offer` / `poll` / `peek`，变量声明为 `Queue`。声明成 `Queue` 就调用不到 `push` / `pop`，可以防止误用（[[Implement Stack using Queues|225]]）。
->   Use `offer` / `poll` / `peek` with a variable declared as `Queue`. A `Queue` variable can't call `push` / `pop`, which prevents mix-ups (225).
-> - **两种风格 Two styles:** `offer` / `poll` / `peek` 失败时返回 `false` 或 `null`；`add` / `remove` / `push` / `pop` 失败时抛异常。
->   `offer` / `poll` / `peek` return `false` or `null` on failure; `add` / `remove` / `push` / `pop` throw.
-
-> [!note] 补充 Clarifications
-> - **不是只能从头部取 Not front-only:** “取元素都从头部取”只对 `pop` / `poll` / `peek` 这几个简写成立；`Deque` 也有 `pollLast()`、`removeLast()`、`peekLast()`，从尾部取。
->   "Everything is taken from the front" holds only for these shorthand methods; `Deque` also has `pollLast()`, `removeLast()` and `peekLast()`, which take from the back.
-> - **`ArrayDeque` 不会满 `ArrayDeque` is never full:** 它会自动扩容，所以 `push` 和 `offer` 不会因为容量失败，`offer` 总是返回 `true`；“返回 `false` / 抛异常”针对的是有容量上限的实现，比如 `LinkedBlockingDeque`。两者放 `null` 都会抛空指针异常。
->   It grows automatically, so `push` and `offer` never fail for lack of space and `offer` always returns `true`; "returns `false` / throws" applies to capacity-bounded implementations such as `LinkedBlockingDeque`. Both throw `NullPointerException` on `null`.
-> - **小心空值 Beware `null`:** `peek()` 在空队列上返回 `null`，赋给 `int`（比如 `int top()`）时拆箱会抛空指针异常。
->   `peek()` returns `null` on an empty queue, and assigning that to an `int` (as in `int top()`) unboxes it and throws `NullPointerException`.
+> - **队列 Queue:** 用 `offer` / `poll` / `peek`，变量声明为 `Queue`，这样调用不到 `push` / `pop`，防止误用（[[Implement Stack using Queues|225]]）。
+>   Use `offer` / `poll` / `peek` with a variable declared as `Queue`, which can't call `push` / `pop` and so prevents mix-ups (225).
+> - **`ArrayDeque` 不会满 `ArrayDeque` is never full:** 它会自动扩容，放入永远不会失败（`offer` 总是返回 `true`），两列的区别只在空队列时取元素；“满了失败”针对的是 `LinkedBlockingDeque` 这类有容量上限的实现。
+>   It grows automatically, so adding never fails (`offer` always returns `true`) and the two columns differ only when taking from an empty queue; "fails when full" applies to capacity-bounded implementations such as `LinkedBlockingDeque`.
+> - **两端都能取 Both ends:** `pollLast()`、`peekLast()`、`removeLast()` 从尾部取，上表只是最常用的简写。
+>   `pollLast()`, `peekLast()` and `removeLast()` take from the back; the table shows only the common shorthands.
 
 ## 2. 🧠 什么时候用 When to Use
 
@@ -202,8 +179,7 @@ In BFS each node is enqueued and dequeued at most once, so the total is O(V + E)
 - **循环条件用 `size()` Using `size()` in the loop condition:** 按层 BFS 时写 `for (i < q.size())`，`size` 一边循环一边变，层就乱了；先存到变量里 → in level-order BFS, `size()` changes as you add children, so save it to a variable first.
 - **`Integer` 用 `==` 比较 Comparing `Integer`s with `==`:** 两个 `queue.peek()` 比较的是引用，超出 -128 到 127 通常就错；和 `int` 比较时会拆箱，没问题 → two `peek()` results compare references, which usually fails outside the cached range -128 to 127; comparing with an `int` unboxes and is fine, see [[Number of Students Unable to Eat Lunch|1700]].
 - **用 `ArrayList` 当队列 Using an `ArrayList` as a queue:** `remove(0)` 是 O(n)，要平移所有元素 → `remove(0)` shifts every element, O(n).
-- **把 `PriorityQueue` 当普通队列 Treating `PriorityQueue` as FIFO:** 它按大小出队，不按到达顺序 → it dequeues by priority, not by arrival order.
-- **`ArrayDeque` 不能存 `null` `ArrayDeque` rejects `null`:** `offer(null)` 直接抛 NPE，所以对 `ArrayDeque` 来说 `poll()` 返回 `null` 就表示队列空了 → `offer(null)` throws, which is why, for an `ArrayDeque`, `poll()` returning `null` means "empty" (a `LinkedList` can hold `null`).
+- **`ArrayDeque` 不能存 `null` `ArrayDeque` rejects `null`:** `offer(null)` 直接抛 NPE，所以 `poll()` 返回 `null` 就表示队列空了 → `offer(null)` throws, so `poll()` returning `null` means "empty" (a `LinkedList` can hold `null`).
 
 ## 7. ❓ 复习题 Review Questions
 
@@ -230,12 +206,6 @@ In BFS each node is enqueued and dequeued at most once, so the total is O(V + E)
 > [!success]- 答案 Answer
 > 处理这一层时会把下一层的节点加进队列，`size()` 一直在变。先存下来，才能只处理这一层的节点，不把下一层混进来。
 > Processing a level adds the next level's nodes, so `size()` keeps changing. Saving it first lets you process exactly this level without mixing in the next.
-
-**Q5.** 什么时候队列模拟可以换成计数？ When can a queue simulation be replaced by counting?
-
-> [!success]- 答案 Answer
-> 当结果不依赖谁在前谁在后的时候。[[Number of Students Unable to Eat Lunch|1700]] 里学生会不停转圈，只要有人想要栈顶那种就一定能拿到，同口味的人又没有区别，所以只要两个计数器。
-> When the result doesn't depend on who is ahead of whom. In 1700 students keep cycling, so if anyone wants the top sandwich they will get it, and students with the same preference are interchangeable, so two counters are enough.
 
 ## 8. 🧩 经典题 Practice Problems
 

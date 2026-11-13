@@ -44,14 +44,10 @@ The brute force is often "for each element, scan the others again": O(n²). The 
     "Longest consecutive…", "count of…" → a running counter
   - 只关心每种值有几个、不关心顺序 → 计数数组：先数一遍，再扫一遍，模拟可以换成计数（1700）
     Only how many of each value matters, not the order → a count array: count once, then scan once; a simulation can become counting (1700)
-  - “右边所有元素中最大/最小” → **从右往左**扫，维护后缀最值
-    "The max/min of everything to the right" → scan **right to left**, keep a suffix max
-  - “左边所有元素……” → 从左往右扫，维护前缀信息
-    "Everything to the left" → scan left to right, keep a prefix value
+  - “右边所有元素中最大/最小” → **从右往左**扫，维护后缀最值；“左边”则反过来，维护前缀信息
+    "The max/min of everything to the right" → scan **right to left**, keep a suffix max; for "the left", scan left to right with a prefix value
   - “环形”、“首尾相接” → `i % n`
     "Circular", "wraps around" → `i % n`
-  - 暴力解的内层循环在算一个“到目前为止”的量
-    The brute-force inner loop computes a "so far" quantity
   - 状态需要“撤销上一步 / 和最近的配对” → 往往一个变量不够，可以用栈当状态
     The state needs "undo the last one" or "match the most recent one" → one variable is often not enough; a stack can serve as the state
 
@@ -137,7 +133,6 @@ for (int x : nums) {
 - **更新顺序反了 Wrong update order:** 状态把当前元素算进去了（1299） → the state includes the current element.
 - **原地覆盖前没保存 Overwriting before saving:** 先 `int cur = arr[i]` 再写 `arr[i]` → save `arr[i]` before overwriting it.
 - **初始值 Initial value:** 最大值初始化为 `0` 还是 `Integer.MIN_VALUE` 还是题目给的 `-1`？如果数组可能全是负数，`0` 就错了 → if all values can be negative, starting `max` at `0` is wrong.
-- **方向选错 Wrong direction:** 需要“右边的信息”却从左扫，就会被迫写内层循环 → needing right-side info but scanning left forces an inner loop.
 
 ## 7. ❓ 复习题 Review Questions
 
@@ -153,13 +148,7 @@ for (int x : nums) {
 > 看状态是否应包含当前元素。1299 要的是“**严格**在右边”的最大值，不能含自己，所以先用后更新。485 的当前这段连续 1 **包含**当前元素，所以先 `count++` 再和 `max` 比。
 > It depends on whether the state should include the current element. 1299 wants the max **strictly** to the right, excluding itself: use, then update. 485's current run **includes** the current element: `count++` first, then compare with `max`.
 
-**Q3.** 如果题目要求“每个元素替换成右边最大值”但不允许修改原数组，空间复杂度是多少？ If you can't modify the input in 1299, what's the space complexity?
-
-> [!success]- 答案 Answer
-> 需要一个新的输出数组，O(n)。但按惯例输出数组不算“额外空间”，所以仍然说 O(1) 额外空间。见 [[复杂度分析 Big-O|复杂度分析 Big-O]]。
-> You need a new output array: O(n). By convention the output isn't counted as extra space, so it's still O(1) extra. See [[复杂度分析 Big-O|Big-O analysis]].
-
-**Q4.** 为什么 `i % n` 能处理环形数组？ Why does `i % n` handle circular arrays?
+**Q3.** 为什么 `i % n` 能处理环形数组？ Why does `i % n` handle circular arrays?
 
 > [!success]- 答案 Answer
 > `i % n` 把 `n, n+1, …` 映射回 `0, 1, …`，所以下标走过末尾会自动绕回开头。让 `i` 从 `0` 走到 `2n - 1`，每个位置都能“往后看一整圈”，效果等同于把数组复制一份接在后面（1929），但不占额外空间。

@@ -124,19 +124,16 @@ prev        curr   next
 
 ### 3.3 哑节点 Dummy head
 
-头节点可能被删除或替换时，在前面放一个假节点 `dummy`，所有节点（包括原来的头）就都有了“前一个节点”，不用单独处理头。最后返回 `dummy.next`。
-When the head might be removed or replaced, put a fake `dummy` node in front so every node, the old head included, has a predecessor. No special case for the head; return `dummy.next`.
+头节点可能被删除或替换时，在前面放一个假节点 `dummy`，所有节点（包括原来的头）就都有了“前一个节点”，不用单独处理头，最后返回 `dummy.next`。**拼新链表**时，哑节点就是初始尾巴，不用特判“结果还是空的”（[[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]]）。
+When the head might be removed or replaced, put a fake `dummy` node in front so every node, the old head included, has a predecessor; no special case for the head, and you return `dummy.next`. When **building a new list**, the dummy is the first tail, so there's no "result is still empty" special case.
 
-**拼一条新链表**时也一样：哑节点当作初始尾巴，配一个 `tail` 指针不断往后接，不用特判“结果还是空的”（[[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]]）。
-The same goes for **building a new list**: the dummy is the first tail, and a `tail` pointer keeps appending, with no "result is still empty" special case.
-
-把哑节点看成**下标 -1**：从它出发走 `i` 步，正好停在第 `i - 1` 个，也就是删除或插入第 `i` 个时需要站的位置（[[Design Singly Linked List|设计单链表 Design Singly Linked List]]）。
-Treat the dummy as **index -1**: walking `i` steps from it lands on node `i - 1`, exactly where you must stand to remove or insert at position `i`.
+把哑节点看成**下标 -1**：从它出发走 `i` 步，正好停在第 `i - 1` 个，也就是删除或插入第 `i` 个时要站的位置（[[Design Singly Linked List|设计单链表 Design Singly Linked List]]）。
+Treat the dummy as **index -1**: walking `i` steps from it lands on node `i - 1`, exactly where you stand to remove or insert at position `i`.
 
 ### 3.4 尾指针 Tail pointer
 
-多存一个指向最后一个节点的 `tail`，尾部追加就从 O(n) 变成 O(1)。代价是每个可能改变最后一个节点的操作都要维护它：往空链表插入时、删掉最后一个节点时（`tail` 退回前一个，删空了就退回哑节点）。忘了维护不会报错，新值会接到一个已经脱离链表的节点上，悄悄丢失。
-Keeping a `tail` reference to the last node makes appending O(1) instead of O(n). The price: every operation that can change the last node must update it: inserting into an empty list and removing the last node (`tail` moves back to the predecessor, or to the dummy when the list becomes empty). Forgetting doesn't throw; new values get appended to a detached node and silently vanish.
+多存一个指向最后一个节点的 `tail`，尾部追加就从 O(n) 变成 O(1)。代价是改变最后一个节点的操作都要维护它：往空链表插入、删掉最后一个节点（`tail` 退回前一个，删空了就退回哑节点）。忘了维护不会报错，新值会接到已经脱离链表的节点上，悄悄丢失。
+A `tail` reference to the last node makes appending O(1) instead of O(n). The price: every operation that changes the last node must update it, such as inserting into an empty list or removing the last node (`tail` moves back to the predecessor, or to the dummy when the list empties). Forgetting doesn't throw; new values get appended to a detached node and silently vanish.
 
 ### 3.5 快慢指针 Fast and slow pointers
 
@@ -217,40 +214,32 @@ while (fast != null && fast.next != null) {
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
-- **改指针前没存后面的节点 Losing the rest of the list:** 先 `next = curr.next` 再改 → save `curr.next` before overwriting it, see [[Reverse Linked List|206]].
+- **改指针前没存后面的节点 Losing the rest of the list:** 先 `next = curr.next` 再改（3.1） → save `curr.next` before overwriting it (3.1), see [[Reverse Linked List|206]].
 - **`null.next` 空指针 NPE on `null.next`:** 访问 `p.next.next` 之前确认 `p.next != null`；快慢指针的循环条件是 `fast != null && fast.next != null` → check `p.next != null` before `p.next.next`.
 - **空链表和单节点 Empty and single-node lists:** 每次写完都用 `[]`、`[1]`、`[1, 2]` 过一遍 → test with `[]`, `[1]` and `[1, 2]` every time.
 - **忘了断开旧指针，形成环 Forgetting to cut the old pointer:** 反转、重排时新尾巴的 `next` 要设成 `null`，否则遍历死循环 → set the new tail's `next` to `null`, or traversal loops forever (206's `head.next = null`).
 - **删除时停错了位置 Stopping in the wrong place to remove:** 要站在目标的**前一个**节点上改 `prev.next`；从哑节点出发走 `i` 步正好到第 `i - 1` 个 → stand on the node **before** the target; `i` steps from the dummy gets you there, see [[Design Singly Linked List|设计单链表 Design Singly Linked List]].
-- **有尾指针却没维护 A tail pointer you forgot to update:** 删掉最后一个节点后 `tail` 要退回前一个 → after removing the last node, move `tail` back to the predecessor.
 - **双向链表少改一个指针 One pointer short in a doubly linked list:** 插入要改四个指针、删除改两个，漏了 `prev` 正向遍历看不出来，但之后的插入会出错 → an insert updates four pointers and a delete two; a missed `prev` is invisible going forward but breaks later inserts, see [[Design Linked List|707]].
-- **以为要逐个删除 Deleting node by node:** 在 Java 这类有 GC 的语言里，剪掉一整段只需覆盖一个引用，没人指向的节点会被回收 → in a garbage-collected language like Java, cutting off a whole tail takes one overwritten reference and unreachable nodes are reclaimed (in C or C++ you must free them), see [[Design Browser History|1472]].
-- **头节点可能变化却返回了 `head`** Returning `head` when the head changed: 用 dummy，返回 `dummy.next` → use a dummy and return `dummy.next`.
+- **以为要逐个删除 Deleting node by node:** 在 Java 里剪掉一整段只需覆盖一个引用，没人指向的节点会被 GC 回收 → in Java, cutting off a whole tail takes one overwritten reference; unreachable nodes are garbage-collected (C or C++ must free them), see [[Design Browser History|1472]].
+- **头节点变了还返回旧头 Returning a stale head:** 用 dummy，返回 `dummy.next` → use a dummy and return `dummy.next`.
 - **拼接时尾巴没前进 Not advancing the tail while building:** 每接一个节点都要 `tail = tail.next`，否则一直覆盖同一个 `next`（[[Merge Two Sorted Lists|21]]） → after each attach, `tail = tail.next`, or you keep overwriting the same `next`.
 - **`LinkedList.get(i)` 是 O(n) 的 `LinkedList.get(i)` is O(n)**: 在循环里 `list.get(i)` 整体变 O(n²)；要遍历用迭代器或 for-each → looping with `get(i)` is O(n²); use an iterator or for-each.
-- **递归太深 Recursion too deep:** 递归处理链表每个节点一层，很长的链表可能 `StackOverflowError` → one frame per node; very long lists can overflow, see [[递归 Recursion|递归 Recursion]].
 
 ## 7. ❓ 复习题 Review Questions
 
-**Q1.** 链表“插入 O(1)”有什么前提？ When is a linked-list insert really O(1)?
-
-> [!success]- 答案 Answer
-> 已经拿到了插入位置的前一个节点（或用双向链表拿到了那个节点本身）。如果要先从头找到第 i 个位置，查找就是 O(n)。
-> When you already hold the node before the insertion point (or, in a doubly linked list, the node itself). If you first have to find position i from the head, that search is O(n).
-
-**Q2.** 在 `a` 后面插入 `x`，两行代码的顺序为什么不能反？ Why can't the two lines of "insert x after a" be swapped?
+**Q1.** 在 `a` 后面插入 `x`，两行代码的顺序为什么不能反？ Why can't the two lines of "insert x after a" be swapped?
 
 > [!success]- 答案 Answer
 > 先写 `a.next = x` 的话，原来的 `a.next`（以及后面整段）就没有引用了，`x.next = a.next` 只会让 `x` 指向自己。必须先 `x.next = a.next` 再 `a.next = x`。
 > With `a.next = x` first, the old `a.next` (and everything after) has no reference left, and `x.next = a.next` would make `x` point at itself. Do `x.next = a.next` first, then `a.next = x`.
 
-**Q3.** 什么时候用哑节点？ When do you use a dummy head?
+**Q2.** 什么时候用哑节点？ When do you use a dummy head?
 
 > [!success]- 答案 Answer
 > 头节点可能被删除、替换，或者要从空开始拼一条新链表时（合并、过滤）。dummy 让头节点也有“前一个”，省掉特殊判断，最后返回 `dummy.next`。
 > When the head might be deleted or replaced, or you're building a new list from scratch (merging, filtering). The dummy gives the head a predecessor, removing special cases; return `dummy.next`.
 
-**Q4.** 链表和数组遍历都是 O(n)，为什么数组实际更快？ Both are O(n) to scan; why is an array faster in practice?
+**Q3.** 链表和数组遍历都是 O(n)，为什么数组实际更快？ Both are O(n) to scan; why is an array faster in practice?
 
 > [!success]- 答案 Answer
 > 数组连续存放，一条 cache line 能带进多个元素，CPU 还能预取；链表节点分散，每走一步都可能是一次缓存未命中。

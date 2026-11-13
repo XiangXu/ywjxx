@@ -116,9 +116,7 @@ class Solution {
 - [x] 空数组 Empty array (`[]`): 循环不执行，返回 0 → the loop never runs, returns 0
 - [x] 全是 `val` All `val` (`[3,3]`, `val = 3`): 一次都不写，返回 0 → no writes, returns 0
 - [x] 没有 `val` No `val` at all: 每个元素原地复制到自己 (`left == right`)，无害 → each element is copied onto itself, harmless
-- [x] 单个元素 Single element (`[3]` / `[1]`, `val = 3`) → 0 / 1
-- [x] 不要新建数组 Don't allocate a new array: 题目要求原地 O(1) 额外空间 → the problem requires in place with O(1) extra space
-- [x] 返回的是个数 `k`，不是下标 Return the count `k`, not an index: `left` 正好等于个数 → `left` is exactly the count
+- [x] 返回的是个数 `k`，不是下标 Return the count `k`, not an index: `left` 每保留一个加一，正好等于个数 → `left` goes up once per kept element, so it is exactly the count
 
 ## 6. 🔁 进阶 Follow-ups
 
@@ -144,19 +142,13 @@ The same "fast reads, slow writes" template solves a whole family of in-place fi
 > 因为 `left` 只有在写入后才加一，而 `right` 每一步都加一，所以始终 `left <= right`。被写入的位置 `left` 要么就是当前的 `right`，要么已经被读过了。
 > `left` only advances after a write while `right` advances every step, so `left <= right` always holds. The slot being written is either the current `right` or one that has already been read.
 
-**Q2.** 为什么返回 `left` 就是答案？ Why is `left` the answer?
-
-> [!success]- 答案 Answer
-> `left` 每保留一个元素加一次，所以循环结束时它等于保留的元素个数 `k`，同时 `nums[0..k-1]` 正好就是这些元素。
-> `left` goes up once per kept element, so after the loop it equals `k`, and `nums[0..k-1]` holds exactly those elements.
-
-**Q3.** 什么时候用相向双指针的写法更好？它的代价是什么？ When is the opposite-direction version better, and what does it cost?
+**Q2.** 什么时候用相向双指针的写法更好？它的代价是什么？ When is the opposite-direction version better, and what does it cost?
 
 > [!success]- 答案 Answer
 > 当 `val` 很少出现时：它只在遇到 `val` 时写一次，而快慢指针版会把几乎每个保留的元素都复制一遍。代价是元素顺序会被打乱，这题允许，但像 Move Zeroes 这种要求保持顺序的题就不行。
 > When `val` is rare: it writes only once per `val`, while the fast/slow version copies nearly every kept element. The cost is that order isn't preserved. That's fine here, but not for problems like Move Zeroes that require keeping the order.
 
-**Q4.** 相向写法里，用末尾元素填坑后为什么不能马上 `left++`？ In the opposite-direction version, why not advance `left` right after filling the hole?
+**Q3.** 相向写法里，用末尾元素填坑后为什么不能马上 `left++`？ In the opposite-direction version, why not advance `left` right after filling the hole?
 
 > [!success]- 答案 Answer
 > 填过来的元素可能也等于 `val`，必须在下一轮再检查一次。例如 `[3,3]`、`val = 3`：如果填完就 `left++`，会错误地保留一个 3。

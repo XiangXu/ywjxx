@@ -62,10 +62,8 @@ The list goes `[1]` → `[1, 3]` → `[1, 2, 3]`; `get(1)` returns 2; deleting i
 
 - **关键观察 Key insight:** 在 [[Design Singly Linked List|设计单链表 Design Singly Linked List]] 里，删除必须停在前一个节点，因为单链表回不去。双向链表每个节点都有 `prev`，**站在目标本身上就能拿到前后两个邻居**，所以每个按下标的操作都是“走到第 `index` 个，就在这里动手”。
   In the singly linked version, removing must stop at the predecessor because you can't step back. In a doubly linked list every node has `prev`, so **standing on the target is enough to reach both neighbors**, and every index-based operation becomes "walk to node `index`, then act right there".
-- **两个哨兵 Two sentinels:** 头尾各放一个假节点。真实节点的 `prev` 和 `next` 永远不是 `null`，插入删除只改指针，不用判断是不是第一个、最后一个，或者链表是不是空的。
-  A fake node at each end means a real node's `prev` and `next` are never `null`, so inserting and deleting only rewires pointers, with no "first node", "last node" or "empty list" checks.
-- **没有尾指针要维护 No tail pointer to maintain:** 单链表版的 `tail` 要在空链表插入和删尾巴时更新，漏了就是静默 bug。这里最后一个节点永远是 `dummyTail.prev`，没有额外的状态需要同步。
-  The singly linked version's `tail` must be updated on an insert into an empty list and on removing the last node, and missing one is a silent bug. Here the last node is always `dummyTail.prev`; there's no extra state to keep in sync.
+- **两个哨兵 Two sentinels:** 头尾各放一个假节点。真实节点的 `prev` 和 `next` 永远不是 `null`，插入删除只改指针，不用判断第一个、最后一个或空链表；最后一个节点永远是 `dummyTail.prev`，也不用维护尾指针。
+  A fake node at each end means a real node's `prev` and `next` are never `null`, so inserting and deleting only rewires pointers, with no first-node, last-node or empty-list checks; the last node is always `dummyTail.prev`, so there's no tail pointer to maintain either.
 - **套路 Pattern:** 设计题 + 双向链表 + 哨兵节点。LRU 缓存（146）通常用的也是同一个结构。
   A design problem with a doubly linked list and sentinel nodes, typically the same structure behind the LRU cache (146).
 
@@ -86,14 +84,10 @@ Treat `dummyHead` as **index -1** and `dummyTail` as **index `n`**. Every bounda
 
 ## 3. 🐢 暴力解 Brute Force
 
-- 思路 Idea: 用 `ArrayList<Integer>` 存值，每个操作直接对应 `get`、`add(index, val)`、`remove(index)`。
-  Store the values in an `ArrayList<Integer>` and map each operation to `get`, `add(index, val)` and `remove(index)`.
-- `get` 是 O(1)，但 `addAtHead` 和按下标插入删除都要平移后面的元素，O(n)。
-  `get` is O(1), but `addAtHead` and indexed inserts and deletes shift every later element: O(n).
-- 能通过，但这题要练的是链表本身，这样写就变成了 [[Design Dynamic Array|设计动态数组 Design Dynamic Array]]。
-  It passes, but the point is to practice the linked list itself; this just turns into Design Dynamic Array.
-- **朴素写法 Naive version:** 不加哨兵的单链表，`addAtHead`、`addAtIndex(0)`、`deleteAtIndex(0)` 都要单独处理头节点，尾部操作还要从头走到尾。
-  A singly linked list with no sentinel: `addAtHead`, `addAtIndex(0)` and `deleteAtIndex(0)` each need a head special case, and tail operations walk the whole list.
+- 思路 Idea: 用 `ArrayList<Integer>` 存值，每个操作直接对应 `get`、`add(index, val)`、`remove(index)`。`get` 是 O(1)，但头插和按下标插入删除都要平移后面的元素，O(n)。
+  Store the values in an `ArrayList<Integer>` and map each operation to `get`, `add(index, val)` and `remove(index)`. `get` is O(1), but head inserts and indexed inserts and deletes shift every later element: O(n).
+- 能通过，但这题要练的是链表本身，这样写就变成了 [[Design Dynamic Array|设计动态数组 Design Dynamic Array]]。不加哨兵的单链表也能过，只是头尾都要特殊处理。
+  It passes, but the point is to practice the linked list itself; this just turns into Design Dynamic Array. A singly linked list with no sentinel also passes, but needs special cases at both ends.
 
 ## 4. 🚀 最优解 Optimal Solution
 
@@ -209,12 +203,12 @@ The three index-based methods share **the exact same loop**: start at node 0 and
 `addAtIndex` 和另外两个的**唯一区别**是少了 `curr != dummyTail`：插入允许落在下标 `n`，读和删不允许。这正好就是题目“下标等于长度时追加”的要求，不用单独写 `if (index == size) addAtTail(val)`。
 `addAtIndex` differs from the other two **only** by dropping `curr != dummyTail`: an insert may land on index `n`, reads and deletes may not. That's exactly the "append when `index` equals the length" rule, with no separate `if (index == size) addAtTail(val)`.
 
-两处 `curr != null` 一起管第三行：`dummyTail.next` 是 `null`，下标比长度大时 `curr` 会越过尾哨兵走到 `null`。下标至少比长度大 2 时，循环里不检查的话下一步 `null.next` 就空指针；下标正好比长度大 1 时，循环刚好在 `null` 上停下，靠 `if` 里的 `curr != null` 挡住后面的 `curr.val` 或 `curr.prev`。
-The two `curr != null` checks handle the third row together: `dummyTail.next` is `null`, so when the index is past the length, `curr` walks past the tail sentinel to `null`. For `index ≥ n + 2`, the loop's check stops the next `curr.next` from throwing an NPE; for `index == n + 1`, the loop ends right on `null`, and the `if`'s `curr != null` keeps `curr.val` or `curr.prev` from throwing.
+两处 `curr != null` 一起管第三行：`dummyTail.next` 是 `null`，循环里的检查防止 `null.next` 空指针，`if` 里的检查防止在 `null` 上读 `curr.val` 或 `curr.prev`。
+The two `curr != null` checks handle the third row together: `dummyTail.next` is `null`, so the loop's check stops `null.next` from throwing and the `if`'s check stops `curr.val` or `curr.prev` from being read on `null`.
 
 > [!note] `index == 0` 其实是多余的 `index == 0` is actually redundant
-> 在约束保证下标不小于 0 时，循环只有两种退出方式：`index` 减到 0，或者 `curr` 变成 `null`。所以只要 `curr != null`，`index` 就一定是 0，三个 `if` 里的 `index == 0` 都可以删掉。留着也有好处：下标为负数时循环一次都不跑，`curr` 不是 `null`，正是 `index == 0` 让 `get(-1)` 返回 `-1`，而不是返回第 0 个的值。
-> Given the constraint `index >= 0`, the loop exits only when `index` reaches 0 or `curr` becomes `null`. So whenever `curr != null`, `index` must be 0, and the `index == 0` in all three `if`s can go. Keeping it has a bonus: with a negative index the loop never runs and `curr` isn't `null`, so `index == 0` is what makes `get(-1)` return `-1` instead of node 0's value.
+> 下标不小于 0 时，循环只在 `index` 减到 0 或 `curr` 变成 `null` 时退出，所以 `curr != null` 已经蕴含 `index == 0`。留着的好处是下标为负数时（循环一次都不跑）`get(-1)` 返回 `-1`，而不是第 0 个的值。
+> With `index >= 0`, the loop exits only when `index` reaches 0 or `curr` becomes `null`, so `curr != null` already implies `index == 0`. Keeping it means a negative index (the loop never runs) makes `get(-1)` return `-1` instead of node 0's value.
 
 ### 4.2 🔗 插入和删除改了哪些指针 Which pointers insert and delete change
 
@@ -233,12 +227,8 @@ The two `curr != null` checks handle the third row together: `dummyTail.next` is
   next.prev = prev;   prev.next = next;     curr 没人指了，等 GC 回收 curr is unreachable; GC reclaims it
 ```
 
-- **先存邻居再改 Save the neighbors first:** 我的写法先把两个邻居存进局部变量 `prev` / `next`，之后插入的四行赋值**换成任何顺序都对**，因为不会再从正在被改的字段（比如 `curr.prev`）里读。
-  My code copies both neighbors into the locals `prev` / `next` first, so the insert's four assignments **work in any order**: nothing reads a field like `curr.prev` while it's being overwritten.
-- **哨兵保证邻居存在 Sentinels guarantee neighbors:** 空链表时，`addAtHead` 里的 `next` 是 `dummyTail`，`addAtTail` 里的 `prev` 是 `dummyHead`，所以 `next.prev = ...` 和 `prev.next = ...` 永远不会空指针。
-  On an empty list, `addAtHead`'s `next` is `dummyTail` and `addAtTail`'s `prev` is `dummyHead`, so `next.prev = ...` and `prev.next = ...` never throw.
-- **被删的节点 The deleted node:** 它的 `prev` / `next` 还指着旧邻居，但已经没有节点指向它，GC 会回收。想更保险可以顺手把它的两个指针设成 `null`，这题不需要。
-  Its `prev` / `next` still point at the old neighbors, but nothing points at it, so GC reclaims it. You can null them out for safety; this problem doesn't need it.
+**先存邻居再改 Save the neighbors first:** 我的写法先把两个邻居存进局部变量 `prev` / `next`，之后的四行赋值**换成任何顺序都对**，因为不会再从正在被改的字段（比如 `curr.prev`）里读。
+My code copies both neighbors into the locals `prev` / `next` first, so the four assignments **work in any order**: nothing reads a field like `curr.prev` while it's being overwritten.
 
 ### 4.3 ⚖️ 和单链表版对比 Compared with the singly linked version
 
@@ -267,16 +257,10 @@ One extra `prev` reference per node buys "stand on a node and remove it". That's
 > | `addAtIndex(2, 5)` | `[1, 3, 5]` | 尾哨兵（下标 2 等于长度，追加） the tail sentinel (index 2 equals the length, append) | |
 > | `get(3)` | `[1, 3, 5]` | 尾哨兵（不是真实节点） the tail sentinel (not a real node) | `-1` |
 > | `addAtIndex(5, 9)` | `[1, 3, 5]` | 走到 `null` 了（越界，不插入） ran off to `null` (out of bounds, no insert) | |
->
-> 以 `addAtIndex(2, 5)` 为例：长度是 2，`curr` 从值为 1 的节点出发走两步，经过 3，落在 `dummyTail` 上；它不是 `null`，于是新节点插在 `dummyTail` 前面，也就是追加。
-> Take `addAtIndex(2, 5)`: the length is 2, so `curr` starts at the node holding 1, takes two steps past 3, and lands on `dummyTail`; it isn't `null`, so the new node goes before `dummyTail`, which is an append.
 
 > [!note] 其他写法 Alternatives
-> **抽一个辅助方法 Extract a helper:** 三个方法的循环一模一样，可以合成一个 `getNode`；`addAtHead` 和 `addAtTail` 也能写成 `addAtIndex(0, val)` 和 `addAtIndex(size, val)`。
-> The three loops are identical and can become one `getNode`; `addAtHead` and `addAtTail` can then be `addAtIndex(0, val)` and `addAtIndex(size, val)`.
->
-> **记录长度，从近的一端走 Keep `size`, walk from the closer end:** 有了 `size`，越界判断变成 O(1)；下标在前半段就从头走，否则从 `dummyTail` 往回走，最多走一半左右。Java 的 `LinkedList.get(index)` 思路相同（内部的 `node(index)` 比较 `index < (size >> 1)`），只是它从 `first` / `last` 字段出发，没有哨兵。
-> With `size`, bounds checks become O(1); walk forward from the head when the index is in the first half, backward from `dummyTail` otherwise, about half the list at most. Java's `LinkedList.get(index)` uses the same idea (its internal `node(index)` compares `index < (size >> 1)`), but it walks from its `first` / `last` fields, with no sentinels.
+> **记录 `size`，抽一个 `getNode`，从近的一端走 Keep `size`, extract `getNode`, walk from the closer end:** 有了 `size`，越界判断变成 O(1)；三个一样的循环合成一个 `getNode`，下标在前半段就从头走，否则从 `dummyTail` 往回走。Java 的 `LinkedList.get(index)` 思路相同（内部的 `node(index)` 比较 `index < (size >> 1)`），只是没有哨兵。
+> With `size`, bounds checks become O(1); the three identical loops become one `getNode` that walks forward from the head for the first half and backward from `dummyTail` otherwise. Java's `LinkedList.get(index)` uses the same idea (its internal `node(index)` compares `index < (size >> 1)`), just without sentinels.
 > ```java
 > private int size = 0;
 >
@@ -297,31 +281,11 @@ One extra `prev` reference per node buys "stand on a node and remove it". That's
 >     return getNode(index).val;
 > }
 >
-> public void addAtIndex(int index, int val) {
->     if (index < 0 || index > size) return;    // 允许 index == size：追加 index == size is allowed: append
->     ListNode next = getNode(index);
->     ListNode prev = next.prev;
->     ListNode node = new ListNode(val);
->     node.prev = prev;
->     node.next = next;
->     prev.next = node;
->     next.prev = node;
->     size++;
-> }
->
-> public void deleteAtIndex(int index) {
->     if (index < 0 || index >= size) return;
->     ListNode curr = getNode(index);
->     curr.prev.next = curr.next;
->     curr.next.prev = curr.prev;
->     size--;
-> }
->
 > public void addAtHead(int val) { addAtIndex(0, val); }
 > public void addAtTail(int val) { addAtIndex(size, val); }
 > ```
-> 代价是每个插入删除都要记得更新 `size`；复杂度变成 O(min(i, n − i))，最坏仍是 O(n)，只是常数减半。
-> The price: every insert and delete must update `size`. The cost becomes O(min(i, n − i)): still O(n) in the worst case, just with half the constant.
+> `addAtIndex` 先判断 `index > size` 就返回（等于 `size` 时 `getNode` 给出 `dummyTail`，插在它前面就是追加），`deleteAtIndex` 判断 `index >= size`，之后的指针操作和我的解法一样，再加 `size++` / `size--`。代价是每个插入删除都要记得更新 `size`；复杂度变成 O(min(i, n − i))，最坏仍是 O(n)，只是常数减半。
+> `addAtIndex` returns early when `index > size` (at `index == size`, `getNode` gives `dummyTail`, and inserting before it appends), `deleteAtIndex` when `index >= size`; the pointer updates are the same as in my solution, plus `size++` / `size--`. The price: every insert and delete must update `size`. The cost becomes O(min(i, n − i)): still O(n) in the worst case, just with half the constant.
 
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
 
@@ -331,8 +295,7 @@ One extra `prev` reference per node buys "stand on a node and remove it". That's
 - [x] ⚠️ 漏了尾哨兵检查 Missing the sentinel check: 没有 `curr != dummyTail` 的话，`get(n)` 会返回哨兵的占位值 0，`deleteAtIndex(n)` 会在 `next.prev` 上空指针（尾哨兵的 `next` 是 `null`） → without `curr != dummyTail`, `get(n)` returns the sentinel's placeholder 0 and `deleteAtIndex(n)` throws an NPE on `next.prev` (the tail sentinel's `next` is `null`)
 - [x] ⚠️ 插入少改一个指针 One pointer short on insert: 比如漏了 `next.prev = node`，正向遍历看起来没问题，但 `next.prev` 还指着旧的前一个，之后在这里插入就会把 `node` 跳过去，丢掉节点 → e.g. missing `next.prev = node`: forward traversal still looks fine, but `next.prev` still points at the old predecessor, so a later insert there skips `node` and loses it
 - [x] 不存局部变量时的顺序 Order without locals: 直接写 `curr.prev.next = node; curr.prev = node;` 时顺序不能反，先改 `curr.prev` 就找不到原来的前一个了 → with `curr.prev.next = node; curr.prev = node;` the order is fixed: overwrite `curr.prev` first and the old predecessor is lost
-- [x] 哨兵的值 Sentinel values: `0` 只是占位，永远不该被读到；`curr != dummyTail` 检查保证了这一点 → `0` is a placeholder that must never be read; the `curr != dummyTail` check guarantees it
-- [x] 旧题面的负数下标 Negative index in the old statement: 现在约束是 `index >= 0`；要兼容旧版的话，在 `addAtIndex` 里把负数当成 0 来处理（现在的代码会直接忽略负数下标） → current constraints say `index >= 0`; for the old version, treat a negative index in `addAtIndex` as 0 (the current code silently ignores it)
+- [x] 旧题面的负数下标 Negative index in the old statement: 现在的代码会直接忽略负数下标；要兼容旧版的话，在 `addAtIndex` 里把负数当成 0 → the current code silently ignores a negative index; for the old statement, treat it as 0 in `addAtIndex`
 
 ## 6. 🔁 进阶 Follow-ups
 
@@ -363,23 +326,11 @@ One extra `prev` reference per node buys "stand on a node and remove it". That's
 > 落在尾哨兵上说明 `index == n`，题目要求这时追加，而插在尾哨兵前面就是追加。`get` 和 `deleteAtIndex` 必须落在真实节点上，所以才要排除它。
 > Landing on the tail sentinel means `index == n`, where the problem says to append, and inserting before the tail sentinel is an append. `get` and `deleteAtIndex` must land on a real node, so they exclude it.
 
-**Q4.** 下标比长度大很多时，循环里的 `curr != null` 为什么必要？ Why is `curr != null` needed in the loop when the index is far past the length?
-
-> [!success]- 答案 Answer
-> 尾哨兵的 `next` 是 `null`，所以越过尾哨兵再走一步就到了 `null`。如果继续执行 `curr = curr.next`，就会空指针。
-> The tail sentinel's `next` is `null`, so one step past it reaches `null`. Running `curr = curr.next` again would throw an NPE.
-
-**Q5.** 不用局部变量时，`curr.prev.next = node;` 和 `curr.prev = node;` 能交换顺序吗？ Without locals, can `curr.prev.next = node;` and `curr.prev = node;` be swapped?
+**Q4.** 不用局部变量时，`curr.prev.next = node;` 和 `curr.prev = node;` 能交换顺序吗？ Without locals, can `curr.prev.next = node;` and `curr.prev = node;` be swapped?
 
 > [!success]- 答案 Answer
 > 不能。先执行 `curr.prev = node` 的话，`curr.prev.next = node` 改的就是 `node.next`，让 `node` 指向自己，原来的前一个节点也不会指向 `node`。改一个字段之前，先把要从它读的都读完，或者先存进局部变量。
 > No. With `curr.prev = node` first, `curr.prev.next = node` sets `node.next` and makes `node` point at itself, and the old predecessor never points at `node`. Finish reading a field before you overwrite it, or save it in a local first.
-
-**Q6.** 双向链表的 `get(i)` 能优化到什么程度？Big-O 变了吗？ How far can a doubly linked `get(i)` be optimized, and does its Big-O change?
-
-> [!success]- 答案 Answer
-> 记录 `size`，从近的一端走，最多走一半左右，即 O(min(i, n − i))。但最坏仍然是 O(n)，只是常数减半。真正的 O(1) 随机访问通常要靠数组。
-> Keep `size` and walk from the closer end: about half the list at most, O(min(i, n − i)). The worst case is still O(n), just with half the constant; true O(1) random access usually needs an array.
 
 ## 8. 🔗 相关题目 Related
 

@@ -13,10 +13,6 @@ created: 2026-10-15
 ---
 # Lesson 1: LLM Basics（LLM 基础）
 
-> [!info] 课程安排 Schedule（2026-10-15，60 分钟 60 min）
-> 30 分钟概念 · 25 分钟动手 · 5 分钟笔记
-> 30 min concepts · 25 min hands-on · 5 min notes
-
 ## 1. Tokens：模型处理文本的单位 The model's unit of text
 
 LLM 不直接读字符。**Tokenizer** 先把文本切成 Token（子词片段），每个 Token 对应一个整数 id。
@@ -35,10 +31,8 @@ Billing, context length and generation speed are all counted in tokens, not word
 At its core the model does one thing: given all previous tokens, predict a probability distribution for the next token → pick one → append it → repeat until it stops. This is **autoregressive generation**.
 
 > [!example] Java 类比 Java analogy
-> Tokenizer ≈ 一个 `Map<String, Integer>` 词表 + 一个贪心切分算法。
-> A tokenizer ≈ a `Map<String, Integer>` vocabulary + a greedy splitting algorithm.
-> 模型输入是 `int[]`，输出是“下一个 int”的概率表。
-> The model's input is an `int[]`; its output is a probability table for "the next int".
+> Tokenizer ≈ 一个 `Map<String, Integer>` 词表 + 一套切分规则（例如 BPE 的合并规则）。模型输入是 `int[]`，输出是“下一个 int”的概率表。
+> A tokenizer ≈ a `Map<String, Integer>` vocabulary + a set of splitting rules (e.g. BPE merge rules). The model's input is an `int[]`; its output is a probability table for "the next int".
 
 ## 2. Context Window：模型的工作记忆 The model's working memory
 
@@ -47,16 +41,14 @@ The maximum number of tokens the model can see in one request, **input + output 
 
 - 当前的 Claude Opus 5.5 / Sonnet 5.5 / Haiku 5.5：**1M tokens**（大约几本书）；旧的 Haiku 4.5：200K。
   Current Claude Opus 5.5 / Sonnet 5.5 / Haiku 5.5: **1M tokens** (roughly several books); the older Haiku 4.5: 200K.
-- **模型没有记忆，每次 API 调用都是无状态的。** 聊天之所以“记得”前文，是因为客户端每次都把完整历史重新发送。
-  **The model has no memory; every API call is stateless.** A chat "remembers" earlier turns only because the client resends the full history each time.
-- 所以对话越长 → 每轮输入 Token 越多 → 每轮越慢、越贵。
-  So the longer the conversation → the more input tokens per turn → each turn is slower and more expensive.
+- **模型没有记忆，每次 API 调用都是无状态的。** 聊天之所以“记得”前文，是因为客户端每次都重发完整历史，所以对话越长，每轮越慢、越贵。
+  **The model has no memory; every API call is stateless.** A chat "remembers" earlier turns only because the client resends the full history each time, so the longer the chat, the slower and pricier each turn.
 - `max_tokens` 限制单次调用的输出长度。触顶时回复被截断，`stop_reason` 变成 `"max_tokens"`，而不是正常结束的 `"end_turn"`。
   `max_tokens` limits the output length of one call. When it's hit, the reply is cut off and `stop_reason` becomes `"max_tokens"` instead of the normal `"end_turn"`.
 
 > [!example] 类比 Analogy
-> HTTP 是无状态的，Session 能工作是因为客户端每次都带上 Cookie。LLM 的“记忆”同理：客户端每次重发历史。
-> HTTP is stateless; sessions work because the client sends the cookie every time. An LLM's "memory" works the same way: the client resends the history every time.
+> HTTP 是无状态的，Session 能工作是因为客户端每次都带上 Cookie。LLM 的“记忆”同理。
+> HTTP is stateless; sessions work because the client sends the cookie every time. An LLM's "memory" works the same way.
 
 ## 3. Sampling：如何选下一个 Token How the next token is chosen
 
@@ -70,14 +62,12 @@ At each step the model outputs a distribution, e.g. `{"cat": 0.6, "dog": 0.3, "c
 | Top-p | 只从累计概率达到 p 的最小候选集中采样 Sample only from the smallest set whose cumulative probability reaches p (e.g. 0.9) | 砍掉低概率长尾 Cuts off the low-probability tail |
 | Top-k | 只从概率最高的 k 个 Token 中采样 Sample only from the k most likely tokens | 固定候选数量 Fixed number of candidates |
 
-详细原理、数值例子和 Temperature = 0 的可重复性问题见 [[贪心算法 vs Top-p vs Temperature 讲解区别|Greedy vs Top-p vs Temperature]]。
-For the details, worked numbers and the reproducibility issue with temperature = 0, see [[贪心算法 vs Top-p vs Temperature 讲解区别|Greedy vs Top-p vs Temperature]].
+详细原理和数值例子见 [[贪心算法 vs Top-p vs Temperature 讲解区别|Greedy vs Top-p vs Temperature]]。
+For the details and worked numbers, see [[贪心算法 vs Top-p vs Temperature 讲解区别|Greedy vs Top-p vs Temperature]].
 
 > [!warning] 实践注意 In practice（重要 important）
-> 最新 Claude 模型（Opus 5.5 等）**不再接受** `temperature` / `top_p` / `top_k`，发送会返回 **400 错误**（Sonnet 5.5 只接受默认值）。应通过 **prompt** 和 **`effort` 参数**（`output_config.effort`：`low` / `medium` / `high` / `xhigh` / `max`）来引导输出。
-> The latest Claude models (Opus 5.5 and others) **no longer accept** `temperature` / `top_p` / `top_k`; sending them returns a **400 error** (Sonnet 5.5 accepts only the defaults). Steer the output with the **prompt** and the **`effort` parameter** (`output_config.effort`: `low` / `medium` / `high` / `xhigh` / `max`) instead.
-> 面试仍会问这些概念，但今晚的代码里不要发送这些参数。
-> Interviews still ask about these concepts, but don't send these parameters in tonight's code.
+> 最新 Claude 模型（Opus 5.5 等）**不再接受** `temperature` / `top_p` / `top_k`，发送会返回 **400 错误**（Sonnet 5.5、Haiku 5.5 只接受默认值）；API 版本 `2026-10-21` 起所有模型都拒绝它们。应通过 **prompt** 和 **`effort` 参数**（`output_config.effort`：`low` / `medium` / `high` / `xhigh` / `max`）来引导输出。面试仍会问这些概念。
+> The latest Claude models (Opus 5.5 and others) **no longer accept** `temperature` / `top_p` / `top_k`; sending them returns a **400 error** (Sonnet 5.5 and Haiku 5.5 accept only the defaults), and from API version `2026-10-21` every model rejects them. Steer the output with the **prompt** and the **`effort` parameter** (`output_config.effort`: `low` / `medium` / `high` / `xhigh` / `max`) instead. Interviews still ask about these concepts.
 
 ## 4. 成本计算 Cost
 
@@ -99,9 +89,7 @@ Prices are quoted **per million tokens (MTok)**:
 > Haiku 5.5 的 \$0.10 / \$0.50 适用于 100K Token 以内的 prompt；超过 100K 时为 \$0.50 / \$2.50。
 > Haiku 5.5's \$0.10 / \$0.50 applies to prompts up to 100K tokens; above 100K it's \$0.50 / \$2.50.
 
-### 练习 Exercise
-
-客服机器人每天 100,000 次请求，每次 2,000 输入 Token + 300 输出 Token，用 Sonnet 5.5，每天花多少钱？
+**练习 Exercise:** 客服机器人每天 100,000 次请求，每次 2,000 输入 Token + 300 输出 Token，用 Sonnet 5.5，每天花多少钱？
 A support bot handles 100,000 requests a day, each with 2,000 input tokens + 300 output tokens, on Sonnet 5.5. What does it cost per day?
 
 > [!success]- 答案 Answer
@@ -112,20 +100,12 @@ A support bot handles 100,000 requests a day, each with 2,000 input tokens + 300
 > - 换成 Haiku 5.5（每次 2,000 Token，低于 100K 档）：200M × \$0.10 + 30M × \$0.50 = \$20 + \$15 = **\$35 / 天**，是 Sonnet 5.5 的 1/20。
 >   With Haiku 5.5 (2,000 tokens per request, under the 100K tier): 200M × \$0.10 + 30M × \$0.50 = \$20 + \$15 = **\$35 / day**, 1/20 of Sonnet 5.5.
 
-### 要点 Key points
+**要点 Key points:**
 
-- 这几款模型的 **输出单价都是输入的 5 倍** → 缩短回复能省很多钱。
-  For these models **output costs 5× input** → shorter replies save a lot.
-- 长对话中输入不断累积，往往成为主要成本。
-  In long conversations the input keeps growing and usually becomes the main cost.
-- 降本手段：
-  Ways to cut cost:
-  - **Prompt caching**：重复的前缀便宜得多（例如 Opus 5.5 的缓存读取为 \$0.20/MTok，而普通输入为 \$4/MTok）。
-    Repeated prefixes are much cheaper (e.g. Opus 5.5 cache reads are \$0.20/MTok vs \$4/MTok for normal input).
-  - **Batch API**：异步处理，**半价**。
-    Asynchronous processing at **half price**.
-  - 更小的模型、更短的 prompt。
-    Smaller models, shorter prompts.
+- 这几款模型的 **输出单价都是输入的 5 倍** → 缩短回复能省很多钱；长对话中不断累积的输入往往成为主要成本。
+  For these models **output costs 5× input** → shorter replies save a lot; in long chats the growing input usually becomes the main cost.
+- 降本手段：**Prompt caching**（重复前缀便宜得多，例如 Opus 5.5 缓存读取 \$0.20/MTok，普通输入 \$4/MTok）、**Batch API**（异步，**半价**）、更小的模型、更短的 prompt。
+  Ways to cut cost: **prompt caching** (repeated prefixes are much cheaper, e.g. Opus 5.5 cache reads at \$0.20/MTok vs \$4/MTok normal input), the **Batch API** (asynchronous, **half price**), smaller models, shorter prompts.
 
 ## 5. 延迟计算 Latency
 
@@ -135,20 +115,10 @@ $$
 
 - **首 Token 时间 TTFT (Time To First Token):** 网络 + 排队 + 处理全部输入（**prefill**）。输入越长，TTFT 越长。
   Network + queueing + processing the whole input (**prefill**). The longer the input, the longer the TTFT.
-- **生成阶段 Generation:** Token 一个一个输出，按 tokens/second 衡量。1,000 个输出 Token 远比 100 个慢。
-  Tokens come out one at a time, measured in tokens/second. 1,000 output tokens take far longer than 100.
-- **结论 Takeaway:** 输出长度是延迟的最大驱动因素。
-  Output length is the biggest driver of latency.
-
-降延迟手段：
-Ways to cut latency:
-
-- **Streaming**：边生成边显示，用户只需等待 TTFT。
-  Show text as it's generated, so the user only waits for the TTFT.
-- 更短的输出、更小的模型。
-  Shorter outputs, smaller models.
-- **Prompt caching**：同样能降低 TTFT。
-  Also lowers the TTFT.
+- **生成阶段 Generation:** Token 一个一个输出，按 tokens/second 衡量。输出长度通常是延迟的最大驱动因素。
+  Tokens come out one at a time, measured in tokens/second. Output length is usually the biggest driver of latency.
+- **降延迟 Cutting latency:** 用 **streaming**（边生成边显示，用户只需等 TTFT）、更短的输出、更小的模型、**prompt caching**（降低 TTFT）。
+  **Streaming** (show text as it's generated, so the user only waits for the TTFT), shorter outputs, smaller models, **prompt caching** (lowers the TTFT).
 
 > [!example] 系统设计类比 System design analogy
 > TTFT ≈ Time To First Byte · 生成速度 ≈ 吞吐量 · Streaming ≈ chunked transfer encoding
@@ -165,27 +135,16 @@ LLM 把文本切成 Token，在固定大小的上下文窗口内自回归地预�
 只用 JDK 自带的 `java.net.http.HttpClient`，不需要 Maven。
 Uses only the JDK's built-in `java.net.http.HttpClient`; no Maven needed.
 
-### 步骤 Steps
-
-1. **获取密钥 Get an API key:** 在 console.anthropic.com 注册，在 API Keys 中创建 key，充值少量额度（\$5 能用很久）。大约 5 分钟。
-   Sign up at console.anthropic.com, create a key under API Keys, and add a little credit (\$5 lasts a long time). About 5 minutes.
-2. **设置环境变量 Set the environment variable:**
+1. **获取密钥 Get an API key:** 在 console.anthropic.com 创建 key，充值少量额度（\$5 能用很久）。
+   Create a key at console.anthropic.com and add a little credit (\$5 lasts a long time).
+2. **设置并运行 Set it and run**（Java 11+ 可以直接运行单个源文件）：
+   Java 11+ can run a single source file directly:
    ```bash
    export ANTHROPIC_API_KEY=sk-ant-...
-   ```
-3. **运行 Run**（Java 11+ 可以直接运行单个源文件，不需要 `javac`）：
-   Java 11+ can run a single source file directly, no `javac` needed:
-   ```bash
    java LlmHello.java "Explain what a token is in one sentence"
    ```
-4. **在输出中找到 Find in the output:**
-   - `content[0].text`：模型的回答 the model's answer
-   - `stop_reason`：`end_turn` 表示正常结束 means a normal finish
-   - `usage.input_tokens` 和 `usage.output_tokens` 两个用量
-     `usage.input_tokens` and `usage.output_tokens`
-   - 程序最后打印的成本和延迟 The cost and latency printed at the end
-
-### 请求结构 Request shape
+3. **在输出中找到 Find in the output:** `content[0].text`（回答 the answer）、`stop_reason`（`end_turn` 表示正常结束 means a normal finish）、`usage.input_tokens` / `usage.output_tokens`。
+   `content[0].text`, `stop_reason` and `usage.input_tokens` / `usage.output_tokens`.
 
 ```http
 POST https://api.anthropic.com/v1/messages
@@ -204,14 +163,10 @@ content-type: application/json
 }
 ```
 
-- **三个必填字段 Three required fields:** `model`、`max_tokens`、`messages`（由 `role` + `content` 组成的数组）。
-  `model`, `max_tokens` and `messages` (an array of `role` + `content`).
-- **三个 header Three headers:** `x-api-key`、`anthropic-version: 2023-06-01`、`content-type`。
-  `x-api-key`, `anthropic-version: 2023-06-01` and `content-type`.
+- **必填 Required:** 三个字段 `model`、`max_tokens`、`messages`（`role` + `content` 数组），加上面三个 header。
+  Three fields, `model`, `max_tokens` and `messages` (an array of `role` + `content`), plus the three headers above.
 - **无状态 Stateless:** 多轮对话时，把之前的 user 和 assistant 消息都放进 `messages` 再发一次。
   For a multi-turn conversation, put the earlier user and assistant messages into `messages` and send them again.
-
-### 实验 Experiments（可选 optional）
 
 | 实验 Experiment | 做法 How | 观察 Observe |
 | --- | --- | --- |
@@ -220,27 +175,10 @@ content-type: application/json
 | C. 延迟 vs 输出长度 Latency vs output length | 先要求一句话回答，再要求 500 字回答 Ask for a one-sentence answer, then a 500-word one | 比较延迟 Compare latency |
 
 > [!tip] 真实项目 Real projects
-> 不要手拼 JSON，也不要用正则解析。使用官方 Java SDK（`com.anthropic:anthropic-java`）或 Jackson。今晚用 `HttpClient` 只是为了说明：底层就是一个 HTTPS POST。
-> Don't build JSON by hand or parse it with regexes. Use the official Java SDK (`com.anthropic:anthropic-java`) or Jackson. Tonight's `HttpClient` is only to show that underneath it's just an HTTPS POST.
+> 不要手拼 JSON，也不要用正则解析。使用官方 Java SDK（`com.anthropic:anthropic-java`）或 Jackson。这里用 `HttpClient` 只是为了说明：底层就是一个 HTTPS POST。
+> Don't build JSON by hand or parse it with regexes. Use the official Java SDK (`com.anthropic:anthropic-java`) or Jackson. `HttpClient` here only shows that underneath it's just an HTTPS POST.
 
-## 8. 快速复习 Quick Revision
-
-- **Token**：模型的文本单位；计费、上下文、速度都按 Token 算。
-  The model's unit of text; billing, context and speed are all counted in tokens.
-- **Autoregressive**：预测下一个 Token → 追加 → 重复。
-  Predict the next token → append → repeat.
-- **Context window**：输入 + 输出的上限；API 无状态，历史由客户端重发。
-  The limit on input + output; the API is stateless, so the client resends the history.
-- **max_tokens**：输出上限，触顶时 `stop_reason = "max_tokens"`。
-  The output limit; when hit, `stop_reason = "max_tokens"`.
-- **Sampling**：Greedy / Temperature / Top-p / Top-k；新 Claude 模型改用 prompt + `effort`。
-  Greedy / temperature / top-p / top-k; newer Claude models use the prompt + `effort` instead.
-- **Cost**：输入、输出分别计价，输出贵 5 倍；用 caching、Batch、小模型降本。
-  Input and output are priced separately, output is 5× more; cut cost with caching, Batch and smaller models.
-- **Latency**：TTFT + 输出长度 × 每 Token 时间；用 streaming 改善感知延迟。
-  TTFT + output length × time per token; streaming improves perceived latency.
-
-## 9. 🔗 相关笔记 Related Notes
+## 8. 🔗 相关笔记 Related Notes
 
 - [[贪心算法 vs Top-p vs Temperature 讲解区别|Greedy vs Top-p vs Temperature]]
 - [[Prompt Caching]]

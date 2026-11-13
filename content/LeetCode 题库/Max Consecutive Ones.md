@@ -39,8 +39,8 @@ Given a binary array `nums`, return the maximum number of consecutive `1`s.
 
 - **关键观察 Key insight:** 数组被 `0` 切成若干段连续的 1，答案就是最长那一段。只需要记住“当前段长度”和“历史最长”两个数字。
   The `0`s split the array into runs of `1`s; the answer is the longest run. Two numbers are enough: the current run length and the best so far.
-- **套路 Pattern:** 数组一次遍历 + 计数器 (one pass with a running counter)。它也是滑动窗口的最简形态：窗口里不允许出现 0。
-  It's the simplest form of a sliding window: a window that may contain no `0`.
+- **套路 Pattern:** 一次遍历 + 计数器，也是滑动窗口的最简形态：窗口里不允许出现 0。
+  One pass with a running counter, which is also the simplest sliding window: a window that may contain no `0`.
 
 ## 3. 🐢 暴力解 Brute Force
 
@@ -86,9 +86,8 @@ class Solution {
 > | 1 | 3 | **3** |
 
 > [!tip] 为什么在 `num == 1` 时更新 `max`？ Why update `max` inside the `1` branch?
-> 如果只在遇到 `0` 时更新 `max`，数组以 1 结尾时最后一段不会被比较；若它恰好最长，答案就错了（例如 `[1,1,0,1,1,1]` 会返回 2），需要在循环后再补一次 `Math.max`。
-> 每次 `count++` 后立刻更新就没有这个问题。
-> If you only update `max` when you hit a `0`, the final run is never compared when the array ends in `1`s, which is wrong whenever that run is the longest, so you'd need an extra `Math.max` after the loop. Updating right after `count++` avoids that.
+> 只在遇到 `0` 时更新的话，以 1 结尾的最后一段不会被比较，要在循环后补一次（见 Q2）。每次 `count++` 后立刻更新就没有这个问题。
+> If you only update on a `0`, a final run of `1`s is never compared and needs an extra `Math.max` after the loop (see Q2). Updating right after `count++` avoids that.
 
 > [!note] 另一种写法 Alternative: 只在段结束时比较 Compare only when a run ends
 > ```java
@@ -104,10 +103,7 @@ class Solution {
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
 
 - [x] 全是 0 All zeros (`[0,0]`): 返回 0，`max` 初始值 0 正好 → returns 0
-- [x] 全是 1 All ones (`[1,1,1]`): 最后一段就是答案，必须在循环里或循环后更新 `max` → the last run is the answer
-- [x] 单个元素 Single element (`[1]` → 1, `[0]` → 0)
-- [x] 以 1 结尾 Ends with 1s: 见上面的 tip → see the tip above
-- [x] 溢出 Overflow: 长度最多 10⁵，`int` 足够 → `int` is plenty
+- [x] 全是 1 或以 1 结尾 All ones or ending in 1s (`[1,1,1]`): 最后一段可能就是答案，见上面的提示 → the last run may be the answer; see the tip above
 
 ## 6. 🔁 进阶 Follow-ups
 

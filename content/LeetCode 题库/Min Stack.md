@@ -59,8 +59,8 @@ Design a stack that supports the following, **each in O(1) time**:
   Updating the minimum on `push` is easy. `pop` is the problem: if the popped value was the minimum, what's the next one? A single `min` variable can't answer that in O(1).
 - **关键观察 Key insight:** 栈只会从顶部变化，所以“某一层以下的元素”在这一层存在期间**永远不变**。那么每一层的最小值也不变，可以在 push 时算好、存起来，pop 时一起扔掉。
   A stack only changes at the top, so everything below a given level stays **fixed** while that level exists. The minimum at each level never changes either, so compute it on push, store it, and discard it on pop.
-- **套路 Pattern:** 辅助栈 auxiliary stack / 用空间换时间 trade space for time。“给每一层记一份快照”这个思路也用在撤销（undo）操作和持久化数据结构里。
-  Auxiliary stack, trading space for time. "Snapshot some state per level" also shows up in undo features and persistent data structures.
+- **套路 Pattern:** 辅助栈，用空间换时间。
+  Auxiliary stack, trading space for time.
 
 ## 3. 🐢 暴力解 Brute Force
 
@@ -171,13 +171,12 @@ class MinStack {
 - [x] ⚠️ 省空间版必须用 `<=` 而不是 `<` The space-saving version needs `<=`, not `<`: 如果用 `<`，push 1、push 1 只记一次 1，pop 一次就把 1 从 `minStack` 弹掉了，但栈里还有一个 1 → with `<`, two 1s are recorded once, so one pop removes 1 from `minStack` while a 1 is still in the stack
 - [x] ⚠️ 两个 `Integer` 用 `==` 比较的是引用 Two `Integer`s compared with `==` compare references: `stack.pop() == minStack.peek()` 在 -128 到 127 之间碰巧对（默认有缓存），超出范围通常就错。用 `.equals()`，或者像上面那样先存进 `int` → it happens to work for -128..127 (cached by default) and usually breaks outside that range; use `.equals()` or unbox to `int` first
 - [x] 负数和 `int` 极值 Negatives and `int` extremes: 只比较、不做加减，不会溢出 → we only compare, never add or subtract, so nothing overflows
-- [x] 空栈调用 `pop` / `top` / `getMin` Calling on an empty stack: 题目保证不会发生 → the problem guarantees it won't happen
 
 ## 6. 🔁 进阶 Follow-ups
 
 > [!question] 除了栈本身，能只用 O(1) 额外空间吗？ Can you use O(1) extra space beyond the stack itself?
-> 可以：只存一个 `min` 变量，栈里存 `val - min`（差值）。差值为负说明这次 push 更新了最小值，pop 时可以用 `min - diff` 还原出上一个最小值；`top()` 在 `diff < 0` 时返回 `min`，否则返回 `min + diff`；空栈时第一次 push 存 0 并令 `min = val`。因为 `val` 覆盖整个 `int` 范围，差值会溢出，所以栈里要用 `long`。栈本身仍有 n 个元素，省掉的只是第二个栈。面试里能讲清思路就够，平时用辅助栈更清楚。
-> Yes: keep one `min` and store `val - min` on the stack. A negative difference means that push set a new minimum, and pop restores the previous minimum as `min - diff`. `top()` returns `min` if `diff < 0`, otherwise `min + diff`; on an empty stack the first push stores 0 and sets `min = val`. Since `val` spans the full `int` range the difference can overflow, so store `long`s. The stack still holds n entries, so this only removes the second stack, not the O(n) total. It's good to explain in an interview; the auxiliary stack is clearer in practice.
+> 可以：只存一个 `min` 变量，栈里存差值 `val - min`。差值为负说明这次 push 更新了最小值，pop 时用 `min - diff` 还原上一个最小值。差值可能溢出 `int`，所以要存 `long`。省掉的只是第二个栈，平时用辅助栈更清楚。
+> Yes: keep one `min` and store the difference `val - min`. A negative difference means that push set a new minimum, and pop restores the previous one as `min - diff`. The difference can overflow `int`, so store `long`s. This only removes the second stack; the auxiliary stack is clearer in practice.
 
 | 题目 Problem | 和本题的关系 Connection |
 | --- | --- |

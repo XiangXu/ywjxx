@@ -61,11 +61,8 @@ Return the sum of all scores in the record.
 
 ## 3. 🐢 暴力解 Brute Force
 
-用 `ArrayList<Integer>` 当记录，`C` 删除最后一个元素（`list.remove(list.size() - 1)`），`+` 和 `D` 读最后一两个元素。这其实就是用列表实现的栈，复杂度一样是 O(n)。
-Use an `ArrayList<Integer>` as the record: `C` removes the last element, `+` and `D` read the last one or two. That's just a stack built on a list, and it's also O(n).
-
-真正“暴力”的写法是 `C` 时把它标记为无效、最后再扫一遍，但 `+` 和 `D` 需要跳过无效项往回找，最坏会变成 O(n²)。这说明删除必须真的删掉，让下一个得分直接露出来。
-A truly brute-force version marks cancelled scores as invalid instead of removing them, but then `+` and `D` must skip invalid entries while scanning back, which can be O(n²). Removing for real, so the previous score is right on top, is what makes it O(n).
+暴力写法是 `C` 时只把得分标记为无效，但之后 `+` 和 `D` 要跳过无效项往回找，最坏 O(n²)。真的删掉，让前一个得分露在最上面，才是 O(n)。（用 `ArrayList` 删最后一个元素也行，那其实就是栈。）
+A brute-force version only marks cancelled scores as invalid, but then `+` and `D` must skip invalid entries while scanning back, which can be O(n²). Removing for real, so the previous score is right on top, makes it O(n). (An `ArrayList` that removes its last element works too; that's just a stack.)
 
 ## 4. 🚀 最优解 Optimal Solution
 
@@ -128,7 +125,7 @@ class Solution {
 > int[] stack = new int[operations.length];
 > int top = 0; // 下一个空位，也是元素个数 next free slot, also the size
 > for (String op : operations) {
->     switch (op) {
+>     switch (op) {                // 箭头写法需要 Java 14+ arrow syntax needs Java 14+
 >         case "+" -> { stack[top] = stack[top - 1] + stack[top - 2]; top++; }
 >         case "D" -> { stack[top] = stack[top - 1] * 2; top++; }
 >         case "C" -> top--;
@@ -144,12 +141,10 @@ class Solution {
 
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
 
-- [x] 比较字符串用 `.equals` Compare strings with `.equals`, not `==`: `==` 比较的是引用，判题时的字符串不一定是同一个对象 → `==` compares references, and the judge's strings aren't guaranteed to be the same objects
-- [x] `"+".equals(operation)` 把常量写在前面，`operation` 为 `null` 也不会抛空指针异常 Putting the literal first (`"+".equals(operation)`) can't throw an NPE (not needed here, but a good habit)
+- [x] 比较字符串用 `.equals` Compare strings with `.equals`, not `==`: `==` 比较的是引用，判题时的字符串不一定是同一个对象；常量写在前面还能防空指针 → `==` compares references, and the judge's strings aren't guaranteed to be the same objects; putting the literal first also avoids an NPE
 - [x] 负数 Negative numbers: `"-2"` 不是操作符，`Integer.parseInt` 能正确解析，所以要先判断三个操作符，最后才在 `else` 里解析数字 → `"-2"` isn't an operator and `Integer.parseInt` parses it fine, which is why the three operators are checked first and parsing is the `else`
 - [x] `+` 后两个旧得分都要保留 `+` keeps both old scores: 弹出栈顶后要压回去，再压新得分 → push the popped top back before pushing the new score
 - [x] 全部被 `C` 掉 Everything cancelled (`["1","C"]`): 栈为空，返回 0 → empty stack, return 0
-- [x] 溢出 Overflow: 题目保证结果在 `int` 范围内 → the problem guarantees everything fits in `int`
 
 ## 6. 🔁 进阶 Follow-ups
 

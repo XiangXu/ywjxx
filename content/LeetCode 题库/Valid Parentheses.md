@@ -116,8 +116,8 @@ class Solution {
 > Compare `"([])"`: the third char `]` pops `]`, the fourth `)` pops `)`, the stack ends empty → `true`.
 
 > [!note] 其他写法 Alternatives
-> **`ArrayDeque` + 奇数长度提前返回 `ArrayDeque` + early exit on odd length:** `Stack` 是遗留类（继承 `Vector`，方法都加了同步），官方推荐用 `ArrayDeque`；它的空栈 `pop()` 抛 `NoSuchElementException`，所以仍要先判 `isEmpty()`。长度为奇数一定无法两两配对（只是提前返回，复杂度不变）。
-> `Stack` is legacy (extends `Vector`, synchronized); `ArrayDeque` is preferred. Its `pop()` on empty throws `NoSuchElementException`, so keep the `isEmpty()` check. An odd-length string can never pair up (a shortcut only; the complexity is unchanged).
+> **`ArrayDeque` + 奇数长度提前返回 `ArrayDeque` + early exit on odd length:** `Stack` 是遗留类，官方推荐用 `ArrayDeque`（空栈 `pop()` 同样会抛异常，仍要先判空）。长度为奇数一定无法两两配对。
+> `Stack` is legacy; `ArrayDeque` is preferred (its `pop()` on empty also throws, so keep the `isEmpty()` check). An odd-length string can never pair up.
 > ```java
 > if (s.length() % 2 == 1) return false;
 > Deque<Character> stack = new ArrayDeque<>();
@@ -147,7 +147,6 @@ class Solution {
 
 - [x] 只有右括号 Only closers (`")"`): 栈空时 `pop()` 会抛 `EmptyStackException`，所以要先判断 `isEmpty()` → `pop()` on an empty `Stack` throws, so check `isEmpty()` first (short-circuit `||` does this)
 - [x] 只有左括号 Only openers (`"(("`): 循环里不会返回 `false`，必须靠最后的 `return stack.isEmpty()` → nothing fails in the loop; the final `isEmpty()` catches it
-- [x] 类型对、顺序错 Right types, wrong order (`"([)]"`): 栈天然保证顺序 → the stack enforces order
 - [x] `stack.pop() != c` 能正确比较 `stack.pop() != c` compares correctly: `pop()` 返回 `Character`，和 `char` 比较时会**拆箱**成值比较 → `pop()` returns a `Character`, which is **unboxed** when compared with a `char`, so it's a value comparison
 - [x] ⚠️ 换成 `Map` 写法时小心 Careful with the `Map` version: `stack.pop() != map.get(c)` 两边都是 `Character`，`!=` 比较的是**引用**。ASCII（0–127）有缓存所以碰巧对，别的字符可能出错；用 `.equals()` 或拆箱成 `char` → both sides are `Character`, so `!=` compares **references**. ASCII (0–127) is cached so it happens to work; other chars can fail. Use `.equals()` or unbox to `char`
 
@@ -160,8 +159,6 @@ class Solution {
 | 题目 Problem | 和本题的关系 Connection |
 | --- | --- |
 | [[Baseball Game\|682. 棒球比赛 Baseball Game]] | 同样用栈“撤销 / 读前一个” Same stack idea: undo / read the previous one |
-| 1021. Remove Outermost Parentheses | 只有 `()`，计数器即可 Only `()`, a counter is enough |
-| 921. Minimum Add to Make Parentheses Valid | 计数没配对的左右括号 Count unmatched openers and closers |
 | 1249. Minimum Remove to Make Valid Parentheses | 栈里存下标，删掉没配对的 Store indices, remove the unmatched |
 | 22. Generate Parentheses | 反过来：生成所有有效组合（回溯） The reverse: generate all valid strings (backtracking) |
 | 32. Longest Valid Parentheses | 可用栈存下标求最长有效子串（也可 DP / 双计数器）(Hard) Stack of indices for the longest valid substring (DP or two counters also work) |

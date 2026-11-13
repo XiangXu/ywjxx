@@ -39,6 +39,9 @@ The model decides which tool (API) to call, and your code actually runs it.
 4. 循环下去，直到模型直接给出回答。
    This repeats until the model answers directly.
 
+大多数 AI Agent 都建立在它之上：Claude Code、客服机器人、运维排障助手。
+Most AI agents are built on it: Claude Code, support bots and ops troubleshooting assistants.
+
 ## 2. 🔑 关键细节 Key Details
 
 - 模型不会直接执行你的工具，中间始终隔着你的代码。
@@ -97,8 +100,8 @@ import anthropic
 
 client = anthropic.Anthropic()
 
-# ① 工具清单：告诉模型"你能让我做什么"。模型只看 name 和 description 来判断。
-#    Tool list: tells the model "what you can ask me to do". It decides using only name and description.
+# ① 工具清单：告诉模型"你能让我做什么"。模型靠 name、description 和 input_schema 来判断。
+#    Tool list: tells the model "what you can ask me to do". It decides using name, description and input_schema.
 TOOLS = [
     {
         "name": "get_weather",
@@ -182,40 +185,23 @@ if __name__ == "__main__":
 
 ## 5. 🏠 我的每日简报 My Daily Brief
 
-现在的规则方案（天气、穿衣、关键词排新闻）很好，不需要改。
-The current rule-based approach (weather, clothing, news ranked by keyword) works well and doesn't need changing.
+**决定 Decision:** 这次不改代码。我的简报每天查的东西都一样（天气、穿衣、按关键词排新闻），现在的规则方案就够用；工具调用适合事先不知道要查什么的场景。
+No code changes this time. My brief looks up the same things every day (weather, clothing, news ranked by keyword), so the rule-based approach is enough; tool calling suits cases where you don't know in advance what to look up.
 
-工具调用适合“事先不知道要查什么”的场景，而我的简报每天查的东西都一样，用不上。
-Tool calling suits cases where you don't know in advance what to look up. My brief looks up the same things every day, so it doesn't need it.
+## 6. 🔍 对课程原文的补充与更正 Clarifications to the Lesson Text
 
-**决定 Decision:** 这次不改代码。
-No code changes this time.
-
-## 6. 🌍 现在谁在用 Who Uses It
-
-大多数 AI Agent 都建立在它之上：Claude Code、客服机器人、运维排障助手。
-Most AI agents are built on it: Claude Code, support bots and ops troubleshooting assistants.
-
-## 7. 🔍 对课程原文的补充与更正 Clarifications to the Lesson Text
-
-> [!note] 1. “从不执行”只针对你自己的工具 "Never runs" only covers your own tools
-> 原文说模型从不直接执行任何东西。这对你自己定义的工具成立；网页搜索这类服务端工具由 Anthropic 一侧执行，不经过你的代码。
-> The source says the model never runs anything itself. That holds for tools you define; server tools such as web search run on Anthropic's side, without going through your code.
-
-> [!note] 2. “几号”不一定能直接答对 "What's the date?" may not get a correct direct answer
-> 模型本身不知道今天的日期。这个例子不调用工具，但要答对，得在 prompt 里告诉它日期，或者提供一个查日期的工具。
-> The model doesn't know today's date by itself. This example calls no tools, but a correct answer needs the date in the prompt or a tool that returns it.
-
-> [!note] 3. 模型也会看参数定义 The model reads parameter definitions too
-> 代码注释说模型只看 `name` 和 `description`。它其实也会看 `input_schema`，所以才知道该传什么参数。
-> The code comment says the model only looks at `name` and `description`. It also reads `input_schema`, which is how it knows what arguments to pass.
-
-> [!note] 4. 这段代码为了简短省略了错误处理 The code skips error handling to stay short
-> 工具不存在或执行失败时，程序会直接崩溃。生产代码要捕获异常，并用 `is_error` 把错误还给模型。
-> If a tool doesn't exist or fails, the program crashes. Production code should catch the exception and return the error to the model with `is_error`.
->
-> 另外，任何不是 `tool_use` 的停止原因都会被当成最终回答，包括被 `max_tokens` 截断的情况。生产代码要分开处理。这些情况下，最后一行也可能直接报错，因为最后一块不一定是文本，内容也可能为空。
-> Also, any stop reason other than `tool_use` is treated as the final answer, including output cut off by `max_tokens`. Production code should handle those separately. In those cases the last line can also crash, because the last block may not be text or the content may be empty.
+- **服务端工具例外 Server tools are the exception:** 原文说模型从不执行任何东西。你定义的工具由你的代码执行；网页搜索这类服务端工具在 Anthropic 一侧执行，不经过你的代码。
+  The source says the model never runs anything. Tools you define run in your code; server tools such as web search run on Anthropic's side, without going through your code.
+- **日期要告诉模型 The model needs the date:** 问“几号”时模型不调用工具，但它本身不知道今天的日期，要在 prompt 里告诉它，或者提供一个查日期的工具。
+  For "What's the date?" the model calls no tools, but it doesn't know today's date by itself; put the date in the prompt or provide a tool that returns it.
+- **模型也看参数定义 It reads the schema too:** 原注释说模型只看 `name` 和 `description`，其实它也看 `input_schema`，所以才知道该传什么参数（代码注释已改正）。
+  The original comment said the model only looks at `name` and `description`; it also reads `input_schema`, which is how it knows what arguments to pass (the code comment is fixed).
+- **权限由你的代码检查 Your code checks permissions:** 模型生成了订单号，不代表这个订单属于当前用户。用户身份要从登录会话里取。
+  A model producing an order ID doesn't mean that order belongs to the current user. Take the user's identity from the login session.
+- **不是智能体 MCP isn't an agent:** 原文把 MCP 和 Agent 列在一起。MCP 是连接 AI 应用和外部工具、数据的开放标准，Agent 可以通过它使用工具。
+  The source lists MCP alongside agents. MCP is an open standard for connecting AI applications to external tools and data, and agents can use tools through it.
+- **代码省略了错误处理 The code skips error handling:** 工具不存在或执行失败时程序会崩溃，生产代码要捕获异常，用 `is_error` 把错误还给模型（见下）。另外，任何不是 `tool_use` 的停止原因都被当成最终回答，包括被 `max_tokens` 截断；这时最后一块不一定是文本，最后一行也可能报错。Sonnet 5.5 默认开启自适应思考，思考也计入 `max_tokens`，所以 1024 偏紧。
+  If a tool doesn't exist or fails, the program crashes; production code should catch the exception and return the error with `is_error` (below). Also, any stop reason other than `tool_use` is treated as the final answer, including a `max_tokens` cut-off; then the last block may not be text and the last line can crash. Sonnet 5.5 thinks adaptively by default and thinking counts toward `max_tokens`, so 1024 is tight.
 
 ```python
 try:
@@ -226,45 +212,25 @@ except Exception as e:
     results.append({"type": "tool_result", "tool_use_id": block.id, "is_error": True, "content": str(e)})
 ```
 
-> [!note] 5. 权限也由你的代码检查 Your code checks permissions too
-> 模型生成了订单号，不代表这个订单属于当前用户。用户身份要从登录会话里取，由你的代码检查。
-> A model producing an order ID doesn't mean that order belongs to the current user. Take the user's identity from the login session and check it in your code.
+## 7. ❓ 复习题 Review Questions
 
-> [!note] 6. MCP 不是智能体 MCP isn't an agent
-> 原文把 MCP 和 Agent 列在一起。MCP 是连接 AI 应用和外部工具、数据的开放标准，Agent 可以通过它使用工具。
-> The source lists MCP alongside agents. MCP is an open standard for connecting AI applications to external tools and data, and agents can use tools through it.
-
-## 8. ❓ 复习题 Review Questions
-
-**Q1.** 普通调用和工具调用有什么区别？ How does tool calling differ from a normal call?
-
-> [!success]- 答案 Answer
-> 普通调用是你问、模型答。工具调用是模型让你的代码帮它查，查够了再回答。
-> In a normal call, you ask and the model answers. With tool calling, the model has your code look things up, then answers once it has enough.
-
-**Q2.** 谁决定调用哪个工具？谁真正执行？ Who decides which tool to call, and who actually runs it?
+**Q1.** 谁决定调用哪个工具？谁真正执行？ Who decides which tool to call, and who actually runs it?
 
 > [!success]- 答案 Answer
 > 模型决定，你的代码执行。
 > The model decides, and your code runs it.
 
-**Q3.** 工具出错时，`is_error` 写在哪里？ When a tool fails, where does `is_error` go?
+**Q2.** 工具出错时，`is_error` 写在哪里？ When a tool fails, where does `is_error` go?
 
 > [!success]- 答案 Answer
 > 写在 `tool_result` 块上，不是写在内容 JSON 里。
 > On the `tool_result` block, not inside the content JSON.
 
-**Q4.** 为什么循环要设上限？ Why does the loop need a cap?
+**Q3.** 为什么循环要设上限？ Why does the loop need a cap?
 
 > [!success]- 答案 Answer
 > 防止模型一直调用工具、停不下来。示例代码最多跑 5 轮。
 > It stops the model from calling tools forever. The example code runs at most 5 rounds.
-
-**Q5.** 为什么我的 daily brief 不需要工具调用？ Why doesn't my daily brief need tool calling?
-
-> [!success]- 答案 Answer
-> 它每天查的东西都一样。工具调用适合事先不知道要查什么的场景。
-> It looks up the same things every day. Tool calling suits cases where you don't know in advance what to look up.
 
 ## 🔗 相关 Related
 

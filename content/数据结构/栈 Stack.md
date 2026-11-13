@@ -47,14 +47,8 @@ push 1, push 2, push 3          pop() → 3          peek() → 2
 
 ### 1.2 底层实现 How it's built
 
-栈只在一端操作，所以用**数组**实现最自然：自己用数组实现时，栈顶放在数组末尾，push / pop 就是在末尾追加 / 删除，正好是数组最擅长的 O(1) 操作（见 [[数组 Array|数组 Array]]）。`ArrayDeque` 是循环数组，它把 `push` 放在头部，所以遍历顺序是从栈顶到栈底。也可以用[[链表 Linked List|链表 Linked List]]，在头部插入删除。
-A stack only touches one end, so an **array** is the natural fit: in your own array-backed stack the top is the end of the array, and push/pop are append/remove-last, exactly the O(1) operations arrays are good at (see [[数组 Array|Array]]). `ArrayDeque` is a circular array that pushes at its head, so it iterates from top to bottom. A linked list with insert/remove at the head also works.
-
-| | 数组实现 Array-backed | 链表实现 Linked-list-backed |
-| --- | --- | --- |
-| push / pop | O(1)（扩容时 O(n)，均摊仍是 O(1) Resizing is O(n), amortized O(1)） | O(1) |
-| 内存 Memory | 连续，缓存友好 contiguous, cache-friendly | 每个节点多一个指针 an extra pointer per node |
-| Java | `ArrayDeque`，或自己用 `int[]` 和一个计数器 `ArrayDeque`, or your own `int[]` with a size counter | `LinkedList`（它也实现了 `Deque` 接口 it also implements `Deque`） |
+栈只在一端操作，所以用**数组**最自然：栈顶放在数组末尾，push / pop 就是末尾追加 / 删除，不用平移，都是 O(1)（扩容时均摊 O(1)，见 [[数组 Array|数组 Array]]）。用[[链表 Linked List|链表 Linked List]]在头部插入删除也行，但每个节点多一个指针，缓存不友好。
+A stack only touches one end, so an **array** is the natural fit: with the top at the end of the array, push/pop are append/remove-last with no shifting, both O(1) (amortized when resizing, see [[数组 Array|Array]]). A linked list with insert/remove at the head also works, at the cost of an extra pointer per node and worse cache behavior.
 
 ### 1.3 Java 里用哪个 Which one in Java
 
@@ -73,11 +67,8 @@ A stack only touches one end, so an **array** is the natural fit: in your own ar
 > | 存 `null` Storing `null` | 可以 Allowed | ❌ 会抛空指针异常 Throws `NullPointerException` |
 > | 遍历顺序 Iteration order | 栈底 → 栈顶 bottom → top | 栈顶 → 栈底 top → bottom |
 >
-> 在 LeetCode 上把 `Stack` 换成 `ArrayDeque` 基本只要改声明那一行，但要注意上表的空栈行为和遍历顺序；`Stack` 的 `empty()`、`search()`、`get(i)` 在 `Deque` 上不存在。
-> Swapping `Stack` for `ArrayDeque` is usually a one-line change, but mind the empty-stack behavior and iteration order above; `Stack`'s `empty()`, `search()` and `get(i)` don't exist on `Deque`.
->
-> `Deque` 里 `push` 放头部、`offer` 放尾部，而 `pop` / `poll` / `peek` 都从头部取；最简的 `Deque` 栈就是 225 的解法二，完整对照表在 1.4 节，见 [[队列 Queue|队列 Queue]]。
-> In a `Deque`, `push` adds at the front and `offer` at the back, and `pop` / `poll` / `peek` all take from the front; see section 1.4 of the Queue note. Solution 2 of 225 is a minimal `Deque` stack.
+> 把 `Stack` 换成 `ArrayDeque` 通常只要改声明那一行，但要注意上表的空栈行为和遍历顺序（`ArrayDeque` 把 `push` 放在头部，所以从栈顶遍历到栈底）。`Deque` 的完整方法对照见 [[队列 Queue|队列 Queue]] 1.4 节。
+> Swapping `Stack` for `ArrayDeque` is usually a one-line change, but mind the empty-stack behavior and iteration order above (`ArrayDeque` pushes at its head, so it iterates top to bottom). For all the `Deque` methods, see section 1.4 of [[队列 Queue|Queue]].
 
 ## 2. 🧠 什么时候用 When to Use
 
@@ -155,34 +146,26 @@ Stack algorithms are commonly **O(n) time**: each element is pushed once and pop
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
-- **空栈 pop / peek Popping an empty stack:** `Stack` 抛 `EmptyStackException`；`ArrayDeque.pop()` 抛 `NoSuchElementException`，`peek()` 返回 `null`（再拆箱成 `int` 就是 NPE）。先判 `isEmpty()` → check `isEmpty()` first.
+- **空栈 pop / peek Popping an empty stack:** 会抛异常，或者 `peek()` 返回 `null` 再拆箱成 `int` 抛 NPE（见 1.3 的表）；先判 `isEmpty()` → it throws, or `peek()` returns `null` and unboxing it into an `int` throws an NPE (see the table in 1.3); check `isEmpty()` first.
 - **忘了最后检查栈是否为空 Forgetting the final emptiness check:** 配对题里，循环结束后栈里还有东西也是无效的，如 `"(("` → leftovers mean unmatched openers, see [[Valid Parentheses|20]].
 - **`Integer` 用 `==` 比较 Comparing `Integer`s with `==`:** 两个 `Integer` 比较的是引用，默认只有 -128 到 127 有缓存，超出范围通常就错。用 `.equals()` 或先拆箱成 `int` → only -128..127 is cached by default; use `.equals()` or unbox first, see [[Min Stack|155]].
-- **`ArrayDeque` 遍历顺序 Iteration order:** `for (int x : deque)` 是从栈顶到栈底，和 `Stack` 相反；打印调试时别看反了 → top to bottom, the opposite of `Stack`.
 - **`ArrayDeque` 不能存 `null`** `ArrayDeque` rejects `null`: 需要“空”标记时用别的值 → use a sentinel value instead.
-- **递归太深 Recursion too deep:** 调用栈有大小限制，递归深度很大（比如 10⁵ 层的链状树）可能 `StackOverflowError`，可以改成显式栈 → the call stack is limited; very deep recursion can overflow, so switch to an explicit stack.
 
 ## 7. ❓ 复习题 Review Questions
 
-**Q1.** 为什么数组很适合实现栈？ Why is an array a good fit for a stack?
-
-> [!success]- 答案 Answer
-> 栈只在一端操作。把数组末尾当栈顶，push / pop 就是末尾追加 / 删除，都是 O(1)，不需要平移元素，而且内存连续、缓存友好。
-> A stack works at one end only. With the array's end as the top, push/pop are append/remove-last, both O(1) with no shifting, and the memory is contiguous and cache-friendly.
-
-**Q2.** Java 里为什么推荐 `ArrayDeque` 而不是 `Stack`？ Why prefer `ArrayDeque` over `Stack` in Java?
+**Q1.** Java 里为什么推荐 `ArrayDeque` 而不是 `Stack`？ Why prefer `ArrayDeque` over `Stack` in Java?
 
 > [!success]- 答案 Answer
 > `Stack` 继承自 `Vector`，大部分方法都同步，单线程下有不必要的同步开销（通常很小）；还暴露了 `get(i)`、`add(i, x)` 等方法，可以绕过栈的规则。`ArrayDeque` 没有同步开销，官方文档也推荐用 `Deque` 做栈。
 > `Stack` extends `Vector`: most methods are synchronized (unnecessary, though usually small, overhead single-threaded) and it exposes `get(i)` / `add(i, x)` that bypass stack rules. `ArrayDeque` has no locking, and the Javadoc recommends `Deque` for stacks.
 
-**Q3.** 循环里有一个 `while` 不断 pop，为什么单调栈仍然是 O(n)？ With a `while` popping inside the loop, why is a monotonic stack still O(n)?
+**Q2.** 循环里有一个 `while` 不断 pop，为什么单调栈仍然是 O(n)？ With a `while` popping inside the loop, why is a monotonic stack still O(n)?
 
 > [!success]- 答案 Answer
 > 看总工作量：每个元素最多被 push 一次、pop 一次，所以所有 `while` 加起来最多 pop n 次，总共 O(n)。
 > Count total work: each element is pushed once and popped at most once, so all the `while` loops together pop at most n times. O(n) overall.
 
-**Q4.** 栈和队列分别适合什么场景？ When do you use a stack vs a queue?
+**Q3.** 栈和队列分别适合什么场景？ When do you use a stack vs a queue?
 
 > [!success]- 答案 Answer
 > 栈后进先出，适合“最近的先处理”：配对、撤销、DFS。队列先进先出，适合“按到达顺序处理”：BFS、任务调度。

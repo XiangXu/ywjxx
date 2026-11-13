@@ -65,9 +65,6 @@ flowchart LR
 > [!important] 关键规则 Key rule
 > 内存和磁盘**不会自己直接通信**。它们之间的每次传输都由 CPU 协调。
 > RAM and disk **don't talk to each other on their own**. The CPU orchestrates every transfer between them.
->
-> 在真实硬件里，**DMA**（直接内存访问）让磁盘控制器把数据复制到内存，而不需要 CPU 逐字节搬运。传输仍然由 CPU 发起和管理。
-> In real hardware, **DMA** (Direct Memory Access) lets the disk controller copy data into RAM without the CPU moving each byte. The CPU still starts and manages the transfer.
 
 读取时，CPU 按 **缓存 → 内存 → 磁盘** 的顺序查找。
 On a read, the CPU checks **cache → RAM → disk**, in that order.
@@ -99,47 +96,23 @@ RAM is the fast, **volatile** working memory where running programs live. Its co
 - **存放 Holds:** 打开的应用，以及程序分配的变量。
   Open applications and the variables your program allocates.
 
-> [!note] 注意 Note
-> 这些数字是粗略估计，会随硬件进步而变化。
-> These numbers are rough estimates and change as hardware improves.
-
 ### 4.3 🧠 处理器 CPU (Central Processing Unit)
 
 CPU 是计算机的“大脑”。它负责所有计算，并读写内存和磁盘。
 The CPU is the "brain" of the computer. It does every computation and reads and writes both RAM and disk.
 
-运行代码时，代码会被翻译成二进制指令存放在内存中。然后 CPU 不断重复一个循环：
-When you run code, it is translated into binary instructions stored in RAM. The CPU then repeats one cycle:
-
-```mermaid
-flowchart LR
-    F["1️⃣ Fetch<br/>next instruction from RAM"] --> D["2️⃣ Decode<br/>into an operation"] --> E["3️⃣ Execute<br/>read/write RAM or disk"]
-    E -- repeat --> F
-```
-
-在最底层，每条指令都只是字节。CPU 在同一块芯片（die）上还集成了**缓存**。
-At the lowest level, every instruction is just bytes. The CPU also contains a **cache** on the same chip (die).
+运行代码时，代码会被翻译成二进制指令存放在内存中，CPU 不断重复**取指 → 译码 → 执行**的循环。CPU 在同一块芯片（die）上还集成了**缓存**。
+When you run code, it is translated into binary instructions stored in RAM, and the CPU repeats a **fetch → decode → execute** cycle. The CPU also contains a **cache** on the same chip (die).
 
 ### 4.4 🚀 缓存 Caches
 
 缓存把常用数据的一小份副本放在更快的存储里，让大多数读取不用走慢路。
 A cache keeps a small copy of frequently used data in faster storage, so most reads skip the slow trip.
 
-**CPU 缓存 CPU caches** (L1, L2, L3)
-
-- 比内存快得多，但只能存 KB 到几十 MB。L1 最小最快；L3 最大最慢。
-  Much faster than RAM, but they store only KBs to tens of MBs. L1 is the smallest and fastest; L3 is the largest and slowest.
-- 读取时先查缓存，再查内存和磁盘。**缓存命中**（数据在缓存里且仍然有效）就不用去内存了。
-  On a read, the cache is checked before RAM and disk. A **cache hit** (the data is present and still valid) avoids going to RAM.
-- 它们快，一部分因为就在 CPU 芯片上，一部分因为用 **SRAM** 制造。主内存用的是 DRAM。SRAM 更快，但每比特需要更多晶体管，所以更贵、更占地方。
-  They are fast partly because they sit on the CPU die and partly because they are built from **SRAM**. Main memory uses DRAM. SRAM is faster but needs more transistors per bit, so it is costlier and bulkier.
-
-**硬件之外的缓存 Caching beyond hardware**
-
-- 浏览器会缓存 HTML、CSS、JavaScript 和图片，让再次访问加载更快。
-  A web browser caches HTML, CSS, JavaScript, and images so repeat visits load faster.
-- 浏览器会为当前会话保留一个小的内存缓存，但主缓存在**磁盘**上。磁盘比内存慢，但比网络请求快。
-  Browsers keep a small memory cache for the current session, but the main cache lives on **disk**. Disk is slow next to RAM but fast next to a network request.
+- **CPU 缓存 CPU caches:** 三级缓存 L1/L2/L3 比内存快得多，但只能存 KB 到几十 MB。它们快，一部分因为就在 CPU 芯片上，一部分因为用 **SRAM** 制造（主内存用 DRAM）。SRAM 每比特需要更多晶体管，所以更贵、更占地方。
+  L1/L2/L3 are much faster than RAM but store only KBs to tens of MBs. They are fast partly because they sit on the CPU die and partly because they are built from **SRAM** (main memory uses DRAM). SRAM needs more transistors per bit, so it is costlier and bulkier.
+- **浏览器缓存 Browser cache:** 浏览器缓存 HTML、CSS、JavaScript 和图片。会话期间有个小的内存缓存，但主缓存在**磁盘**上：比内存慢，但比网络请求快。
+  A browser caches HTML, CSS, JavaScript, and images. It keeps a small memory cache for the session, but the main cache lives on **disk**: slow next to RAM, but fast next to a network request.
 
 > [!tip] 通用模式 General pattern
 > 缓存 = 把数据放到比慢速来源**更近一层**的地方。
@@ -171,27 +144,10 @@ flowchart TB
 | **L2** | 每核 256 KB–2 MB 左右 About 256 KB–2 MB per core | ~4 ns | 单核私有 Private to one core | L1 的后备，接住 L1 大部分未命中 Backup for L1. Catches most of what L1 misses |
 | **L3** | 每芯片 8–64 MB 左右 About 8–64 MB per chip | ~10–40 ns | 所有核心共享 Shared by all cores | 去内存前的最后一站，让核心之间不用经过内存就能共享数据 Last stop before RAM. Lets cores share data without a trip to memory |
 
-> [!note] 注意 Note
-> 大小和延迟是现代 CPU 的典型值，不同型号差别很大。
-> Sizes and latencies are typical modern values and vary a lot by CPU model.
-
-**查找过程 How a lookup works**
-
-```mermaid
-flowchart LR
-    Req["CPU needs data"] --> L1{"In L1?"}
-    L1 -- hit --> Done["✅ Use it"]
-    L1 -- miss --> L2{"In L2?"}
-    L2 -- hit --> Done
-    L2 -- miss --> L3{"In L3?"}
-    L3 -- hit --> Done
-    L3 -- miss --> RAM["Fetch from RAM<br/>and copy into the caches"] --> Done
-```
-
 **关键概念 Key ideas**
 
-- **命中与未命中 Hit vs miss:** *命中*是在这一级找到了数据。*未命中*就落到下一级更慢的地方。一路未命中到内存，代价约是 L1 命中的 100 倍。
-  A *hit* finds the data at that level. A *miss* falls through to the next, slower level. A miss all the way to RAM costs about 100× an L1 hit.
+- **命中与未命中 Hit vs miss:** 按 L1 → L2 → L3 → 内存的顺序查。*命中*是在这一级找到了数据；*未命中*就落到下一级。一路未命中到内存，代价约是 L1 命中的 100 倍。
+  Lookups go L1 → L2 → L3 → RAM. A *hit* finds the data at that level; a *miss* falls through to the next. A miss all the way to RAM costs about 100× an L1 hit.
 - **缓存行 Cache line:** 数据在各级之间按固定大小的块移动，通常是 **64 字节**，而不是一次一个字节。读一个值也会把它的邻居一起带进来。
   Data moves between levels in fixed blocks, usually **64 bytes**, not one byte at a time. Reading one value also brings its neighbors along.
 - **局部性 Locality:** 这是缓存有效的原因：
@@ -227,8 +183,8 @@ flowchart TB
 ⬇️ Going down: **bigger, cheaper per byte, slower**. The biggest jump is RAM → SSD, about **1,000×** slower.
 
 > [!info] 这些数字的来源 Source of these figures
-> 这些延迟和容量是现代计算机的近似值，是为了提供背景补充的。课程本身只给了微秒（内存）和毫秒（磁盘）的对比。
-> The latency and size figures are approximate values for a modern computer, added for context. The lesson itself only gave µs (RAM) vs ms (disk).
+> 本笔记的延迟和容量都是现代计算机的粗略典型值，不同型号差别很大。课程本身只给了微秒（内存）和毫秒（磁盘）的对比。
+> All latency and size figures in this note are rough typical values for a modern computer and vary a lot by model. The lesson itself only gave µs (RAM) vs ms (disk).
 
 ## 6. 📈 摩尔定律 Moore's Law
 
@@ -238,13 +194,9 @@ Moore's Law is an observation, not a physical law: **the number of transistors o
 | 年份 Year | 芯片 Chip | 晶体管数（约） Transistors (approx.) |
 | --- | --- | --- |
 | 1971 | Intel 4004 | 2,300 |
-| 1978 | Intel 8086 | 29,000 |
 | 1985 | Intel 386 | 275,000 |
-| 1989 | Intel 486 | 1.2M |
 | 1993 | Pentium | 3.1M |
-| 2000 | Pentium 4 | 42M |
 | 2006 | Core 2 Duo | 291M |
-| 2010 | Core i7-980X | 1.17B |
 | 2020 | Apple M1 | 16B |
 | 2023 | Apple M2 Ultra | 134B |
 
@@ -286,8 +238,8 @@ The same trade-off between speed, size, cost, and durability appears again at th
 On every request: check the in-process cache → then Redis → then the database. This mirrors the hardware hierarchy: closest and smallest first, the durable source of truth last.
 
 > [!note] CDN 和浏览器缓存放在哪 Where CDNs and browser caches fit
-> 它们和 CPU 缓存不对应。它们缩短的是**到用户的网络距离**（地理位置），而不是内存和处理器之间的距离。它们遵循同样的一般原则（“把数据放到离读取者更近一层的地方”），只是沿着不同的维度。
-> These don't map to the CPU cache. They cut **network distance to the user** (geography), not the distance between memory and processor. They follow the same general principle ("put data one level closer to whoever reads it"), but along a different axis.
+> 它们和 CPU 缓存不对应：缩短的是**到用户的网络距离**，而不是内存和处理器之间的距离。原则相同（把数据放近一层），只是维度不同。
+> These don't map to the CPU cache: they cut **network distance to the user**, not the distance between memory and processor. Same principle (put data one level closer), different axis.
 
 ## 9. 🧩 复习题 Review Questions
 
@@ -303,31 +255,25 @@ On every request: check the in-process cache → then Redis → then the databas
 > 由 CPU 协调。内存和磁盘不会自己通信（有 DMA 时由磁盘控制器复制数据，但仍由 CPU 发起和管理）。
 > The CPU coordinates it. RAM and disk don't communicate on their own (with DMA, the disk controller does the copying, but the CPU still starts and manages it).
 
-**Q3.** 读取时，缓存、内存、磁盘按什么顺序检查？ In what order are cache, RAM, and disk checked on a read?
-
-> [!success]- 答案 Answer
-> 缓存 → 内存 → 磁盘。
-> Cache → RAM → disk.
-
-**Q4.** 为什么浏览器把主缓存放在磁盘而不是内存？ Why does a browser keep its main cache on disk instead of RAM?
+**Q3.** 为什么浏览器把主缓存放在磁盘而不是内存？ Why does a browser keep its main cache on disk instead of RAM?
 
 > [!success]- 答案 Answer
 > 浏览器会为当前会话保留内存缓存，但主缓存放在磁盘上，这样重启后还在，而且可以大得多。磁盘仍然比网络请求快得多。
 > Browsers keep a memory cache for the current session, but the main cache is on disk so it survives restarts and can be much larger. Disk is still far faster than a network request.
 
-**Q5.** 为什么 SSD 比 HDD 快？ Why is an SSD faster than an HDD?
+**Q4.** 为什么 SSD 比 HDD 快？ Why is an SSD faster than an HDD?
 
 > [!success]- 答案 Answer
 > SSD 用电子方式读写。HDD 必须物理移动读写磁头，在旋转的盘片上寻找数据。
 > An SSD reads and writes electronically. An HDD must physically move a read/write head over spinning platters.
 
-**Q6.** 哪几级缓存是核心私有的，哪一级是共享的？ Which cache levels are private to a core, and which is shared?
+**Q5.** 哪几级缓存是核心私有的，哪一级是共享的？ Which cache levels are private to a core, and which is shared?
 
 > [!success]- 答案 Answer
 > L1 和 L2 是每个核心私有的。L3 由芯片上所有核心共享。
 > L1 and L2 are private to each core. L3 is shared by all cores on the chip.
 
-**Q7.** 为什么按顺序遍历数组比沿着链表指针走更快？ Why is looping over an array in order faster than following linked-list pointers?
+**Q6.** 为什么按顺序遍历数组比沿着链表指针走更快？ Why is looping over an array in order faster than following linked-list pointers?
 
 > [!success]- 答案 Answer
 > 数据按 64 字节的缓存行移动，一次读取就带进好几个相邻的数组元素（空间局部性）。链表节点散落在内存各处，所以很多步都可能未命中缓存。

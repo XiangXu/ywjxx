@@ -164,34 +164,17 @@ class Solution {
 
 ### 4.3 🤔 递归到底怎么理解 Making sense of the recursion
 
-我卡住的地方：`newHead` 看起来是从最底层“一路传上来”的，可又说每一层“只管自己这一段”，这两种说法感觉矛盾。
-Where I got stuck: `newHead` looks like it's "passed all the way up" from the bottom, yet each level supposedly "only handles its own part". The two descriptions felt contradictory.
+> [!important] 只关心子调用的**结果**，不关心**过程** Care about the child's result, not its process
+> `newHead` 看起来是从最底层“一路传上来”的，但每一层其实只是**按合同使用子调用的结果**。合同：`reverseList(x)` 把从 `x` 开始的链表反转好，**返回反转后的头**。
+> `newHead` looks like it's "passed all the way up" from the bottom, but each level just **uses the child's result by its contract**: `reverseList(x)` reverses the list starting at `x` and **returns the new head**.
 
-> [!important] 关键：只关心子调用的**结果**，不关心子调用的**过程** Care about the child's result, not its process
-> “只管自己这一层”不是说不关心下面传上来的东西，而是：**按合同使用子调用的结果，不去追踪它是怎么算出来的。** `newHead` 就是那个结果。
-> "Only handle your own level" doesn't mean ignoring what comes back. It means: **use the child call's result according to its contract, without tracing how it was computed.** `newHead` is that result.
+站在 `head = 1` 这一层：子调用交回反转好的 `3 → 2`，而 `1.next` 还指着 2（现在是那段的尾巴）。
+At the `head = 1` level, the child hands back a reversed `3 → 2`, and `1.next` still points at 2, now that part's tail.
 
-**① 合同 The contract.** `reverseList(x)`：把从 `x` 开始的链表反转好，**返回反转后的头**。每一层都遵守这个合同，也相信子调用遵守它。
-`reverseList(x)` reverses the list starting at `x` and **returns the new head**. Every level keeps this contract and trusts its child to keep it.
-
-**② 站在 `head = 1` 这一层看 From the `head = 1` level.** 它只知道两件事：
-It only knows two things:
-
-- 我自己：1，而且 `1.next` 还指着 2 Me: node 1, and `1.next` still points at 2
-- 子调用交回来一条反转好的 `3 → 2`，头是 `newHead` The child handed back a reversed `3 → 2` whose head is `newHead`
-
-它不知道、也不需要知道 `newHead` 是从最底层传上来的。合同说返回值是“反转后的头”，那 `newHead` 就是 `3 → 2` 的头。
-It doesn't know, and doesn't need to know, that `newHead` came from the bottom. The contract says the return value is "the reversed head", so `newHead` is the head of `3 → 2`.
-
-**③ 这一层要完成合同的两件事 This level fulfils the contract in two steps.**
-
-- **反转 Reverse:** 2 原来是我的下一个，现在是 `3 → 2` 的尾巴，`1.next` 还指着它。所以 `head.next.next = head` 让 2 指回 1，`head.next = null` 让 1 成为新尾巴，得到 `3 → 2 → 1`。
-  Node 2 was my next and is now the tail of `3 → 2`, and `1.next` still points to it. So `head.next.next = head` points 2 back at 1, and `head.next = null` makes 1 the new tail: `3 → 2 → 1`.
-- **返回新头 Return the new head:** `3 → 2 → 1` 的头是谁？我是接在**尾巴**上的，头不受影响，还是子链表的头 `newHead`。
-  What's the head of `3 → 2 → 1`? I joined at the **tail**, so the head is unaffected: it's still the sublist's head, `newHead`.
-
-所以 `return newHead` 不是“照搬下面的值”，而是**这一层自己推理出来的答案**。从效果上看它像是一路传上来的，但每一层其实都在做同样的推理。
-So `return newHead` isn't "copying whatever came from below"; it's **this level's own conclusion**. The effect looks like a value passed straight up, but each level is making the same deduction.
+- **反转 Reverse:** `head.next.next = head` 让 2 指回 1，`head.next = null` 让 1 成为新尾巴，得到 `3 → 2 → 1`。
+  `head.next.next = head` points 2 back at 1, and `head.next = null` makes 1 the new tail: `3 → 2 → 1`.
+- **返回新头 Return the new head:** 我接在**尾巴**上，头不受影响，还是 `newHead`。所以 `return newHead` 是本层自己推出来的，不是照搬。
+  I joined at the **tail**, so the head is unaffected: still `newHead`. So `return newHead` is this level's own conclusion, not a blind copy.
 
 > [!tip] 和 maxDepth 对比 Compare with Maximum Depth of Binary Tree (104)
 > 两者都是“拿到子结果 → 结合自己 → 得出本层结果”，区别只在要不要加工：
@@ -202,17 +185,8 @@ So `return newHead` isn't "copying whatever came from below"; it's **this level'
 > return newHead;              // reverseList: 恰好不用加工 happens to need no processing
 > ```
 >
-> 反转链表里，“结合自己”只改变**尾部**，不改变头部，所以返回值原封不动。
-> In reverseList, "combining with yourself" only changes the **tail**, never the head, so the return value passes through unchanged.
-
-> [!note] 两个变量的分工 Who does what
-> | 变量 Variable | 角色 Role |
-> | --- | --- |
-> | `head`、`head.next` | 干活的：调转本层这一条箭头 the workers: flip this level's one arrow |
-> | `newHead` | 传递员：本层不碰它，只负责把“新头是谁”交给调用者 the messenger: untouched here, it tells the caller where the new head is |
->
-> 为什么非要返回它？反转完成后，最外层调用者只拿着原来的 1，而 1 现在是**尾巴**。不把新头一路交上去，调用者就找不到反转后的链表了。
-> Why return it at all? Afterwards the top-level caller only holds the original 1, which is now the **tail**. Without handing the new head back up, the caller couldn't find the reversed list.
+> 必须把新头交上去：最外层调用者只拿着原来的 1，而它现在是尾巴。
+> The new head must be handed up: the top-level caller only holds the original 1, which is now the tail.
 
 ### 4.4 其他写法 Alternatives
 
@@ -231,8 +205,6 @@ So `return newHead` isn't "copying whatever came from below"; it's **this level'
 >     return reverse(next, curr);           // 前进一步 advance one step
 > }
 > ```
-> 面试里通常先写迭代版（O(1) 空间、不会栈溢出），再按要求补递归版。我的“先反转后面再接自己”那种递归最常被问到原理，要能讲清楚 4.3 的推理。
-> In interviews, usually write the iterative version first (O(1) space, no stack overflow), then the recursive one if asked. My "reverse the rest, then attach myself" recursion is the one interviewers ask you to explain, so be ready to walk through 4.3.
 
 ## 5. ⚠️ 易错点 Edge Cases & Pitfalls
 
@@ -280,12 +252,6 @@ So `return newHead` isn't "copying whatever came from below"; it's **this level'
 > [!success]- 答案 Answer
 > 迭代 O(1)，只有几个指针。递归 O(n)，因为递归深度是 n，每层在[[栈 Stack|调用栈]]上占一帧，即使没有 `new` 任何对象。
 > Iterative is O(1): a few pointers. Recursive is O(n): recursion depth is n and each level takes a frame on the call stack, even though nothing is allocated with `new`.
-
-**Q5.** 去掉 `head.next = null` 会怎样？ What happens without `head.next = null`?
-
-> [!success]- 答案 Answer
-> 原头节点 1 仍然指向 2，而 2 已经指向 1，形成 `1 ⇄ 2` 的环。返回的链表遍历到最后会在 1 和 2 之间死循环。
-> The old head 1 still points at 2 while 2 points at 1, forming a `1 ⇄ 2` cycle. Traversing the result loops forever between them.
 
 ## 8. 🔗 相关题目 Related
 
