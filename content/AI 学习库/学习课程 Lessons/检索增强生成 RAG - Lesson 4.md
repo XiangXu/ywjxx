@@ -24,6 +24,9 @@ created: 2026-11-15
 > [!abstract] TL;DR
 > 模型不知道你的私有文档。RAG 先把和问题相关的几段找出来，塞进 prompt，再让模型只根据这几段回答。
 > The model doesn't know your private documents. RAG finds the few passages related to the question, puts them in the prompt, and has the model answer from those passages only.
+>
+> 一句话：RAG = 向量库查资料 + 大模型写答案 + 中间的胶水代码。
+> In one line: RAG = a vector DB to look things up + an LLM to write the answer + glue code in between.
 
 ## 1. 🎯 是什么 What It Is
 
@@ -32,6 +35,12 @@ A model only knows what it saw in training: not your internal docs, yesterday's 
 
 RAG 只把**和问题相关的那几段**找出来贴进去，相当于给模型一份开卷资料。
 RAG pastes in **only the passages related to the question**, like handing the model open-book notes.
+
+| 角色 Role | RAG 世界 RAG world | Java 类比 Java analogy |
+| --- | --- | --- |
+| 架构模式 Pattern | RAG | MVC |
+| 框架 Framework | Spring AI / LangChain | Spring Boot |
+| 存储 Storage | 向量库 Vector DB (pgvector, Qdrant) | MySQL |
 
 **提前准备（只做一次）Prepare ahead (once)**
 
@@ -61,7 +70,8 @@ RAG pastes in **only the passages related to the question**, like handing the mo
 
 | 概念 Concept | 要点 Key point |
 | --- | --- |
-| 嵌入 Embedding | 一串数字（比如 1024 维），意思相近的文字向量也相近 A list of numbers (say 1,024); similar meanings give nearby vectors |
+| 嵌入 Embedding | 一串数字（比如 1024 维），意思相近的文字向量也相近，如“pod 重启了”和“容器挂了自动拉起” A list of numbers (say 1,024); similar meanings give nearby vectors, like "the pod restarted" and "the container died and came back" |
+| 向量库 Vector DB | 按意思查找的数据库，比如 pgvector 和 Qdrant 等 A database that searches by meaning, such as pgvector or Qdrant |
 | 相似度 Similarity | 常用余弦相似度，越接近 1 越像 Usually cosine similarity; closer to 1 means more similar |
 | 段大小 Chunk size | 太大混进噪音，太小丢上下文；常见几百 token，相邻段略重叠 Too big adds noise, too small loses context; a few hundred tokens is common, with slight overlap |
 | 取几段 Top-k | 太少会漏答案，太多浪费 token 还分散注意力；一般 3–5 段 Too few can miss the answer, too many waste tokens and distract; usually 3–5 |
@@ -76,19 +86,116 @@ RAG pastes in **only the passages related to the question**, like handing the mo
   As in Lesson 2, wrap passages in `<doc id="3">…</doc>` tags so the model treats them as data rather than instructions, which reduces (but doesn't remove) prompt-injection risk.
 - **检索时过滤权限 Filter at retrieval:** 按用户权限过滤文档，别指望靠 prompt 让模型"别说"。
   Filter by the user's permissions before the model sees anything; don't rely on the prompt to keep secrets.
+- **元数据 Metadata:** 每块带上来源、章节、团队等字段，用来标出处和按权限过滤。
+  Store source, section and team with each chunk, for citations and permission filters.
 
-## 3. 🧭 例子 Examples
+## 3. 🧭 完整例子：K8s 运维问答 Full Example: K8s Ops Assistant
 
-**券商客服 Brokerage support:** 公司有 500 页内部 FAQ，客户问"卖了股票多久钱能到账？"
-The company has 500 pages of internal FAQ. A customer asks: "How long after selling shares does the cash arrive?"
+**背景 Background:** 团队资料散在 Confluence 运维手册、事故复盘和 Git 里的 Helm chart。新人值班遇到告警，不知道该翻哪份；目标是直接提问，拿到带出处的答案。
+  Team knowledge is scattered across Confluence runbooks, postmortems, and Helm charts in Git. A new on-call engineer doesn't know which doc to open; the goal is to ask a question and get an answer with sources.
 
-| 步骤 Step | 发生了什么 What happens |
-| --- | --- |
-| 检索 Retrieve | 找到 3 段：T+1 结算、周末节假日顺延、可提现与未结算余额 Finds 3 chunks: T+1 settlement, weekend/holiday delays, withdrawable vs unsettled cash |
-| 拼 prompt Build prompt | 用 `<doc>` 标签包好这 3 段，再加上问题 Wraps the 3 chunks in `<doc>` tags and adds the question |
-| 回答 Answer | 一般下一个工作日到账，周末顺延，引用第 1、2 段 Usually the next business day, later over weekends; cites docs 1 and 2 |
+### 3.1 离线建索引 Step 1: Build the Index (Offline)
 
-**什么时候不用 RAG When not to use RAG**
+原始文档是事故复盘 `postmortem-2026-03.md` 的一部分：
+Source document, part of `postmortem-2026-03.md`:
+
+```markdown
+## Root cause
+order-service pods kept getting OOMKilled. The JVM heap was 2G,
+but the container memory limit was also 2G, leaving no room for off-heap memory.
+
+## Fix
+Raised the limit to 3G and set -XX:MaxRAMPercentage=70.
+```
+
+1. 切块：按 `##` 标题切成 2 块，每块带上元数据。
+   Chunk: split on `##` headings into 2 chunks, each with metadata.
+2. 嵌入：每块变成一个 1024 维向量，比如 `[0.12, -0.53, 0.08, …]`。
+   Embed: each chunk becomes a 1,024-dimension vector, e.g. `[0.12, -0.53, 0.08, …]`.
+3. 入库：几千份文档切成约 3 万块，存进 pgvector。
+   Store: a few thousand docs become about 30,000 chunks in pgvector.
+
+```json
+{
+  "text": "Root cause: order-service pods kept getting OOMKilled. The JVM heap...",
+  "source": "postmortem-2026-03.md",
+  "section": "Root cause",
+  "team": "backend"
+}
+```
+
+### 3.2 在线检索 Step 2: Retrieve (Online)
+
+凌晨 3 点，新人问："payment-service 的 pod 一直重启，状态是 OOMKilled，怎么办？"
+At 3 a.m., the new engineer asks: "payment-service pods keep restarting with OOMKilled. What do I do?"
+
+| 检索方式 Method | 命中 Hit | 为什么 Why |
+| --- | --- | --- |
+| 向量检索 Vector search | `postmortem-2026-03.md` | 讲的是另一个服务，但情形很像：Java 服务、内存超限、反复重启 A different service, but the same situation: Java service, OOMKilled, restart loop |
+| 关键词检索 BM25 | `runbook-oom.md` | 文中有 OOMKilled 这个词 Contains the exact word "OOMKilled" |
+| 噪音 Noise | 调度失败排查 Pod scheduling failures | 沾边但不相关 Related but not useful |
+
+重排序：20 条候选重新打分，只留前 3 条。
+Rerank: rescore 20 candidates and keep the top 3.
+
+1. `runbook-oom.md`：通用的内存超限排查步骤
+   `runbook-oom.md`: generic OOM troubleshooting steps
+2. `postmortem-2026-03.md`：堆大小和容器上限冲突的案例
+   `postmortem-2026-03.md`: the heap vs container limit incident
+3. `payment-service/values.yaml`：这个服务当前的资源配置
+   `payment-service/values.yaml`: this service's current resource settings
+
+### 3.3 拼 Prompt Step 3: Build the Prompt
+
+```
+只根据以下资料回答，注明出处。资料中没有的信息请说明。
+Answer only from the passages below and cite them. Say so if something isn't covered.
+
+<doc id="1" source="runbook-oom.md">
+Run kubectl describe pod and confirm Last State is OOMKilled,
+then check actual memory use with kubectl top pod...
+</doc>
+<doc id="2" source="postmortem-2026-03.md">
+order-service kept getting OOMKilled: JVM heap 2G, container limit also 2G...
+</doc>
+<doc id="3" source="payment-service/values.yaml">
+resources.limits.memory: 1Gi
+JAVA_OPTS: -Xmx1g
+</doc>
+
+问题 Question: payment-service 的 pod 一直重启，状态是 OOMKilled，怎么办？
+payment-service pods keep restarting with OOMKilled. What do I do?
+```
+
+### 3.4 模型回答 Step 4: The Answer
+
+> [!example] 模型回答 Model answer
+> 很可能和 3 月 order-service 的事故是同一个问题：堆设成 `-Xmx1g`，内存上限也是 `1Gi`，堆外内存没有空间 \[2\]\[3\]。
+> Most likely the same problem as March's order-service incident: the heap is `-Xmx1g` and the limit is also `1Gi`, leaving no room for off-heap memory \[2\]\[3\].
+>
+> 1. 先确认：用 `kubectl describe pod` 看上一次退出原因 \[1\]。
+>    Confirm: check Last State with `kubectl describe pod` \[1\].
+> 2. 临时缓解：把内存上限提到 1.5Gi。
+>    Short term: raise the memory limit to 1.5Gi.
+> 3. 长期方案：去掉 `-Xmx`，改用 `-XX:MaxRAMPercentage=70`，让堆随上限自动调整 \[2\]。
+>    Long term: drop `-Xmx` and use `-XX:MaxRAMPercentage=70` so the heap scales with the limit \[2\].
+
+### 3.5 体现了什么 What This Shows
+
+- **跨文档关联 Cross-document:** 事故复盘和配置文件在两个系统里，RAG 把它们拼到一起。
+  The postmortem and the config live in different systems; RAG puts them side by side.
+- **语义匹配 Semantic match:** 问的是 payment-service，却找到了 order-service 的事故。
+  The question is about payment-service, yet it finds the order-service incident.
+- **私有知识 Private knowledge:** 通用模型不可能知道你们的 `values.yaml` 怎么配。
+  No general model knows what's in your `values.yaml`.
+- **可验证 Verifiable:** 每条建议都有出处，值班的人可以点开原文核对。
+  Every suggestion has a source the on-call engineer can open and check.
+
+> [!warning] 不用 RAG 会怎样 Without RAG
+> 直接问 Claude，会得到一份正确但泛泛的排查清单。它不知道你们 3 月出过同样的事故，也不知道这个服务的配置。
+> Asking Claude directly gives a correct but generic OOM checklist. It doesn't know you had the same incident in March or how this service is configured.
+
+### 3.6 什么时候不用 RAG When Not to Use RAG
 
 | 问题 Question | 更好的办法 Better approach |
 | --- | --- |
@@ -100,24 +207,6 @@ The company has 500 pages of internal FAQ. A customer asks: "How long after sell
 > [!important] 适用场景 When RAG fits
 > 知识多、问题杂、每次只用其中一小部分。
 > Lots of knowledge, varied questions, and each question needs only a small part.
-
-> [!example]- 动手 Hands-on（claude.ai，10 分钟 10 min）
-> 新开对话贴下面这段；再把问题换成"可以买加密货币吗？"，看它会不会老实说资料里没有。
-> Paste this into a new chat, then change the question to "Can I buy crypto?" and check whether it admits the answer isn't there.
->
-> ```
-> 只根据下面的资料回答。找不到答案就说"资料里没有"。在句末用 [doc N] 标出处。
-> Answer only from the passages below. If the answer isn't there, say "not in the passages". Cite with [doc N].
->
-> <doc id="1">Trades settle on T+1: cash from a sale becomes withdrawable one business day after the trade.</doc>
-> <doc id="2">If the settlement day is a weekend or bank holiday, settlement moves to the next business day.</doc>
-> <doc id="3">Unsettled cash can be used to buy other shares but cannot be withdrawn.</doc>
->
-> 问题 Question: 我周五卖了股票，什么时候能提现？ I sold shares on Friday. When can I withdraw the cash?
-> ```
->
-> 预期答案：周五之后的下一个工作日是周一，若周一是节假日再顺延 \[doc 1\]\[doc 2\]。
-> Expected: the next business day after Friday is Monday, later if Monday is a holiday \[doc 1\]\[doc 2\].
 
 ## 4. 💻 代码 Code
 
@@ -198,7 +287,26 @@ if __name__ == "__main__":
 真实系统里，② 换成 embedding 模型（如 Voyage AI），④ 换成向量数据库（pgvector、Pinecone 等），⑥ 之后再调用 Claude。
 In a real system, ② becomes an embedding model (such as Voyage AI), ④ becomes a vector database (pgvector, Pinecone, etc.), and after ⑥ you call Claude.
 
-## 5. 🔍 对课程原文的补充与更正 Clarifications to the Lesson Text
+## 5. 🚀 部署与成败关键 Deployment & What Makes It Work
+
+| 规模 Scale | 做法 Setup |
+| --- | --- |
+| 个人项目 Personal | 用 Python、Chroma 和 Claude API，本地就能跑 Runs locally with Python, Chroma and the Claude API |
+| 小团队 Small team | 用 Dify、RAGFlow 等现成平台，用 docker-compose 一键启动 Ready-made platforms like Dify or RAGFlow, started with docker-compose |
+| 企业 Enterprise | 部署在 K8s 上，见下表 On K8s, see below |
+
+| 组件 Component | K8s 上怎么部署 On K8s |
+| --- | --- |
+| 检索服务 RAG API | Deployment + HPA |
+| 向量库 Vector DB | 复用现有 Postgres 装 pgvector，或单独部署 Qdrant Reuse the existing Postgres with pgvector, or run Qdrant as a StatefulSet |
+| 文档同步 Doc sync | 用 CronJob 定时从 Confluence 和 Git 增量拉取 A CronJob pulls incremental changes from Confluence and Git |
+| 大模型 LLM | 调用 Claude API，或在 GPU 节点上用 vLLM 自建 Call the Claude API, or self-host with vLLM on GPU nodes |
+
+> [!tip] 成败关键 What decides success
+> 难点不在部署，在检索质量：怎么切块、选哪个 embedding 模型、要不要混合检索和重排序。上面的例子如果没找回那份事故复盘，答案就退化成泛泛的通用建议。
+> The hard part isn't deployment, it's retrieval quality: how you chunk, which embedding model, whether to add hybrid search and reranking. If the example had missed the postmortem, the answer would fall back to generic advice.
+
+## 6. 🔍 对课程原文的补充与更正 Clarifications to the Lesson Text
 
 - **不是训练 Not training:** 模型本身不变，只是每次多给资料。改了文档，下一次回答就生效，不用重新训练。
   The model doesn't change; it gets extra material per question. Edit a document and the next answer reflects it, with no retraining.
@@ -218,8 +326,12 @@ In a real system, ② becomes an embedding model (such as Voyage AI), ④ become
   When project knowledge approaches the context window limit, Claude Projects switches to a retrieval mode and pulls in only the relevant parts.
 - **和缓存配合 With prompt caching:** 检索到的段每次不同，要放在固定的系统 prompt 之后（`cache_control` 打在系统 prompt 上），否则缓存前缀会失效。
   Retrieved chunks change every question, so put them after the fixed system prompt (with `cache_control` on the system prompt), or they break the cached prefix.
+- **关键词也能命中 Keywords would hit it too:** 原文说找到 order-service 的事故是关键词搜索做不到的。其实复盘里也有 OOMKilled，BM25 也可能命中；向量检索的优势是认出整个情形相似，即使服务名不同。
+  The source says keyword search couldn't find the order-service incident. The postmortem also contains "OOMKilled", so BM25 might hit it too; vector search's edge is recognizing the same situation even with a different service name.
+- **`-Xmx` 会覆盖百分比 `-Xmx` overrides the percentage:** 同时设了 `-Xmx` 时 `MaxRAMPercentage` 不生效，所以长期方案要先删掉 `-Xmx`。堆外内存还包括元空间、线程栈、直接内存和 JIT 代码缓存。
+  If `-Xmx` is also set, `MaxRAMPercentage` is ignored, so the long-term fix must remove `-Xmx` first. Off-heap memory includes metaspace, thread stacks, direct buffers and the JIT code cache.
 
-## 6. ❓ 复习题 Review Questions
+## 7. ❓ 复习题 Review Questions
 
 **Q1.** RAG 的两个阶段分别做什么？ What do RAG's two phases do?
 
@@ -262,6 +374,12 @@ In a real system, ② becomes an embedding model (such as Voyage AI), ④ become
 > [!success]- 答案 Answer
 > 每天的数据少、都是新的，整份放进 prompt 就行。等要从几百篇旧笔记里找内容时再加。
 > The daily data is small and fresh, so it fits in the prompt. Add RAG when it needs to search hundreds of old notes.
+
+**Q8.** 在 K8s 例子里，向量检索、关键词检索和重排序各起什么作用？ In the K8s example, what does each of vector search, keyword search and reranking contribute?
+
+> [!success]- 答案 Answer
+> 向量检索按情形相似找到别的服务的事故复盘；关键词检索靠 OOMKilled 这个词找到运维手册；重排序从 20 条候选里挑出最有用的 3 条。
+> Vector search finds another service's postmortem because the situation is similar; keyword search finds the runbook through the word "OOMKilled"; reranking picks the 3 most useful of 20 candidates.
 
 ## 🔗 相关 Related
 
