@@ -287,7 +287,88 @@ if __name__ == "__main__":
 真实系统里，② 换成 embedding 模型（如 Voyage AI），④ 换成向量数据库（pgvector、Pinecone 等），⑥ 之后再调用 Claude。
 In a real system, ② becomes an embedding model (such as Voyage AI), ④ becomes a vector database (pgvector, Pinecone, etc.), and after ⑥ you call Claude.
 
-## 5. 🚀 部署与成败关键 Deployment & What Makes It Work
+## 5. 🤖 经典 RAG 与智能体 RAG Classic vs Agentic RAG
+
+谁去查向量库？两种都有：经典 RAG 由你的代码去查，不用工具调用；让模型通过工具调用自己去查的，叫智能体 RAG。
+Who queries the vector DB? Both exist: in classic RAG your code does it, with no tool calling; when the model searches on its own through tool calling, it's called agentic RAG.
+
+### 5.1 经典 RAG：代码去查 Classic RAG: Your Code Searches
+
+模型**完全不知道**向量库存在。代码先查，再把结果塞进 prompt。上面的内存超限例子就是这种。
+The model **doesn't know the vector DB exists**. Your code searches first, then puts the results in the prompt. The OOM example above works this way.
+
+```
+用户问题 question
+   ↓
+应用代码 app code ──search──▶ 向量库 vector DB
+   ↓ (top 3 chunks)
+拼 prompt: chunks + question
+   ↓
+LLM ──▶ 答案 answer
+```
+
+```python
+hits = vector_db.search(embed(question), top_k=5)    # 代码查 Your code searches
+prompt = f"Passages: {hits}\nQuestion: {question}"
+answer = llm(prompt)                                  # 模型只负责读和写 The model only reads and writes
+```
+
+- **优点 Pros:** 每次提问固定检索一次，流程可控，延迟低。
+  Exactly one retrieval per question: predictable and low latency.
+- **缺点 Cons:** 不需要查的问题也会查；只查一次，查偏了没机会补救。
+  It searches even when the question doesn't need it, and only once, so a bad retrieval can't be fixed.
+
+### 5.2 智能体 RAG：模型自己查 Agentic RAG: The Model Searches
+
+把检索包装成第 3 课的工具，**由模型决定**查不查、查什么、查几次。
+Wrap retrieval as a Lesson 3 tool, and **the model decides** whether to search, what to search for, and how many times.
+
+```python
+TOOLS = [{
+    "name": "search_docs",
+    "description": "Search internal runbooks, postmortems and service configs",
+    "input_schema": {
+        "type": "object",
+        "properties": {"query": {"type": "string"}},
+        "required": ["query"],
+    },
+}]
+```
+
+同一个问题，模型可能这样查：
+For the same question, the model might search like this:
+
+1. 先查 `search_docs("OOMKilled troubleshooting")`，拿到运维手册。
+   `search_docs("OOMKilled troubleshooting")` → gets the runbook.
+2. 想看具体配置，再查 `search_docs("payment-service values.yaml memory")`。
+   Needs the actual config → `search_docs("payment-service values.yaml memory")`.
+3. 再查 `search_docs("JVM OOMKilled incident")`，找到 3 月的复盘。
+   `search_docs("JVM OOMKilled incident")` → finds the March postmortem.
+4. 资料够了，开始回答。
+   It has enough, so it answers.
+
+- **优点 Pros:** 能多轮检索，按已查到的内容调整关键词，复杂问题效果更好；闲聊类问题直接回答，省一次检索。
+  Multiple rounds, refining queries based on what it found, so it handles complex questions better; small talk gets answered without a search.
+- **缺点 Cons:** 多轮调用更慢、更贵，行为也没那么可预测。
+  Multiple calls are slower and more expensive, and behavior is less predictable.
+
+现在也常用 **MCP** 暴露这个工具：写一个包装向量库的 MCP 服务，Claude 等客户端就能直接调用。
+**MCP** is now a common way to expose this tool: write an MCP server around the vector DB, and clients like Claude can call it directly.
+
+### 5.3 怎么选 How to Choose
+
+| 对比 Aspect | 经典 RAG Classic RAG | 智能体 RAG Agentic RAG |
+| --- | --- | --- |
+| 谁决定查 Who decides | 你的代码 Your code | 模型 The model |
+| 检索次数 Searches | 固定 1 次 Exactly 1 | 0 到多次 0 to many |
+| 速度成本 Speed & cost | 快、便宜 Fast, cheap | 慢、贵 Slower, pricier |
+| 适合 Good for | 客服、常见问题、简单问答 Support, FAQ, simple Q&A | 排障、研究、复杂问题 Troubleshooting, research, complex questions |
+
+> [!tip] 建议 Recommendation
+> 先做经典 RAG，把检索质量调好，再考虑包装成工具。底层的向量库和检索逻辑是同一套，只是谁来调用不同。
+> Start with classic RAG and get retrieval quality right, then consider wrapping it as a tool. The vector DB and retrieval logic are the same; only the caller changes.
+
+## 6. 🚀 部署与成败关键 Deployment & What Makes It Work
 
 | 规模 Scale | 做法 Setup |
 | --- | --- |
@@ -306,7 +387,7 @@ In a real system, ② becomes an embedding model (such as Voyage AI), ④ become
 > 难点不在部署，在检索质量：怎么切块、选哪个 embedding 模型、要不要混合检索和重排序。上面的例子如果没找回那份事故复盘，答案就退化成泛泛的通用建议。
 > The hard part isn't deployment, it's retrieval quality: how you chunk, which embedding model, whether to add hybrid search and reranking. If the example had missed the postmortem, the answer would fall back to generic advice.
 
-## 6. 🔍 对课程原文的补充与更正 Clarifications to the Lesson Text
+## 7. 🔍 对课程原文的补充与更正 Clarifications to the Lesson Text
 
 - **不是训练 Not training:** 模型本身不变，只是每次多给资料。改了文档，下一次回答就生效，不用重新训练。
   The model doesn't change; it gets extra material per question. Edit a document and the next answer reflects it, with no retraining.
@@ -331,7 +412,7 @@ In a real system, ② becomes an embedding model (such as Voyage AI), ④ become
 - **`-Xmx` 会覆盖百分比 `-Xmx` overrides the percentage:** 同时设了 `-Xmx` 时 `MaxRAMPercentage` 不生效，所以长期方案要先删掉 `-Xmx`。堆外内存还包括元空间、线程栈、直接内存和 JIT 代码缓存。
   If `-Xmx` is also set, `MaxRAMPercentage` is ignored, so the long-term fix must remove `-Xmx` first. Off-heap memory includes metaspace, thread stacks, direct buffers and the JIT code cache.
 
-## 7. ❓ 复习题 Review Questions
+## 8. ❓ 复习题 Review Questions
 
 **Q1.** RAG 的两个阶段分别做什么？ What do RAG's two phases do?
 
@@ -381,9 +462,16 @@ In a real system, ② becomes an embedding model (such as Voyage AI), ④ become
 > 向量检索按情形相似找到别的服务的事故复盘；关键词检索靠 OOMKilled 这个词找到运维手册；重排序从 20 条候选里挑出最有用的 3 条。
 > Vector search finds another service's postmortem because the situation is similar; keyword search finds the runbook through the word "OOMKilled"; reranking picks the 3 most useful of 20 candidates.
 
+**Q9.** 经典 RAG 和智能体 RAG 有什么区别？各适合什么？ What's the difference between classic and agentic RAG, and when does each fit?
+
+> [!success]- 答案 Answer
+> 经典 RAG 由代码每次固定检索一次，快、便宜、可预测，适合客服和常见问题；智能体 RAG 把检索做成工具，由模型决定查不查、查几次，适合排障和复杂问题，但更慢更贵。
+> Classic RAG: your code retrieves exactly once per question; fast, cheap, predictable; good for support and FAQs. Agentic RAG: retrieval is a tool and the model decides whether and how often to search; better for troubleshooting and complex questions, but slower and pricier.
+
 ## 🔗 相关 Related
 
-- ⬅️ 上一课 Previous: [[工具调用 - Lesson 3|第 3 课：工具调用 Lesson 3: Tool Calling]]
+- ⬅️ 上一课 Previous: [[工具调用 - Lesson 3|第 3 课：工具调用 Lesson 3: Tool Calling]]: 智能体 RAG 就是把检索做成工具
+  Agentic RAG is retrieval wrapped as a tool
 - ✍️ [[Prompt 设计与结构化输出 - Lesson 2|第 2 课：Prompt 设计 Lesson 2: Prompt Design]]: 用标签包住不可信的文档，防提示注入
   Wrap untrusted documents in tags to defend against prompt injection
 - ⚡ [[Prompt Caching|提示缓存 Prompt Caching]]: 检索到的段放在缓存前缀之后
