@@ -15,6 +15,7 @@ description: 软件开发学习笔记 · Software development learning notes, on
 > - [[📌 算法总览|🧮 算法 Algorithms]] 排序、二分、递归、贪心、动态规划 Sorting, binary search, recursion, greedy, dynamic programming
 > - [[📌 数据结构总览|🧱 数据结构 Data Structures]] 数组、哈希表、栈与队列、树、堆、图 Arrays, hash maps, stacks and queues, trees, heaps, graphs
 > - [[📌 系统设计总览|🏗️ 系统设计 System Design]] 计算机架构、内存层级、分布式系统 Computer architecture, the memory hierarchy, distributed systems
+> - [[📌 数据密集型应用总览|📘 数据密集型应用 DDIA]] 《数据密集型应用系统设计》读书笔记：可靠性、扩展性、数据模型 Reading notes on Designing Data-Intensive Applications: reliability, scalability, data models
 
 ## 怎么使用 How to use
 

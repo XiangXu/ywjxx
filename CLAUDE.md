@@ -19,7 +19,7 @@ npm run format                       # prettier --write
 ## Layout
 
 - `content/`: the vault and **single source of truth**. One folder per topic
-  (`AI 学习库/`, `LeetCode 题库/`, `系统设计/`, `算法/`, `数据结构/`), each with a
+  (`AI 学习库/`, `LeetCode 题库/`, `系统设计/`, `数据密集型应用 DDIA/`, `算法/`, `数据结构/`), each with a
   `📌 … 总览.md` overview note. `content/index.md` is the homepage.
   `AI 学习库/` splits into `学习课程 Lessons/` (numbered course lessons) and
   `延伸专题 Deep Dives/` (side topics), so the sidebar shows them separately.
