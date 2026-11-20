@@ -1,0 +1,10 @@
+{
+  "name": "added-date",
+  "version": "1.0.0",
+  "description": "Sorts the Explorer by the date each note was added",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./index.js"
+  }
+}

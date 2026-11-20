@@ -120,6 +120,9 @@ plugins:
     enabled: false
   - source: ./plugins/publish-filter
     enabled: true
+  # Inlines each note's `created` date for the Explorer's sort order.
+  - source: ./plugins/added-date
+    enabled: true
   # 中 / EN language switch (see plugins/bilingual). Runs after latex so math is
   # already rendered. `titles`: English names for titles and folders the
   # automatic "中文 English" split can't handle.
@@ -171,8 +174,11 @@ plugins:
     enabled: true
   - source: "@quartz-community/tag-page"
     enabled: true
+  # Notes sorted by `created`, newest first (see plugins/added-date).
   - source: "@quartz-community/explorer"
     enabled: true
+    options:
+      sortFn: "(a, b) => window.sortByAdded(a, b)"
     layout:
       position: left
       priority: 50
