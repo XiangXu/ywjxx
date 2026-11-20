@@ -1,5 +1,5 @@
 // Local Quartz plugin: sorts the left Explorer by the date each note was added,
-// newest first, so recent notes are easy to find and review.
+// oldest first, so notes read in the order they were written.
 //
 // The Explorer builds its tree in the browser from contentIndex.json, which has
 // no dates. This plugin reads each note's frontmatter `created` date at build
@@ -7,7 +7,7 @@
 // (window.sortByAdded). quartz.config.yaml points the Explorer's `sortFn` at it.
 //
 // Order inside a folder: subfolders (A–Z), the 📌 overview note, then notes by
-// `created`, newest first. Notes added on the same day, or without a date, are
+// `created`, oldest first (newest at the bottom). Notes added on the same day are
 // sorted by title.
 import { readdirSync, readFileSync } from "node:fs"
 import { join, relative, sep } from "node:path"
@@ -43,7 +43,7 @@ function sortByAdded(a, b) {
   const pinned = (node) => (node.data?.filePath || "").split("/").pop().startsWith("📌")
   if (pinned(a) !== pinned(b)) return pinned(a) ? -1 : 1
   const date = (node) => ADDED[(node.data?.filePath || "").normalize("NFC")] || ""
-  return date(b).localeCompare(date(a)) || byName()
+  return date(a).localeCompare(date(b)) || byName()
 }
 
 export const manifest = {

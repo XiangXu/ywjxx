@@ -174,7 +174,7 @@ plugins:
     enabled: true
   - source: "@quartz-community/tag-page"
     enabled: true
-  # Notes sorted by `created`, newest first (see plugins/added-date).
+  # Notes sorted by `created`, oldest first (see plugins/added-date).
   - source: "@quartz-community/explorer"
     enabled: true
     options:
