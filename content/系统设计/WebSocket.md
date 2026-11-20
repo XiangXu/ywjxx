@@ -139,6 +139,7 @@ Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
 ## 8. 🔗 相关 Related
 
 - ⬅️ 上一篇 Previous: [[HTTP|超文本传输协议 HTTP]]
+- ➡️ 下一篇 Next: [[API Paradigms|API 范式 API Paradigms]]
 - [[TCP and UDP|TCP 与 UDP 协议 TCP and UDP]]
 - [[Networking Basics|网络基础 Networking Basics]]
 - [[📌 系统设计总览|系统设计总览 System Design Overview]]
