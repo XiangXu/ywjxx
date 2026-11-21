@@ -470,8 +470,8 @@ For the same question, the model might search like this:
 
 ## 🔗 相关 Related
 
-- ⬅️ 上一课 Previous: [[工具调用 - Lesson 3|第 3 课：工具调用 Lesson 3: Tool Calling]]: 智能体 RAG 就是把检索做成工具
-  Agentic RAG is retrieval wrapped as a tool
+- ⬅️ [[工具调用 - Lesson 3|第 3 课：工具调用 Lesson 3: Tool Calling]]: 上一课，智能体 RAG 就是把检索做成工具
+  Previous lesson: agentic RAG is retrieval wrapped as a tool
 - ✍️ [[Prompt 设计与结构化输出 - Lesson 2|第 2 课：Prompt 设计 Lesson 2: Prompt Design]]: 用标签包住不可信的文档，防提示注入
   Wrap untrusted documents in tags to defend against prompt injection
 - ⚡ [[Prompt Caching|提示缓存 Prompt Caching]]: 检索到的段放在缓存前缀之后

@@ -157,5 +157,5 @@ def ask(question):
 - 🧩 [[LLM 基础 - Lesson 1|第 1 课：LLM 基础 Lesson 1: LLM Basics]]
 - ⚡ [[Prompt Caching|提示缓存 Prompt Caching]]: 工具定义也是 prompt 前缀的一部分，改动它会让整个缓存失效
   Tool definitions are part of the prompt prefix; changing them invalidates the entire cache
-- ➡️ 下一课 Next: [[检索增强生成 RAG - Lesson 4|第 4 课：检索增强生成 Lesson 4: RAG]]，把你自己的文档交给模型
-  Giving the model your own documents
+- ➡️ [[检索增强生成 RAG - Lesson 4|第 4 课：检索增强生成 Lesson 4: RAG]]: 下一课，把你自己的文档交给模型
+  Next lesson: giving the model your own documents
