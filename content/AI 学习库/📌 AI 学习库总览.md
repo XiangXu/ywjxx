@@ -18,6 +18,7 @@ created: 2026-10-16
 - ✍️ [[Prompt 设计与结构化输出 - Lesson 2]]: Prompt 设计习惯、🧾 结构化 JSON 输出和 🛡️ 提示注入 Prompt design habits, 🧾 structured JSON output, and 🛡️ prompt injection
 - 🛠️ [[工具调用 - Lesson 3]]: 模型决定查什么，🧑‍💻 你的代码去执行，🔁 查够了再回答 The model decides what to look up, 🧑‍💻 your code runs it, and 🔁 it answers once it has enough
 - 📚 [[检索增强生成 RAG - Lesson 4]]: 先 🔎 检索相关的几段，再 📝 拼进 prompt 让模型开卷作答 First 🔎 retrieve the relevant passages, then 📝 put them in the prompt so the model answers open-book
+- 🤖 [[智能体与护栏 - Lesson 5]]: 模型 🔁 自己跑多步，🛡️ 步数上限、权限和写操作确认都写在代码里 The model 🔁 runs many steps on its own, while 🛡️ step limits, permissions and write approvals live in your code
 
 ## 🔍 延伸专题 Deep Dives
 - 🎲 [[贪心算法 vs Top-p vs Temperature 讲解区别|LLM 解码 LLM Decoding]]: LLM 怎么选下一个 token（贪心、top-p、temperature） How LLMs pick the next token (greedy, top-p, temperature)

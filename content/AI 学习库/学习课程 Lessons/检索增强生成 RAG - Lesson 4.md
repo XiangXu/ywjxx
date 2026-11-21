@@ -476,5 +476,5 @@ For the same question, the model might search like this:
   Wrap untrusted documents in tags to defend against prompt injection
 - ⚡ [[Prompt Caching|提示缓存 Prompt Caching]]: 检索到的段放在缓存前缀之后
   Put retrieved chunks after the cached prefix
-- ➡️ 下一课 Next: 第 5 课（待定）
-  Lesson 5 (TBD)
+- ➡️ [[智能体与护栏 - Lesson 5|第 5 课：智能体与护栏 Lesson 5: Agents and Guardrails]]: 下一课，把工具调用循环放手跑多步，护栏写在代码里
+  Next lesson: the tool-calling loop run for many steps, with guardrails in code
