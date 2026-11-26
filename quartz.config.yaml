@@ -143,7 +143,6 @@ plugins:
         算法总览: Algorithms Overview
         数据结构总览: Data Structures Overview
         系统设计总览: System Design Overview
-        数据密集型应用总览: DDIA Overview
   - source: "@quartz-community/explicit-publish"
     enabled: false
   # Case redirects are off: on Netlify's case-sensitive build FS they emit e.g.

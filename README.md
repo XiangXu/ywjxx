@@ -25,7 +25,6 @@ ywjxx/
 │   ├── 算法/                   🧮 algorithms
 │   ├── 数据结构/               🧱 data structures
 │   ├── 系统设计/               🏗️ system design
-│   ├── 数据密集型应用 DDIA/     📘 DDIA (Designing Data-Intensive Applications) reading notes
 │   ├── 模板/                   🧰 note templates (never published)
 │   └── attachments/           🖼️ pasted images (created by Obsidian on first paste)
 ├── 🔌 plugins/publish-filter/  🔒 hides `publish: false` / `draft: true` notes from the site
