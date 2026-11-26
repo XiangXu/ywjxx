@@ -178,5 +178,6 @@ return new int[] {-1, -1};
 
 - [[📌 算法总览]]
 - 数据结构 Data structures: [[数组 Array|数组 Array]] · [[链表 Linked List|链表 Linked List]]（快慢指针找中点、判环 fast/slow pointers for the middle and cycles）
+- 合并有序序列 Merging sorted runs: [[归并排序 Merge Sort|归并排序 Merge Sort]]（合并步骤就是两个输入各一个指针 the merge step is one pointer per input）
 - 同为一次遍历 Also single pass: [[一次遍历 One Pass|一次遍历 One Pass]]
 - 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析 Big-O]]

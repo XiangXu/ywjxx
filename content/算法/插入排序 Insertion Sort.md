@@ -34,7 +34,7 @@ publish: true
   - 数据**几乎有序**，只有少数元素位置不对 **Nearly sorted** data with only a few elements out of place
   - 需要**稳定**、原地、代码最简单的排序 You need a **stable**, in-place sort with minimal code
   - 数据一个一个到达，边来边插（在线） Items arrive one at a time and are inserted as they come (online)
-- 🚫 不适合 Poor fits: 大数组、逆序居多的数组，改用 O(n log n) 的归并或快速排序 For large or mostly reversed arrays, switch to merge sort or quicksort at O(n log n)
+- 🚫 不适合 Poor fits: 大数组、逆序居多的数组，改用 O(n log n) 的[[归并排序 Merge Sort|归并排序 Merge Sort]]或快速排序 For large or mostly reversed arrays, switch to merge sort or quicksort at O(n log n)
 - 💡 实际应用 In practice: 在 Java 里，`Arrays.sort` 对很小的子区间会直接用插入排序（实现细节，版本间可能变化） In Java, `Arrays.sort` uses insertion sort for very small subranges (an implementation detail that can change between versions)
 
 ## 3. ⚙️ 原理 How It Works
@@ -134,4 +134,5 @@ static void insertionSortShift(int[] a) {
 - 题目 Problem: [[Insertion Sort|插入排序题 Insertion Sort (NeetCode)]]
 - 数据结构 Data structures: [[数组 Array|数组 Array]]（原地排序的对象 the in-place target）
 - 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析 Big-O]]（最好、平均、最坏 best, average, worst）
+- 更快的稳定排序 A faster stable sort: [[归并排序 Merge Sort|归并排序 Merge Sort]]（O(n log n)，但要额外空间 but needs extra space）
 - 读写下标的相近思路 Related index thinking: [[双指针 Two Pointers|双指针 Two Pointers]]

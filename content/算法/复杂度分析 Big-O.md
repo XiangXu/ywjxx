@@ -46,7 +46,7 @@ publish: true
 | O(1) | 常数 constant | 数组按下标访问 array index, `HashMap.get`（平均 average） |
 | O(log n) | 对数 logarithmic | 二分查找 binary search |
 | O(n) | 线性 linear | [[一次遍历 One Pass\|一次遍历 one pass]] · [[双指针 Two Pointers\|双指针 two pointers]] |
-| O(n log n) | 线性对数 linearithmic | 归并排序 merge sort, `Arrays.sort` |
+| O(n log n) | 线性对数 linearithmic | [[归并排序 Merge Sort\|归并排序 merge sort]], `Arrays.sort` |
 | O(n²) | 平方 quadratic | 两层循环 nested loops, 冒泡排序 bubble sort |
 | O(2ⁿ) | 指数 exponential | 枚举所有子集 all subsets |
 | O(n!) | 阶乘 factorial | 枚举所有排列 all permutations |
@@ -209,6 +209,7 @@ Every problem is practice for stating complexity (see the table in section 5); t
 - [[📌 算法总览]]
 - [[一次遍历 One Pass|一次遍历 One Pass]] · [[双指针 Two Pointers|双指针 Two Pointers]]
 - [[插入排序 Insertion Sort|插入排序 Insertion Sort]]（最好 O(n)、最坏 O(n²) Best O(n), worst O(n²)）
+- [[归并排序 Merge Sort|归并排序 Merge Sort]]（对任何输入都一样快 the same O(n log n) on every input）
 - [[递归 Recursion|递归 Recursion]]（递归栈的空间 recursion-stack space）
 - [[动态规划 Dynamic Programming|动态规划 Dynamic Programming]]（状态数乘转移数 states times transitions）
 - 数据结构 Data structures: [[数组 Array|数组 Array]] · [[栈 Stack|栈 Stack]] · [[链表 Linked List|链表 Linked List]] · [[队列 Queue|队列 Queue]]

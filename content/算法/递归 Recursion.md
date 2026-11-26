@@ -184,4 +184,5 @@ int fib(int n, int[] memo) {          // memo 长度 n + 1，初始全 0 memo ha
 - 数据结构 Data structures: [[链表 Linked List|链表 Linked List]]（天然递归的结构 a naturally recursive structure）
 - 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析 Big-O]]（递归栈也算空间 the recursion stack counts as space）
 - 对比 Compare with: [[一次遍历 One Pass|一次遍历 One Pass]]（206 的迭代写法 iterative version）
+- 分治 Divide and conquer: [[归并排序 Merge Sort|归并排序 Merge Sort]]（拆两半、各自递归、再合并 split, recurse on each half, merge）
 - 下一步 Next step: [[动态规划 Dynamic Programming|动态规划 Dynamic Programming]]（递归加缓存 recursion plus a cache）
