@@ -17,8 +17,8 @@ publish: true
 # 🔀 归并排序 Merge Sort
 
 > [!abstract] TL;DR
-> **分治**：从中间切成两半，递归排好每一半，再像拉拉链一样**合并**两个有序段。任何输入都是 O(n log n)，**稳定**，但数组版要 O(n) 额外空间。
-> **Divide and conquer:** split in the middle, recursively sort each half, then **merge** the two sorted halves like a zipper. O(n log n) on every input and **stable**, but the array version needs O(n) extra space.
+> **分治**：从中间切成两半，递归排好每一半，再像拉拉链一样**合并**两个有序段。最坏也是 O(n log n)，**稳定**，但数组版要 O(n) 额外空间。
+> **Divide and conquer:** split in the middle, recursively sort each half, then **merge** the two sorted halves like a zipper. O(n log n) even in the worst case and **stable**, but the array version needs O(n) extra space.
 
 ## 1. 🎯 核心概念 Overview
 
@@ -50,15 +50,15 @@ publish: true
 - 💡 实际应用 In practice:
   - Java 的 `Arrays.sort(Object[])` 和 `Collections.sort` 用 TimSort（归并 + 插入排序，稳定、自适应）。
     Java's `Arrays.sort(Object[])` and `Collections.sort` use TimSort (merge plus insertion sort, stable and adaptive).
-  - 基本类型的 `Arrays.sort(int[])` 用双轴快排，因为基本类型不需要稳定。
-    `Arrays.sort(int[])` on primitives uses dual-pivot quicksort, since primitives don't need stability.
+  - 基本类型的 `Arrays.sort(int[])` 用双轴快排，因为基本类型不需要稳定（实现细节，版本间可能变化）。
+    `Arrays.sort(int[])` on primitives uses dual-pivot quicksort, since primitives don't need stability (an implementation detail that can change between versions).
   - 数据大到放不进内存时，先分块排序写回磁盘，再多路归并（外部排序）。
     When data doesn't fit in memory, sort chunks, write them to disk, then do a k-way merge (external sorting).
 
 ## 3. ⚙️ 原理 How It Works
 
-递推式是 T(n) = 2T(n/2) + O(n)。一共 log₂ n 层，每一层所有子数组的合并加起来正好处理 n 个元素，所以总共 O(n log n)。拆分方式和数据无关，所以最好、平均、最坏都一样。
-The recurrence is T(n) = 2T(n/2) + O(n). There are log₂ n levels, and the merges on each level touch exactly n elements in total, so the whole sort is O(n log n). The split never depends on the data, so best, average and worst case are the same.
+递推式是 T(n) = 2T(n/2) + O(n)。一共 log₂ n 层，每一层所有子数组的合并加起来正好处理 n 个元素，所以总共 O(n log n)。拆分方式和数据无关，所以基本版的最好、平均、最坏都一样。
+The recurrence is T(n) = 2T(n/2) + O(n). There are log₂ n levels, and the merges on each level touch exactly n elements in total, so the whole sort is O(n log n). The split never depends on the data, so for the basic version best, average and worst case are the same.
 
 > [!example] 最后一次合并 The final merge: `[2 4 5 7]` + `[1 2 3 6]`
 >
@@ -128,11 +128,11 @@ static void mergeSortBottomUp(int[] a) {
 
 | 情况 Case | ⏱️ Time | 为什么 Why |
 | --- | --- | --- |
-| 最好 Best | O(n log n) | 照样拆到底 it still splits all the way down |
+| 最好 Best | O(n log n) | 照样拆到底；加了跳过，已有序的输入降到 O(n) It still splits all the way down; with the skip, sorted input drops to O(n) |
 | 平均 Average | O(n log n) | 每层 O(n)，共 log n 层 log n levels, O(n) each |
 | 最坏 Worst | O(n log n) | 拆分和数据无关 the split ignores the data |
 
-- 🗄️ **数组空间 Array space:** 临时数组 O(n)，递归栈 O(log n) Buffer O(n), recursion stack O(log n)
+- 🗄️ **数组空间 Array space:** 临时数组 O(n)，自顶向下另有递归栈 O(log n) Buffer O(n), plus a recursion stack O(log n) for top-down
 - 🗄️ **链表空间 List space:** 自顶向下 O(log n) 递归栈，自底向上 O(1) Top-down O(log n) stack, bottom-up O(1)
 - ✅ **稳定 Stable:** 相等时取左边的元素 take the left element on ties
 - ❌ **不是原地 Not in place:** 数组版需要 O(n) 额外空间 the array version needs O(n) extra
@@ -143,9 +143,9 @@ static void mergeSortBottomUp(int[] a) {
 | --- | --- | --- | --- |
 | 最坏 Worst | O(n log n) | O(n²) | O(n²) |
 | 平均 Average | O(n log n) | O(n log n) | O(n²) |
-| 额外空间 Extra space | O(n) | O(log n) | O(1) |
+| 额外空间 Extra space | O(n) | 平均 O(log n) Average O(log n) | O(1) |
 | 稳定 Stable | ✅ | ❌ | ✅ |
-| 擅长 Good at | 链表、稳定、外部排序 Lists, stability, external sorting | 数组上平均最快 fastest on average for arrays | 小数组、几乎有序 small or nearly sorted input |
+| 擅长 Good at | 链表、稳定、外部排序 Lists, stability, external sorting | 数组上平均通常最快 usually fastest on average for arrays | 小数组、几乎有序 small or nearly sorted input |
 
 ## 6. ⚠️ 常见坑 Common Pitfalls
 
@@ -164,11 +164,11 @@ static void mergeSortBottomUp(int[] a) {
 
 ## 7. ❓ 复习题 Review Questions
 
-**Q1.** 为什么归并排序在任何输入上都是 O(n log n)？ Why is merge sort O(n log n) on every input?
+**Q1.** 为什么基本版归并排序在任何输入上都是 O(n log n)？ Why is basic merge sort O(n log n) on every input?
 
 > [!success]- 答案 Answer
-> 它总是从中间切，和数据无关，所以递归树总是 log n 层；每层的合并加起来处理 n 个元素，O(n)。
-> It always splits in the middle regardless of the data, so the recursion tree always has log n levels, and each level's merges handle n elements in O(n).
+> 它总是从中间切，和数据无关，所以递归树总是 log n 层；每层的合并加起来处理 n 个元素，O(n)。加了 `a[mid] <= a[mid + 1]` 的跳过后，已有序的输入只要 O(n)。
+> It always splits in the middle regardless of the data, so the recursion tree always has log n levels, and each level's merges handle n elements in O(n). With the `a[mid] <= a[mid + 1]` skip, sorted input takes only O(n).
 
 **Q2.** 归并排序和快排怎么选？ Merge sort or quicksort?
 
@@ -202,7 +202,7 @@ static void mergeSortBottomUp(int[] a) {
 | 88. Merge Sorted Array | 数组合并，从后往前填 array merge, fill from the back |
 | 912. Sort an Array | 手写完整的归并排序 write the full merge sort |
 | 148. Sort List | 链表归并：快慢指针拆、21 合并 list merge sort: split with fast/slow pointers, merge with 21 |
-| 23. Merge k Sorted Lists | 两两归并或小顶堆 pairwise merging or a min-heap, O(N log k) |
+| 23. Merge k Sorted Lists | 分治两两归并或小顶堆，O(N log k) Divide-and-conquer pairwise merging or a min-heap, O(N log k) |
 | 315. Count of Smaller Numbers After Self | 合并时统计右边更小的 count smaller-to-the-right during the merge |
 | 493. Reverse Pairs | 合并前用双指针数对 count pairs with two pointers before merging |
 
@@ -211,6 +211,6 @@ static void mergeSortBottomUp(int[] a) {
 - [[📌 算法总览]]
 - 分治靠递归 Divide and conquer via: [[递归 Recursion|递归 Recursion]]（相信子调用排好了一半 trust each call to sort its half）
 - 合并步骤 The merge step: [[双指针 Two Pointers|双指针 Two Pointers]]（两个输入各一个指针 one pointer per input） · [[Merge Two Sorted Lists|21. 合并两个有序链表 Merge Two Sorted Lists]]
-- 对比 Compare with: [[插入排序 Insertion Sort|插入排序 Insertion Sort]]（平方级，小数组时反而更快 quadratic, yet faster on tiny arrays） · [[动态规划 Dynamic Programming|动态规划 Dynamic Programming]]（子问题会重叠 overlapping subproblems）
+- 对比 Compare with: [[插入排序 Insertion Sort|插入排序 Insertion Sort]]（平方级，小数组时反而更快 quadratic, yet faster on tiny arrays） · [[动态规划 Dynamic Programming|动态规划 Dynamic Programming]]（DP 的子问题会重叠，归并的不会 DP's subproblems overlap; merge sort's don't）
 - 数据结构 Data structures: [[数组 Array|数组 Array]] · [[链表 Linked List|链表 Linked List]]
 - 复杂度 Complexity: [[复杂度分析 Big-O|复杂度分析 Big-O]]（典型的 O(n log n) 例子 the classic O(n log n) example）

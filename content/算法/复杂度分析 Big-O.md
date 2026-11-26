@@ -209,7 +209,7 @@ Every problem is practice for stating complexity (see the table in section 5); t
 - [[📌 算法总览]]
 - [[一次遍历 One Pass|一次遍历 One Pass]] · [[双指针 Two Pointers|双指针 Two Pointers]]
 - [[插入排序 Insertion Sort|插入排序 Insertion Sort]]（最好 O(n)、最坏 O(n²) Best O(n), worst O(n²)）
-- [[归并排序 Merge Sort|归并排序 Merge Sort]]（对任何输入都一样快 the same O(n log n) on every input）
+- [[归并排序 Merge Sort|归并排序 Merge Sort]]（最坏情况也不退化 O(n log n) even in the worst case）
 - [[递归 Recursion|递归 Recursion]]（递归栈的空间 recursion-stack space）
 - [[动态规划 Dynamic Programming|动态规划 Dynamic Programming]]（状态数乘转移数 states times transitions）
 - 数据结构 Data structures: [[数组 Array|数组 Array]] · [[栈 Stack|栈 Stack]] · [[链表 Linked List|链表 Linked List]] · [[队列 Queue|队列 Queue]]
